@@ -1,0 +1,161 @@
+@import "../Poppins-Font.css";
+
+.genz-container{
+    background-color: white;
+  max-width:1500px;
+  margin:0 auto;
+  padding: 20px  20px;
+}
+
+.genz-title{
+  font-family: 'PoppinsSemibold';
+   font-size:1.6rem;
+  margin-bottom:20px;
+}
+
+/* Slider */
+
+.genz-slider{
+  display:flex;
+  padding-top: 10px;
+  gap:20px;
+  overflow-x:auto;
+  scroll-behavior:smooth;
+}
+
+.genz-slider::-webkit-scrollbar{
+  display:none;
+}
+
+/* Card */
+
+.genz-card{
+  min-width:280px;
+  max-width: 280px;
+  border-radius:5px; /* more premium */
+  overflow:hidden;
+  background:#fff;
+  position:relative;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  border:0.5px solid rgba(186, 186, 186, 0.61);
+  padding: 5px
+  ;
+}
+
+/* Hover Effect */
+.genz-card:hover{
+  transform:translateY(-6px);
+}
+
+/* Image */
+
+.genz-card img{
+  width:100%;
+  height:260px;
+  object-fit:cover;
+  border-radius: 5px 5px 0 0;
+}
+
+/* Brand Tag */
+
+.genz-brand-tag{
+  position:absolute;
+  top:10px;
+  left:10px;
+  background:#2be66b;
+  color:black;
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:5px;
+  font-family: 'PoppinsSemibold';
+  z-index:2;
+}
+
+/* Info */
+
+.genz-info{
+  background:#fff;
+  padding:10px;
+  text-align:center;
+  font-family: 'PoppinsRegular';
+  font-size:14px;
+}
+
+/* Bottom Price */
+
+.genz-price{
+  background:linear-gradient(180deg, #212121, rgba(28, 28, 28, 0.763));
+  color:white;
+  text-align:center;
+  padding:10px;
+  font-family: 'PoppinsSemibold';
+  font-size:16px;
+  border-radius: 0 0 5px 5px;
+}
+
+@media (min-width: 601px) and (max-width: 1024px){
+
+  .genz-container{
+    padding:20px 15px;
+  }
+
+  .genz-slider{
+    gap:16px;
+  }
+
+  .genz-card{
+    min-width:220px;
+  }
+
+  .genz-card img{
+    height:230px;
+  }
+
+  .genz-title{
+    font-size:1.4rem;
+  }
+
+}
+
+@media (max-width: 600px){
+
+  .genz-container{
+    padding:15px 10px;
+  }
+
+  .genz-title{
+    font-size: 1.1rem;
+    margin-bottom:8px;
+  }
+
+  .genz-slider{
+    gap:12px;
+    padding-left:5px;
+  }
+
+  .genz-card{
+    min-width:190px; /* smaller but neat */
+    border-radius:5px;
+  }
+
+  .genz-card img{
+    height:200px;
+  }
+
+  .brand-tag{
+    font-size:10px;
+    padding:3px 8px;
+  }
+
+  .genz-info{
+    font-size:12px;
+    padding:8px;
+  }
+
+  .genz-price{
+    font-size:14px;
+    padding:8px;
+  }
+
+}

@@ -1,0 +1,102 @@
+.offers-container-Com10 {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #ffffff;
+}
+
+.offers-title-Com10 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Slider */
+.offers-slider-Com10 {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 10px;
+}
+
+.offers-slider-Com10::-webkit-scrollbar {
+  display: none;
+}
+
+/* Card */
+.offer-card-Com10 {
+  min-width: 280px;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
+.offer-card-Com10:hover {
+  transform: translateY(1px);
+  box-shadow: 0 12px 25px rgba(159, 159, 159, 0.1);
+}
+
+/* Image */
+.offer-image-Com10 {
+  position: relative;
+  height: 250px;
+  background: #eef2f7;
+}
+
+.offer-image-Com10 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Arrow button */
+.arrow-btn-Com10 {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Offer Badge */
+.offer-badge-Com10 {
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px;
+  text-align: center;
+}
+
+/* Title */
+.offer-title-Com10 {
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  color: #333;
+}
+
+.offer-image-Com10 img {
+  transition: transform 0.4s ease;
+}
+
+.offer-card-Com10:hover img {
+  transform: scale(1.05);
+}
+
+.offers-slider-Com10 {
+  scroll-snap-type: x mandatory;
+}
+
+.offer-card-Com10 {
+  scroll-snap-align: start;
+}

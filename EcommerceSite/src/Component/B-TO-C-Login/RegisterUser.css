@@ -1,0 +1,161 @@
+/* SignupForm.css */
+.RegisterUser-container {
+    display: flex;
+    min-width: 58vw;
+    height: 88vh;
+    background-color: white;
+  }
+
+  .review-top-heading{
+    margin: 3vw;
+  }
+  
+  .RegisterUser-form-section {
+    width: 68%;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    padding: 1.2rem 2rem;
+    margin-right: 30px;
+  }
+  
+  .RegisterUser-title {
+    font-size: 1.7vw;
+    line-height: 2;
+    font-weight: bold;
+  }
+  
+  .RegisterUser-subtitle {
+    font-size: 1.7vw;
+    font-weight: bold;
+    margin-bottom: 1vw;
+  }
+  
+  .RegisterUser-input-field {
+    width: 100%;
+    padding: 0.8vw;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 0.7vw;
+    outline: none;
+  }
+  
+  .RegisterUser-continue-btn {
+    background-color: black;
+    color: white;
+    padding: 1vw;
+    width: 10vw;
+    border: none;
+    border-radius: 24px;
+    cursor: pointer;
+    margin-left: 8vw;
+    margin-top: 1.3vw;
+    font-weight: bold;
+  }
+  
+  .RegisterUser-sign-up-text {
+    margin: 1rem 0;
+    text-align: center;
+
+    color: gray;
+  }
+  
+  .RegisterUser-social-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2vw;
+    margin-top: 0.1rem;
+  }
+  
+  .RegisterUser-social-btn {
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .RegisterUser-social-btn img {
+    width: 24px;
+  }
+  
+  .RegisterUser-image-section {
+    width: 70%;
+    height: 100%;
+  }
+  
+  .RegisterUser-image-section img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .Alreadylogin-text{
+    font-size: 1rem;
+    text-align: center;
+    margin-top: 2vw;
+  }
+
+   .modalss-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1500;
+  } 
+  
+  .modalss-content {
+    background: white;
+    border-radius: 10px;
+    width: 60vw;
+    position: relative;
+  }
+  
+  .Login-close-btn {
+    position: absolute;
+    padding: 1px 10px;
+    top: 10px;
+    right: 15px;
+    border-radius: 50%;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    background-color: black;
+  }
+
+
+  .RegisterUser-phone-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    /* margin-bottom: 15px; */
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: white;
+  }
+  
+  .RegisterUser-phone-prefix {
+    padding: 10px 12px;
+    background-color: #f0f0f0;
+    font-size: 14px;
+  }
+  
+  .RegisterUser-phone-input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+  }
+  
+  
+  
+  

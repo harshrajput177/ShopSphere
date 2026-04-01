@@ -1,0 +1,172 @@
+/* OVERLAY */
+.LoginUserMobile-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+ z-index: 10000; 
+}
+
+/* MAIN CONTAINER */
+.LoginUserMobile-modal-container {
+  width: 90%;
+  max-width: 360px;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+/* ANIMATION */
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* CLOSE BUTTON */
+.LoginUserMobile-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #eee;
+  border: none;
+  border-radius: 50%;
+  padding: 6px 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* BANNER */
+.LoginUserMobile-modal-banner {
+  background: linear-gradient(135deg, #002453, #072652);
+  color: white;
+  padding: 30px 20px;
+  /* border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px; */
+}
+
+.LoginUserMobile-modal-banner h3 {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* CONTENT */
+.LoginUserMobile-modal-content {
+  padding: 15px;
+  text-align: center;
+}
+
+.LoginUserMobile-modal-content h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.LoginUserMobile-modal-content p {
+  font-size: 11px;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+/* INPUT */
+.LoginUserMobile-input-field {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  outline: none;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+/* BUTTON */
+.LoginUserMobile-otp-btn {
+  width: 100%;
+  padding: 12px;
+  background: #d1d5db;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #555;
+  cursor: not-allowed;
+  border: 0.5px solid gray;
+}
+
+/* TERMS */
+.LoginUserMobile-terms {
+  font-size: 11px;
+  color: #888;
+  margin-top: 15px;
+}
+
+.LoginUserMobile-terms span {
+  color: #000;
+  font-weight: 500;
+}
+
+/* OR TEXT */
+.LoginUserMobile-or {
+  font-size: 11px;
+  color: #999;
+  margin: 15px 0;
+  letter-spacing: 1px;
+}
+
+/* SOCIAL ICONS WRAPPER */
+.LoginUserMobile-social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* BUTTON BASE */
+.LoginUserMobile-social-btn {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  background: #fff;
+  transition: 0.3s;
+}
+
+/* HOVER EFFECT */
+.LoginUserMobile-social-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* COLORS */
+
+/* Google (already colored icon) */
+.LoginUserMobile-google svg {
+  font-size: 22px;
+}
+
+/* Apple */
+.LoginUserMobile-apple {
+  background: #000;
+  color: #fff;
+}
+
+/* Facebook */
+.LoginUserMobile-facebook {
+  background: #1877f2;
+  color: #fff;
+}

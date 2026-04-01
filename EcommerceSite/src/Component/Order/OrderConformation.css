@@ -1,0 +1,171 @@
+.Conformation-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 80px;
+    background-color: #EEEBE4;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+  
+  .left-section {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .right-section {
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .thank-you-box,
+  .delivery-box,
+  .orders-box,
+  .address-box {
+    background: #EEEBE4;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .thank-you-box h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+  
+  .track-link {
+    background: none;
+    border: none;
+    color: #1976d2;
+    cursor: pointer;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  
+  .delivery-box h3 {
+    font-size: 18px;
+    margin-bottom: 40px;
+  }
+  
+  .continue-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    background-color:  #4B3D1A;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+  }
+  
+  .continue-btn:hover {
+    background-color: #433d2d;
+  }
+  
+  .orders-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .orders-text {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
+  .orders-btn {
+    background-color:  #4B3D1A;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .orders-btn:hover {
+    background-color:  #433d2d;
+  }
+  
+  .address-box h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
+  }
+  
+  .address-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .change-btn,
+  .add-number-btn {
+    background: none;
+    border: none;
+    color: #4B3D1A;
+    cursor: pointer;
+    font-weight: 500;
+    margin-top: 10px;
+    padding: 0;
+  }
+  
+
+  @media (max-width: 768px) {
+    .Conformation-container {
+      flex-direction: column;
+      padding: 30px 20px;
+      gap: 30px;
+    }
+  
+    .left-section,
+    .right-section {
+      width: 100%;
+      min-width: unset;
+    }
+  
+    .orders-box {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  
+    .track-link {
+      font-size: 1.1rem;
+      justify-content: center;
+    }
+  
+    .continue-btn,
+    .orders-btn {
+      font-size: 15px;
+      padding: 10px;
+      width: 100%;
+    }
+  
+    .address-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  
+    .change-btn,
+    .add-number-btn {
+      font-size: 14px;
+    }
+  
+    .thank-you-box h2 {
+      font-size: 20px;
+      text-align: center;
+    }
+  
+    .delivery-box h3,
+    .address-box h3 {
+      font-size: 16px;
+    }
+  }
+  

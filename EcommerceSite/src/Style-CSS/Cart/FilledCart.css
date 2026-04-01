@@ -1,0 +1,369 @@
+.Filled-cart-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1000;
+}
+
+.Filled-cart-container {
+   width: 400px;
+  height: 100%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  padding:10px 20px 2px 20px;
+  font-family: "Poppins", sans-serif;
+}
+
+.Filled-cart-body {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.Filled-cart-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.Filled-cart-body::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+/* Header */
+.Filled-cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-icon {
+  cursor: pointer;
+}
+
+/* Product */
+.Filled-cart-product {
+  display: flex;
+  margin-top: 20px;
+  gap: 12px;
+  position: relative;
+}
+
+.Filled-cart-product img {
+  width: 80px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.Filled-product-details h4 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.Filled-product-details p {
+  margin: 2px 0;
+  font-size: 13px;
+  color: #555;
+}
+
+.Filled-product-options {
+  display: flex;
+  gap: 10px;
+  margin: 6px 0;
+}
+
+.Filled-product-options span {
+  background: #f5f5f5;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.return {
+  color: #777;
+  font-size: 12px;
+}
+
+.remove {
+  position: absolute;
+  right: 0;
+  top: 0;
+  cursor: pointer;
+}
+
+/* Price */
+.Filled-cart-price {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  margin: 15px 0;
+}
+
+.discount {
+  color: green;
+  font-size: 13px;
+}
+
+/* Coupon */
+.Filled-cart-coupon {
+  border: 1px solid #eee;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+/* Summary */
+.Filled-price-summary {
+  border: 1px solid #eee;
+  padding: 15px;
+  border-radius: 6px;
+}
+
+.Filled-price-summary h4 {
+  margin: 0;
+}
+
+.tax {
+  font-size: 12px;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+}
+
+.green {
+  color: green;
+}
+
+.total {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.saving {
+  background: #e6f4ea;
+  color: green;
+  padding: 8px;
+  margin-top: 10px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+/* Footer */
+.Filled-cart-footer {
+    position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding: 20px 0;
+  border-top: 1px solid #eee;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Filled-cart-footer h3 {
+  margin: 0;
+}
+
+.Filled-cart-footer p {
+  font-size: 12px;
+  color: #007bff;
+  cursor: pointer;
+}
+
+.Filled-cart-footer button {
+  background: #1e2a38;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Trust Section */
+.cart-trust {
+  display: flex;
+  justify-content: space-between;
+  background: #f5f5f6;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 15px;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #787878;
+  gap: 6px;
+}
+
+.remove-icon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  cursor: pointer;
+  color: #888;
+  transition: 0.2s ease;
+}
+
+.remove-icon:hover {
+  color: #e53935; /* red on hover */
+  transform: scale(1.1);
+}
+
+.icon-footer-cart{
+    font-size: 20px;
+    color: #787878;
+}
+
+
+/* Saving Bar */
+.cart-saving-bar {
+  background: #e6f4ea;
+  color: #1a7f37;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* ================= MOBILE VIEW ================= */
+@media (max-width: 768px) {
+
+  .Filled-cart-overlay {
+    justify-content: center;
+    align-items: flex-end;
+  }
+
+  .Filled-cart-container {
+    width: 100%;
+    height: 92%;
+    border-radius: 16px 16px 0 0;
+    padding: 15px;
+    animation: slideUpCart 0.3s ease;
+  }
+
+
+
+
+  @keyframes slideUpCart {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .Apply-coupons P{
+    font-size: 12px;
+  }
+
+  .discount-old-price{
+    color: rgb(140, 140, 140);
+    margin-left: 5px;
+  }
+
+  /* Header */
+  .Filled-cart-header {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .Filled-cart-header h2 {
+    font-size: 18px;
+  }
+
+  /* Product */
+  .Filled-cart-product img {
+    width: 70px;
+    height: 90px;
+  }
+
+  .Filled-product-details h4 {
+    font-size: 14px;
+  }
+
+  .Filled-product-details p {
+    font-size: 12px;
+  }
+
+  /* Price */
+  .Filled-cart-price h3 {
+    font-size: 15px;
+    font-weight: 400;
+  }
+
+  /* Coupon */
+  .Filled-cart-coupon {
+    padding: 10px;
+  }
+
+  /* Summary */
+  .Filled-price-summary {
+    padding: 12px;
+  }
+
+  .row span {
+    font-size: 13px;
+  }
+
+  /* Trust Section */
+  .cart-trust {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 5px;
+  }
+
+  .trust-item {
+    flex-direction: column;
+    text-align: center;
+    font-size: 11px;
+  }
+
+  .icon-footer-cart {
+    font-size: 18px;
+  }
+
+  /* Footer Sticky Button */
+  .Filled-cart-footer {
+    position: sticky;
+    bottom: 0;
+    padding: 12px 0;
+  }
+
+  .Filled-cart-footer button {
+    width: 55%;
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+
+  .Filled-cart-footer h3 {
+    font-size: 16px;
+  }
+
+  /* Saving bar */
+  .cart-saving-bar {
+    font-size: 12px;
+    padding: 8px;
+  }
+}

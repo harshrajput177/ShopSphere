@@ -1,0 +1,139 @@
+@import "../Poppins-Font.css";
+
+
+.filter-sidebar {
+  width: 250px;
+  padding: 20px;
+  border-radius: 5px;
+  background: #fff;
+  position: sticky !important;
+  top: 90px;
+  height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(213, 213, 213, 0.05);
+
+  /* 🔥 Hide scrollbar */
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;
+}
+
+/* Chrome, Safari */
+.filter-sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Title */
+.filter-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* Section */
+.filter-section {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+/* Header */
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.filter-header span {
+  font-size: 18px;
+}
+
+/* Content */
+.filter-content {
+  padding-left: 5px;
+}
+
+/* Search box */
+.filter-search {
+  width: 90%;
+  padding: 6px 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+/* CUSTOM CHECKBOX */
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  position: relative;
+  padding-left: 25px;
+}
+
+.custom-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Box */
+.checkmark {
+  position: absolute;
+  left: 0;
+  height: 16px;
+  width: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  transition: 0.2s;
+}
+
+/* Checked */
+.custom-checkbox input:checked ~ .checkmark {
+  background: #2874f0;
+  border-color: #2874f0;
+}
+
+/* Tick */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.custom-checkbox .checkmark:after {
+  left: 5px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Hover */
+.custom-checkbox:hover .checkmark {
+  border-color: #2874f0;
+}
+
+/* PRICE */
+.price-slider {
+  width: 100%;
+  margin-top: 10px;
+  accent-color: #2874f0;
+}
+
+.price-label {
+  font-size: 12px;
+  margin-top: 5px;
+  color: gray;
+}

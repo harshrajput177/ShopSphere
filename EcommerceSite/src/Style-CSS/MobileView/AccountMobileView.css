@@ -1,0 +1,242 @@
+
+
+.mobileView-login-container{
+  width: auto;
+  margin:auto;
+  background:#fff;
+  padding:20px;
+  font-family:'PoppinsRegular';
+}
+
+/* HEADER */
+
+.mobileView-login-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.mobileView-login-header h2{
+  font-family:'PoppinsSemibold';
+  font-size:28px;
+  line-height:1.2;
+}
+
+.mobileView-login-link{
+  margin-top:8px;
+  font-size:14px;
+  cursor:pointer;
+}
+
+.mobileView-profile-icon{
+  font-size:60px;
+  color:#e0c7cc;
+}
+
+/* OFFER */
+
+.mobileView-offer-section{
+  margin-top:25px;
+}
+
+.mobileView-offer-title{
+  font-size:16px;
+  font-family:'PoppinsSemibold';
+  margin-bottom:15px;
+}
+
+/* steps */
+
+.mobileView-offer-steps{
+  display:flex;
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.mobileView-step{
+  flex:1;
+  background:#f5f5f6;
+  border-radius:50px;
+  padding:10px;
+  text-align:center;
+  font-size:12px;
+  position:relative;
+}
+
+.mobileView-step span{
+  font-weight:bold;
+}
+
+.mobileView-step.mobileView-active{
+  border:2px solid #1c2b39;
+}
+
+.mobileView-step.mobileView-active p{
+  color:green;
+}
+
+.mobileView-step.mobileView-locked{
+  opacity:0.5;
+}
+
+/* offer box */
+
+.mobileView-offer-box{
+  background:#e8e6f0;
+  padding:15px;
+  border-radius:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.mobileView-offer-box p{
+  font-size:13px;
+  line-height:1.4;
+}
+
+.mobileView-offer-box button{
+  background:#0b1f35;
+  color:#fff;
+  border:none;
+  padding:10px 18px;
+  border-radius:6px;
+  cursor:pointer;
+  font-family:'PoppinsSemibold';
+}
+
+/* ACCOUNT */
+
+.mobileView-account-section{
+  margin-top:25px;
+}
+
+.mobileView-account-section h4{
+  font-size:12px;
+  color:#888;
+  margin-bottom:10px;
+}
+
+.mobileView-account-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 0;
+  border-bottom:1px solid #eee;
+}
+
+.mobileView-account-item .mobileView-title{
+  font-family:'PoppinsSemibold';
+}
+
+.mobileView-account-item span{
+  font-size:13px;
+  color:#777;
+}
+
+.mobileView-account-item svg{
+  color:#999;
+}
+
+/* section spacing improve */
+.mobileView-account-section{
+  margin-top:25px;
+}
+
+/* icon styling */
+.mobileView-icon{
+  font-size:20px;
+  color:#555;
+}
+
+/* better spacing for long text */
+.mobileView-account-item span{
+  display:block;
+  margin-top:3px;
+  line-height:1.4;
+}
+
+/* premium divider */
+.mobileView-account-item{
+  border-bottom:1px solid rgba(0,0,0,0.08);
+}
+
+/* hover effect */
+.mobileView-account-item:hover{
+  background:#fafafa;
+  padding-left:6px;
+  transition:0.2s;
+}
+
+.mobileView-premium-footer{
+  background:#000;
+  color:#fff;
+  padding:30px 10px;
+  margin-top:30px;
+  text-align:center;
+}
+
+/* logo */
+
+.mobileView-footer-logo{
+  font-family:'PoppinsSemibold';
+  font-size:20px;
+  margin-bottom:25px;
+  letter-spacing:1px;
+}
+
+.mobileView-footer-logo span{
+  font-weight:300;
+}
+
+/* grid */
+
+.mobileView-footer-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:25px 10px;
+}
+
+/* item */
+
+.mobileView-footer-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+}
+
+/* circle icon */
+
+.mobileView-circle{
+  width:45px;
+  height:45px;
+  background:#2c2c2c;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  transition:0.3s;
+}
+
+/* text */
+
+.mobileView-footer-item p{
+  font-size:12px;
+  line-height:1.3;
+  color:#ddd;
+}
+
+/* hover effect */
+
+.mobileView-footer-item:hover .mobileView-circle{
+  background:#ff3f6c;
+  transform:translateY(-3px);
+}
+
+.mobileView-footer-item:hover p{
+  color:#fff;
+}

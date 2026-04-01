@@ -1,0 +1,51 @@
+.orders-container {
+  margin-left: 220px;
+  padding: 30px;
+  background: #f6f7fb;
+  min-height: calc(100vh - 80px);
+}
+
+.filters {
+  margin-bottom: 20px;
+}
+
+.filters button {
+  margin-right: 10px;
+  padding: 8px 14px;
+  border: none;
+  background-color: #e0e7ff;
+  color: #2b58ff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.filters button:hover {
+  background-color: #c7d2fe;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 6px rgba(0,0,0,0.05);
+}
+
+th, td {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background-color: #f4f6fa;
+  font-weight: 600;
+}
+.order-details-container {
+  margin-left: 240px; /* or whatever your sidebar width is */
+  padding-top: 60px;  /* adjust for header height */
+  box-sizing: border-box;
+}

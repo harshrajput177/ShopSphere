@@ -1,0 +1,128 @@
+.Mobile-search-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: #f6f6f6;
+  z-index: 1999;
+  overflow-y: auto;
+}
+
+/* HEADER */
+.Mobile-search-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.Mobile-icon {
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.Mobile-search-box {
+  flex: 1;
+  position: relative;
+}
+
+.Mobile-search-box input {
+  width: 100%;
+  padding: 10px 40px 10px 12px;
+  border-radius: 25px;
+  border: none;
+  background: #f1f1f1;
+  font-size: 14px;
+}
+
+.Mobile-camera-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #888;
+}
+
+/* RECENT */
+.Mobile-recent-section {
+  background: #fff;
+  margin: 12px;
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.Mobile-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Mobile-section-header h4 {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.Mobile-delete-icon {
+  color: #ff4d6d;
+  cursor: pointer;
+}
+
+.Mobile-recent-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.Mobile-recent-tags span {
+  padding: 8px 14px;
+  background: #f1f1f1;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+/* VISITED */
+.Mobile-visited-section {
+  padding: 0 12px 20px;
+}
+
+.Mobile-visited-section h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.Mobile-store-grid {
+  display: flex;
+  gap: 10px;
+}
+
+.Mobile-store-card {
+  flex: 1;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.Mobile-store-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.Mobile-store-card p {
+  position: absolute;
+  bottom: 8px;
+  left: 10px;
+  color: #000;
+  font-weight: 500;
+  font-size: 13px;
+  background: rgba(255,255,255,0.7);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+

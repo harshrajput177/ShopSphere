@@ -1,0 +1,211 @@
+.orderTracking-card {
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    border: 1px solid #e0e0e0;
+    padding: 60px  7vw; 
+    margin: auto;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+    background-color: #EEEBE4;;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .orderTracking-header {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .order-image {
+    width: 150px;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .orderTracking-info {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    flex: 1;
+  }
+  
+  .order-product-title {
+    font-size: 18px;
+    margin: 0 0 5px;
+  }
+  
+  .order-product-subtitle,
+  .order-product-seller {
+    color: gray;
+    font-size: 14px;
+    margin: 2px 0;
+  }
+  
+  .order-product-price {
+    font-size: 20px;
+    color: #000;
+    margin-top: 10px;
+  }
+  
+  .orderTracking-status {
+    margin-top: 0;
+  }
+  
+  .status-item {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+  }
+  
+  .status-icon {
+    font-size: 18px;
+    margin-right: 10px;
+  }
+  
+  .confirmed .status-icon {
+    color: green;
+  }
+  
+  .cancelled .status-icon {
+    color: red;
+  }
+  
+  .orderTracking-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  .btn-cn {
+    padding: 10px 15px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .cancel-btn{
+    background-color: #f44336;
+    color: white;
+   border: none;
+   font-size: 1rem;
+   padding: 1vw  2vw;
+   cursor: pointer;
+   border-radius: 8px;
+  }
+
+  .continue-shopping-btn{
+    background-color: #4B3D1A;
+    color: white;
+   border: none;
+   font-size: 1rem;
+   padding: 1vw ;
+   cursor: pointer;
+   border-radius: 8px;
+  }
+
+  .productimage-trackingOrder{
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .AllOrders-track{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+
+  .tracking-steps {
+    margin-top: 1rem;
+    border-left: 3px dashed #ccc;
+    padding-right: 0;
+  }
+  
+  .step {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .step .icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 7px;
+    font-size: 27px;
+    right: 10px;
+position: relative;
+  }
+  
+  .step.active {
+    color: green;
+  }
+  
+  .step.pending {
+    color: #aaa;
+  }
+  
+  .step.cancelled {
+    color: red;
+  }
+  
+
+  @media (max-width: 768px) {
+    .orderTracking-card {
+      padding: 30px 5vw;
+      gap: 20px;
+    }
+  
+    .orderTracking-header {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+  
+    .order-image {
+      width: 100px;
+    }
+  
+    .orderTracking-info {
+      align-items: center;
+    }
+  
+    .order-product-title {
+      font-size: 16px;
+    }
+  
+    .order-product-price {
+      font-size: 18px;
+    }
+  
+    .orderTracking-actions {
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+  
+    .cancel-btn,
+    .continue-shopping-btn {
+      width: 70%;
+      padding: 10px;
+      font-size: 16px;
+    }
+  
+    .productimage-trackingOrder {
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+  
+    .tracking-steps {
+      margin-left: 10px;
+    }
+  
+    .step {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  }
+  

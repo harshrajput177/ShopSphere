@@ -1,0 +1,174 @@
+/* Overlay */
+.login-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+/* Modal */
+.login-modal {
+     position: relative; 
+  width: 400px;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  animation: scaleUp 0.3s ease;
+}
+
+/* Animation */
+@keyframes scaleUp {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Header */
+.login-header {
+  background: linear-gradient(90deg, #ff3f6c, #ff6f91);
+  padding: 20px;
+  text-align: center;
+  color: #fff;
+}
+
+/* Body */
+.login-body {
+  padding: 20px;
+  text-align: center;
+}
+
+.phone-input {
+  display: flex;
+  align-items: center;
+  background: #f5f5f5;
+  padding: 10px;
+  border-radius: 6px;
+  margin: 15px 0;
+}
+
+.phone-input input {
+  border: none;
+  background: transparent;
+  outline: none;
+  margin-left: 10px;
+  flex: 1;
+}
+
+/* OTP Button */
+.otp-btn {
+  width: 100%;
+  padding: 12px;
+  background: #ccc;
+  border: none;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+
+/* Divider */
+.or-divider {
+  margin: 10px 0;
+  font-size: 13px;
+  color: #888;
+}
+
+/* Social */
+.social-login {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.social-login button {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.social-login {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Common button */
+.social-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  background: #fff;
+  transition: 0.25s;
+}
+
+/* Icon size */
+.social-btn .icon {
+  font-size: 18px;
+}
+
+/* Google */
+.social-btn.google:hover {
+  background: #f5f5f5;
+}
+
+/* Apple */
+.social-btn.apple {
+  background: #000;
+  color: #fff;
+}
+
+.social-btn.apple:hover {
+  background: #222;
+}
+
+/* Facebook */
+.social-btn.facebook {
+  background: #1877f2;
+  color: #fff;
+}
+
+.social-btn.facebook:hover {
+  background: #0f5dcf;
+}
+
+.terms {
+  font-size: 11px;
+  color: #777;
+  margin-top: 10px;
+}
+
+.Login-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-size: 22px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #fff;
+  z-index: 10;
+  transition: 0.2s;
+}
+
+.Login-close-btn:hover {
+  transform: scale(1.2);
+}

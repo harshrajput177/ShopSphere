@@ -1,0 +1,161 @@
+
+.MobileView-category-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: flex-end;
+  z-index: 2000;
+}
+
+/* Bottom Sheet */
+.MobileView-category-container {
+  width: 100%;
+  height: 90%;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  padding: 15px;
+  animation: slideUp 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Handle */
+.MobileView-drag-handle {
+  width: 40px;
+  height: 5px;
+  background: #ccc;
+  border-radius: 10px;
+  margin: 0 auto 10px;
+}
+
+/* Header */
+.MobileView-category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Body */
+.MobileView-category-body {
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+/* Section Title */
+.MobileView-category-body h4 {
+  margin: 15px 0 8px;
+}
+
+/* Grid */
+.MobileView-category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.MobileView-category-grid div {
+  background: #f5f5f5;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 13px;
+}
+
+
+.MobileView-category-page {
+  padding: 12px;
+  background: #f5f6fa;
+  height: 100vh;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+/* Section */
+.MobileView-category-section {
+  margin-bottom: 25px;
+}
+
+.MobileView-category-section h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+/* Grid */
+.MobileView-category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* Card */
+.MobileView-category-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 8px;
+  text-align: center;
+  transition: 0.2s ease;
+}
+
+.MobileView-category-card:hover {
+  transform: translateY(-3px);
+}
+
+/* Image */
+.MobileView-category-card img {
+  width: 100%;
+  height: 90px;
+  object-fit: contain;
+  background: #f0f2f5;
+  border-radius: 10px;
+}
+
+/* Text */
+.MobileView-category-card p {
+  font-size: 12px;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+/* Mobile Optimization */
+@media (max-width: 480px) {
+  .MobileView-category-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .MobileView-category-card img {
+    height: 80px;
+  }
+
+  .MobileView-category-section h2 {
+    font-size: 15px;
+  }
+}
+
+.MobileView-category-card {
+  animation: fadeUp 0.4s ease;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,359 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500;600;700&display=swap');
+
+@import "../Poppins-Font.css";
+:root {
+  --trendbg: #fefefe;
+  --card-bg: #ffffff;
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --maroon: #7a1c2e;
+  --text-primary: #1a1a1a;
+  --text-secondary: #555;
+  --text-muted: #888;
+  --discount: #c0392b;
+  --badge-bg: #f0b429;
+  --badge-text: #fff;
+  --border: #f6f3f1;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+  --shadow-hover: 0 12px 40px rgba(0,0,0,0.14);
+  --btn-bg: #ffffff;
+  --btn-shadow: 0 2px 16px rgba(0,0,0,0.13);
+  --btn-hover: #f0b429;
+  --radius: 4px;
+  --transition: all 0.32s cubic-bezier(0.4,0,0.2,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+
+/* ── Section Wrapper ── */
+.trending-section {
+  padding: 32px 20px 20px;
+    max-width: 1400px;
+  margin: 0 auto;
+  background: var(--trendbg);
+  position: relative;
+  overflow: hidden;
+}
+
+.trending-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 0%, rgba(255, 249, 233, 0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 35% at 80% 100%, rgba(255, 242, 244, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Heading ── */
+.trending-heading {
+  text-align: left;
+  margin-bottom: 36px;
+}
+
+.trending-heading h2 {
+    font-family: 'PoppinsSemibold';
+  font-size:1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  line-height: 1.1;
+    text-align: left;
+}
+
+.trending-heading p {
+font-family: 'PoppinsRegular';
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 7px;
+}
+
+/* ── Carousel Container ── */
+.carousel-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 56px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.cards-track-outer {
+  flex: 1;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.cards-track {
+  display: flex;
+  gap: 20px;
+  transition: transform 0.52s cubic-bezier(0.4,0,0.2,1);
+  will-change: transform;
+}
+
+/* ── Nav Buttons ── */
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--btn-bg);
+  box-shadow: var(--btn-shadow);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text-primary);
+}
+
+.nav-btn:hover {
+  background: var(--btn-hover);
+  border-color: var(--gold);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(201,168,76,0.28);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.nav-btn.left  { left: 0; }
+.nav-btn.right { right: 0; }
+
+.nav-btn svg {
+  width: 18px; height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── Card ── */
+.product-card {
+  flex: 0 0 calc(20% - 10px);
+  min-width: 320px;
+  max-width: 300px;
+  background: var(--card-bg);
+  overflow: hidden;
+  position: relative;
+  transition: var(--transition);
+  cursor: pointer;
+    border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.product-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px) ;
+  border-color: var(--gold-light);
+}
+
+/* ── Image Area ── */
+.card-image-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/4.4;
+  background: #f0ede8;
+  overflow: hidden;
+}
+
+
+.card-image-wrap-COM3::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    130deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  transition: transform 0s;
+}
+
+.card-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+.product-card:hover .card-image-wrap img {
+  transform: scale(1.045);
+}
+
+/* ── Online Special Badge ── */
+.badge-special {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  font-family: 'Jost', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 22px 7px 7px;
+  border-radius: 0 6px 6px 0;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  line-height: 1.2;
+  z-index: 3;
+  box-shadow: 2px 2px 8px rgba(240,180,41,0.3);
+}
+
+/* ── Action Icons ── */
+.card-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  z-index: 4;
+}
+
+.action-icon {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(255,255,255,0.7);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+  backdrop-filter: blur(4px);
+}
+
+.action-icon:hover {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.action-icon svg {
+  width: 15px; height: 15px;
+  stroke: #444;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.2s;
+}
+
+.action-icon:hover svg {
+  stroke: #fff;
+}
+
+.action-icon.wishlist:hover svg {
+  fill: #fff;
+}
+
+/* ── Card Info ── */
+.card-info {
+  padding: 14px 15px 16px;
+  border-top: 1px solid var(--border);
+}
+
+.card-brand {
+    font-family: 'PoppinsSemibold';
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.card-name {
+    font-family: 'PoppinsSemibold';
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-pricing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.price-current {
+font-family: 'PoppinsRegular';
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.price-original {
+font-family: 'PoppinsRegular';
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.price-discount {
+ font-family: 'PoppinsRegular';
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--discount);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.card-gst {
+font-family: 'PoppinsRegular';
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 5px;
+}
+
+/* ── Dots ── */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 28px;
+}
+
+.dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #ccc;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  padding: 0;
+}
+
+.dot.active {
+  background: var(--gold);
+  width: 22px;
+  border-radius: 4px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1200px) {
+  .product-card { flex: 0 0 calc(25% - 15px); }
+}
+@media (max-width: 900px) {
+  .product-card { flex: 0 0 calc(33.33% - 14px); }
+  .carousel-wrapper { padding: 0 40px; }
+}

@@ -1,0 +1,136 @@
+.order-details-container {
+  font-family: 'Poppins', sans-serif;
+  padding: 2rem;
+  background-color: #f9f9f9;
+}
+
+.order-header h2 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.order-tags {
+  margin: 0.5rem 0;
+}
+
+.order-tags .tag {
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  margin-right: 6px;
+  color: #fff;
+}
+
+.tag.paid {
+  background-color: #4caf50;
+}
+
+.tag.fulfilled {
+  background-color: #3f51b5;
+}
+
+.tag.archived {
+  background-color: #9e9e9e;
+}
+
+.order-meta {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 1.5rem;
+}
+
+.order-main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.left {
+  flex: 2;
+  min-width: 300px;
+}
+
+.right {
+  flex: 1;
+  min-width: 250px;
+}
+
+.fulfillment-card,
+.payment-summary,
+.notes,
+.customer-details {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tag-box.green {
+  background-color: #e6f4ea;
+  color: #2e7d32;
+  font-weight: 500;
+  font-size: 0.85rem;
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.fulfillment-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+
+.product {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+}
+
+.product img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.product-info {
+  flex: 1;
+  font-size: 0.85rem;
+}
+
+.product-price {
+  text-align: right;
+  font-size: 0.85rem;
+}
+
+.payment-summary table {
+  width: 100%;
+  font-size: 0.9rem;
+  border-collapse: collapse;
+}
+
+.payment-summary td {
+  padding: 4px 0;
+}
+
+.payment-summary .total td {
+  font-weight: 600;
+}
+
+.notes,
+.customer-details {
+  font-size: 0.9rem;
+}
+
+.notes h4,
+.customer-details h4 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}

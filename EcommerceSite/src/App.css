@@ -1,0 +1,23 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+body{
+  background-color: #ffffff !important;
+  margin: 0;
+  padding: 0;
+  width: auto;
+  min-height: 100vh;
+  font-family: 'Degular', sans-serif;
+}
+
+#root{
+  margin:0;
+  padding:0;
+  box-sizing: border-box;
+}
+
+a{
+  text-decoration: none;
+  color: black;
+}
