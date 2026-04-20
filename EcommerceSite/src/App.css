@@ -3,7 +3,7 @@
   padding: 0;
 }
 body{
-  background-color: #ffffff !important;
+  background-color: #fafcff;
   margin: 0;
   padding: 0;
   width: auto;
@@ -12,6 +12,7 @@ body{
 }
 
 #root{
+   background-color: #fafcff;
   margin:0;
   padding:0;
   box-sizing: border-box;

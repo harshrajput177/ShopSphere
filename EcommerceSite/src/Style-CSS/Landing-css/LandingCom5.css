@@ -3,7 +3,7 @@
     max-width: 1500px;
   margin: 0 auto;
   padding:20px;
-  background:#ffffff;
+  background:#fafcff;;
   position:relative;
 }
 
@@ -57,7 +57,7 @@
 }
 
 .img-box-com5{
-  background:#fff;
+  background:#fafcff;
   display:flex;
   justify-content:center;
   align-items:center;

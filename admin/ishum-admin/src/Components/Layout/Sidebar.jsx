@@ -16,6 +16,7 @@ const Sidebar = () => {
   const [openAdd, setOpenAdd] = useState(false);
   const [openManage, setOpenManage] = useState(false);
   const [openCollection, setOpenCollection] = useState(false);
+  const [openBanner, setOpenBanner] = useState(false);
 
   return (
     <div className="admin-sidebar">
@@ -46,7 +47,6 @@ const Sidebar = () => {
               <li><Link to="/category/add">Add Category</Link></li>
               <li><Link to="/subcategory/add">Add SubCategory</Link></li>
               <li><Link to="/product-type/add">Add Product Type</Link></li>
-              <li><Link to="/sub-product-type/add">Add Sub Product Type</Link></li>
             </ul>
           )}
         </li>
@@ -63,10 +63,9 @@ const Sidebar = () => {
 
           {openManage && (
             <ul className="admin-dropdown-list">
-              <li><Link to="/category/manage">Manage Category</Link></li>
-              <li><Link to="/subcategory/manage">Manage SubCategory</Link></li>
-              <li><Link to="/product-type/manage">Manage Product Type</Link></li>
-              <li><Link to="/sub-product-type/manage">Manage Sub Product Type</Link></li>
+              <li><Link to="/category/manage">Category List</Link></li>
+              <li><Link to="/subcategory/manage">SubCategory List</Link></li>
+              <li><Link to="/product-type/manage">Product Type List</Link></li>
             </ul>
           )}
         </li>
@@ -104,6 +103,23 @@ const Sidebar = () => {
               <li><Link to="/products/add-product">Add Product</Link></li>
               <li><Link to="/products/add-product">Product List</Link></li>
               <li><Link to="/manage-products">Manage Products</Link></li>
+            </ul>
+          )}
+        </li>
+        {/* 🔥 BANNER DROPDOWN */}
+        <li className="admin-sidebar-dropdown">
+          <div
+            className="admin-sidebar-item"
+            onClick={() => setOpenBanner(!openBanner)}
+          >
+            <FaTags /> Banner
+            <FaChevronDown className={`chevron ${openBanner ? "rotate" : ""}`} />
+          </div>
+
+          {openBanner && (
+            <ul className="admin-dropdown-list">
+              <li><Link to="/banner/add">Add Banner</Link></li>
+              <li><Link to="/banner/manage">Manage Banner</Link></li>
             </ul>
           )}
         </li>

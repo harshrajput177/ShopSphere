@@ -10,11 +10,18 @@ const productTypeSchema = new mongoose.Schema({
         type: String // cloudinary URL
     },
 
+    group: {
+        type: String,
+        enum: ["Topwear", "Bottomwear", "Innerwear", "Combo", "OnePiece","Outerwear", "other"],
+        required: true
+    },
+
     subCategory: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "SubCategory",
         required: true
     }
+
 
 }, { timestamps: true });
 

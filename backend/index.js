@@ -3,11 +3,11 @@ require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const  BannerRoutes = require("./router/BannerRoute");
 const CategoryRouter = require("./router/CategoryRoute");
 const SubCategoryRouter = require("./router/SubCategoryRoute");
 const ProductRouter = require("./router/Productrouter");
 const productTypeRoutes = require("./router/ProductTypeRoute");
-const SubproductTypeRoutes = require("./router/SubProductTypeRoute");
 const CollectionRoutes = require("./router/CollectionRoute");
 const compression = require("compression");
 const path = require("path");
@@ -27,10 +27,10 @@ app.use(cors({
   origin: function(origin, callback){
     // Allow requests with no origin (like curl, Postman)
     if(!origin) return callback(null, true);
-    if(allowedOrigins.indexOf(origin) === -1){
-      const msg = 'CORS policy: This origin is not allowed.';
-      return callback(new Error(msg), false);
-    }
+ if (allowedOrigins.indexOf(origin) === -1) {
+  console.log("❌ Blocked by CORS:", origin);
+  return callback(null, false); // ❗ error mat throw kar
+}
     return callback(null, true);
   },
   credentials: true
@@ -53,11 +53,11 @@ mongoose.connect(MONGO_URI)
     .catch(err => console.log(err));
 
 
+app.use("/api/banner", BannerRoutes);
 app.use("/api/products", ProductRouter); 
 app.use("/api/category", CategoryRouter); 
 app.use("/api/subcategory", SubCategoryRouter); 
 app.use("/api/product-type", productTypeRoutes);
-app.use("/api/sub-product-type", SubproductTypeRoutes);
 app.use("/api/collection", CollectionRoutes);
 
 app.get("/", (req, res) => {

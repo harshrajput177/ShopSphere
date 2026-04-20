@@ -5,7 +5,8 @@ const {
   createCollection,
   getCollections,
   getCollectionById,
-  deleteCollection
+  deleteCollection,
+  updateCollection
 } = require("../Controller/CollectionController");
 
 const upload = require("../Config/CloudConfig");
@@ -18,6 +19,8 @@ router.get("/", getCollections);
 
 // ✅ GET SINGLE
 router.get("/:id", getCollectionById);
+
+router.put("/update/:id", upload.single("image"), updateCollection);
 
 // ✅ DELETE
 router.delete("/:id", deleteCollection);

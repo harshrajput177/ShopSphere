@@ -12,7 +12,6 @@ import ProductListing from "./Component/ProductListing/ProductListing";
 
 const Home = lazy(() => import("./Pages/LandingPage"));
 const Login = lazy(() => import("./Component/B-TO-C-Login/LoginUser"));
-const BestSeller = lazy(() => import("./Component/BestSeller/BestSellerCom1"));
 const MyOrder = lazy(() => import("./Component/Order/MyOrder"));
 
 const OrderConformation = lazy(() => import("./Component/Order/OrderConformation"));
@@ -86,7 +85,6 @@ function App() {
 
         <Route path="/login" element={<Login />} />
 
-        <Route path="/bestsellers" element={<BestSeller />} />
 
         <Route path="/MyOrder" element={<MyOrder />} />
 

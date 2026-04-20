@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const productSchema = new mongoose.Schema({
 
   // 🔹 BASIC INFO
@@ -13,7 +14,7 @@ const productSchema = new mongoose.Schema({
   },
 
   shortDescription: {
-    type: String // optional (card ke liye)
+    type: String
   },
 
   price: {
@@ -21,7 +22,12 @@ const productSchema = new mongoose.Schema({
     required: true
   },
 
-  // 🔹 CATEGORY RELATION
+  discount: {
+    type: Number,
+    default: 0
+  },
+
+  // 🔹 CATEGORY
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",
@@ -36,10 +42,24 @@ const productSchema = new mongoose.Schema({
 
   productType: {
     type: String,
-    required: true // T-Shirts, Jeans etc
+    required: true
   },
 
-  // 🔹 COLLECTIONS (MULTIPLE)
+    gender: {
+  type: String,
+  enum: ["Men", "Women", "Kids", "Unisex"],
+  required: true
+},
+
+  tags: [String],
+
+  slug: {
+  type: String,
+  unique: true,
+  required: true
+},
+
+  // 🔹 COLLECTIONS
   collections: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -47,45 +67,62 @@ const productSchema = new mongoose.Schema({
     }
   ],
 
-  // 🔹 FLAGS (FILTERS)
-  isBestSeller: {
-    type: Boolean,
-    default: false
-  },
+  // 🔹 FLAGS
+  isBestSeller: { type: Boolean, default: false },
+  isTrending: { type: Boolean, default: false },
+  isNewArrival: { type: Boolean, default: false },
+  isGenZ: { type: Boolean, default: false },
 
-  isTrending: {
-    type: Boolean,
-    default: false
-  },
-
-  isNewArrival: {
-    type: Boolean,
-    default: false
-  },
-
-  isGenZ: {
-    type: Boolean,
-    default: false
-  },
-
-  // 🔹 SPECIFICATIONS (DYNAMIC 🔥)
+  // 🔹 SPECIFICATIONS
   specifications: {
     type: Map,
     of: String
   },
 
-  // 🔹 IMAGES
-  images: {
-    front: String,
-    thumbnails: [String],
-    colors: [String]
-  },
+  occasion: {
+  type: [String],
+  enum: [
+    "Casual",
+    "Party",
+    "Wedding",
+    "Festive",
+    "Travel",
+    "Sports",
+    "Office"
+  ],
+  default: []
+},
 
-  // 🔹 EXTRA (future use)
-  stock: {
-    type: Number,
-    default: 0
-  },
+  // 🔥 VARIANTS (MAIN SYSTEM)
+  variants: [
+    {
+      color: {
+        type: String,
+        required: true
+      },
+
+      images: [
+        {
+          type: String
+        }
+      ],
+
+      // 🔥 NEW (IMPORTANT)
+      sizes: [
+        {
+          size: String,     // S, M, L
+          stock: {
+            type: Number,
+            default: 0
+          },
+              isOutOfStock: {
+      type: Boolean,
+      default: false
+    }
+        }
+      ]
+    }
+  ],
 
   sold: {
     type: Number,

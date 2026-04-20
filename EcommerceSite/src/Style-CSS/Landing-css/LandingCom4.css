@@ -2,8 +2,8 @@
 
 @import "../Poppins-Font.css";
 :root {
-  --trendbg: #fefefe;
-  --card-bg: #ffffff;
+  --trendbg: #fafcff;
+  --card-bg: #fafcff;
   --gold: #c9a84c;
   --gold-light: #e8c97a;
   --maroon: #7a1c2e;
@@ -13,10 +13,10 @@
   --discount: #c0392b;
   --badge-bg: #f0b429;
   --badge-text: #fff;
-  --border: #e1e1e1;
+  --border: #e4e4e4;;
   --shadow: 0 4px 24px rgba(0,0,0,0.08);
   --shadow-hover: 0 12px 40px rgba(0,0,0,0.14);
-  --btn-bg: #ffffff;
+  --btn-bg: #fafcff;;
   --btn-shadow: 0 2px 16px rgba(0,0,0,0.13);
   --btn-hover: #f0b429;
   --radius: 4px;
@@ -151,9 +151,9 @@ font-family: 'PoppinsRegular';
 }
 
 .product-card:hover {
-  box-shadow: var(--shadow-hover);
-  transform: translateY(-0.5px) ;
-  border-color: var(--gold-light);
+  box-shadow: 0 2px 4px rgb(228, 228, 228);
+  transform: translateY(-0.8px) ;
+  border-color: var(--border);
 }
 
 /* ── Image Area ── */

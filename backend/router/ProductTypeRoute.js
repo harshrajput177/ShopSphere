@@ -6,8 +6,9 @@ const upload = require("../Config/CloudConfig"); // ✅ add this
 const {
   createProductType,
   getAllProductTypes,
-  getProductTypesBySubCategory,
-  deleteProductType
+  getProductTypesBySubCategory, 
+  deleteProductType,
+  updateProductType
 } = require("../Controller/ProductType");
 
 // ✅ CREATE (image + data)
@@ -19,7 +20,9 @@ router.get("/", getAllProductTypes);
 // GET BY SUBCATEGORY
 router.get("/subcategory/:subCategoryId", getProductTypesBySubCategory);
 
-// DELETE
+// ✅ UPDATE
+router.put("/update/:id", upload.single("image"), updateProductType);
+
 router.delete("/:id", deleteProductType);
 
 module.exports = router;

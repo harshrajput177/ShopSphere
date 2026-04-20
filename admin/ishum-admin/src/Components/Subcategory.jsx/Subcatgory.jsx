@@ -7,11 +7,27 @@ const AddSubCategory = () => {
   const [category, setCategory] = useState("");
   const [categories, setCategories] = useState([]);
 
+const examples = [
+  "Ethnic Wear",
+  "Western Wear",
+  "Fusion Wear",
+  "Sports & Activewear",
+  "Night wear",
+  "Loungewear",
+  "Rainwear",
+  "Formal Wear",
+  "Beachwear",
+  "Maternity Wear",
+  "Plus Size",
+  "Footwear",
+  "Accessories"
+];
+
   // 🔥 FETCH CATEGORIES
   useEffect(() => {
     const fetchCategories = async () => {
       const res = await axios.get("http://localhost:4000/api/category");
-     setCategories(res.data.categories);
+      setCategories(res.data.categories);
     };
 
     fetchCategories();
@@ -57,17 +73,29 @@ const AddSubCategory = () => {
         onChange={(e) => setName(e.target.value)}
       />
 
+      <div className="example-chips">
+          {examples.map((ex, i) => (
+            <span
+              key={i}
+              className="chip"
+              onClick={() => setName(ex)}
+            >
+              {ex}
+            </span>
+          ))}
+        </div>
+
       <br /><br />
 
       {/* CATEGORY DROPDOWN */}
       <select value={category} onChange={(e) => setCategory(e.target.value)}>
         <option value="">Select Category</option>
 
-     {categories?.map((cat) => (
-  <option key={cat._id} value={cat._id}>
-    {cat.name}
-  </option>
-))}
+        {categories?.map((cat) => (
+          <option key={cat._id} value={cat._id}>
+            {cat.name}
+          </option>
+        ))}
       </select>
 
       <br /><br />

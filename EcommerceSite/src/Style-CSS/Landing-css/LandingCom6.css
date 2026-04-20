@@ -3,7 +3,7 @@
 @import "../Poppins-Font.css";
 :root {
   --trendbg: #fefefe;
-  --card-bg: #ffffff;
+  --card-bg: #fafcff;;
   --gold: #c9a84c;
   --gold-light: #e8c97a;
   --maroon: #7a1c2e;
@@ -13,7 +13,7 @@
   --discount: #c0392b;
   --badge-bg: #f0b429;
   --badge-text: #fff;
-  --border: #f6f3f1;
+  --border: #e4e4e4;
   --shadow: 0 4px 24px rgba(0,0,0,0.08);
   --shadow-hover: 0 12px 40px rgba(0,0,0,0.14);
   --btn-bg: #ffffff;

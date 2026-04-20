@@ -1,128 +1,89 @@
-.lanCom1-banner-wrapper{
+/* wrapper */
+.dual-banner-wrapper {
+  width: 100%;
+  background-color: #fafcff;
+  display: flex;
+  justify-content: center;
+  margin-top: 90px;
+}
+/* container */
+.dual-banner-container {
+  width: 100%;
+  max-width: 1480px;
+  height: 380px;
+  overflow: hidden;
   position: relative;
-  width:100%;
-  padding:0 20px;
-  margin-top:95px;
-  display:flex;
-  z-index: 2;
-  justify-content:center;
 }
 
-.lanCom1-banner{
-  width:100%;
-  max-width:1500px;
-  height:420px;
-  position:relative;
-  overflow:hidden;
-  border-radius:14px;
+/* track */
+.dual-banner-track {
+  display: flex;
+  height: 100%;
+  gap: 20px;   /* 🔥 padding hata ke gap use kar */
+  transition: transform 0.5s ease-in-out;
 }
 
-.lanCom1-banner img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  border-radius:14px;
+/* slide */
+.dual-banner-slide {
+  flex: 0 0 calc(50% - 10px);  /* 🔥 PERFECT WIDTH */
+  height: 100%;
 }
 
+/* image */
+.dual-banner-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+}
 /* arrows */
-
-.lanCom1-arrow{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:30px;
-  border:none;
-  background:rgba(0,0,0,0.25);
-  color:white;
-  padding:6px 12px;
-  cursor:pointer;
-  border-radius:6px;
+.dual-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.3);
+  border: none;
+  color: #fff;
+  font-size: 26px;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  z-index: 10;
 }
 
-.lanCom1-left{
-  left:15px;
+.dual-arrow.left {
+  left: 10px;
 }
 
-.lanCom1-right{
-  right:15px;
+.dual-arrow.right {
+  right: 10px;
 }
 
-/* dots */
-
-.lanCom1-dots{
-  position:absolute;
-  bottom:15px;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  gap:8px;
+.dual-arrow:hover {
+  background: rgba(0,0,0,0.6);
 }
 
-.lanCom1-dot{
-  width:10px;
-  height:10px;
-  background:#ccc;
-  border-radius:50%;
+.dual-dots {
+  position: absolute;
+  bottom: -10px;
+  z-index: 1000;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
 }
 
-.lanCom1-active{
-  background:#009688;
+.dot {
+  width: 10px;
+  height: 10px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-@media (min-width: 1600px) {
-  .lanCom1-banner {
-    height: 500px;
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-  .lanCom1-banner {
-    height: 300px;
-  }
-
-  .lanCom1-arrow {
-    font-size: 24px;
-  }
-
-  .lanCom1-dot {
-    width: 9px;
-    height: 9px;
-  }
-}
-
-
-
-
-@media (max-width: 768px) {
-  .lanCom1-banner-wrapper {
-    padding: 0 10px;
-    margin-top: 75px;
-  }
-
-  .lanCom1-banner {
-    height: 170px;
-    border-radius: 10px;
-  }
-
-  .lanCom1-banner img {
-    border-radius: 10px;
-  }
-
-  .lanCom1-arrow {
-    font-size: 20px;
-    padding: 4px 8px;
-  }
-
-  .lanCom1-left {
-    left: 8px;
-  }
-
-  .lanCom1-right {
-    right: 8px;
-  }
-
-  .lanCom1-dot {
-    width: 8px;
-    height: 8px;
-  }
+.dot.active {
+  width: 22px;
+  border-radius: 10px;
+  background: #fff;
 }

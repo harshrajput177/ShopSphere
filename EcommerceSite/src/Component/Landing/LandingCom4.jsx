@@ -1,89 +1,7 @@
-import React, { useState, useRef } from "react";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchHomeProducts } from "../Store/Slices/ProductSlice";
 import "../../Style-CSS/Landing-css/LandingCom4.css";
-
-const PRODUCTS = [
-  {
-    id: 1,
-    brand: "RANGMANCH",
-    name: "Medium Blue Printed Women Regul...",
-    
-    currentPrice: 1044,
-    originalPrice: 1899,
-    discount: 45,
-    badge: true,
-    image: "https://images.unsplash.com/photo-1583846783214-8d2c31ef7e95?w=400&q=80",
-  },
-  {
-    id: 2,
-    brand: "RANGMANCH",
-    name: "Maroon Floral Embroidered Mandar...",
-    currentPrice: 974,
-    originalPrice: 1299,
-    discount: 25,
-    badge: true,
-    image: "https://images.unsplash.com/photo-1617019114583-affb34d1b3cd?w=400&q=80",
-  },
-  {
-    id: 3,
-    brand: "ANNABELLE",
-    name: "Black Solid Slim Fit Formal Trouser",
-    currentPrice: 974,
-    originalPrice: 1299,
-    discount: 25,
-    badge: true,
-    image: "https://images.unsplash.com/photo-1594938298603-c8148c4b4e5c?w=400&q=80",
-  },
-  {
-    id: 4,
-    brand: "HONEY",
-    name: "Lilac Floral Fit & Flare Dress",
-    currentPrice: 1359,
-    originalPrice: 1699,
-    discount: 20,
-    badge: true,
-    image: "https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?w=400&q=80",
-  },
-  {
-    id: 5,
-    brand: "RANGMANCH",
-    name: "Maroon Leaf Embroidered A-line K...",
-    currentPrice: 1049,
-    originalPrice: 1499,
-    discount: 30,
-    badge: true,
-    image: "https://images.unsplash.com/photo-1511085279-4a8a5f43b8bc?w=400&q=80",
-  },
-  {
-    id: 6,
-    brand: "SF JEANS",
-    name: "Indigo Regular Fit Stretch Jeans",
-    currentPrice: 1189,
-    originalPrice: 1699,
-    discount: 30,
-    badge: true,
-    image: "https://images.unsplash.com/photo-1604176354204-9268737828e4?w=400&q=80",
-  },
-  {
-    id: 7,
-    brand: "HONEY",
-    name: "Rose Pink Embroidered Kurta Set",
-    currentPrice: 1249,
-    originalPrice: 1799,
-    discount: 31,
-    badge: true,
-    image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&q=80",
-  },
-  {
-    id: 8,
-    brand: "RANGMANCH",
-    name: "Navy Blue Geometric Printed Kurta",
-    currentPrice: 899,
-    originalPrice: 1399,
-    discount: 36,
-    badge: false,
-    image: "https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?w=400&q=80",
-  },
-];
 
 function CartIcon() {
   return (
@@ -121,29 +39,45 @@ function ChevronRight() {
 
 const VISIBLE = 5;
 
-export default function TrendingNow() {
+export default function BestSeller() {
+  const dispatch = useDispatch();
+
+  // 🔥 Redux state
+  const { items, loading } = useSelector((state) => state.products);
+
+  const bestSeller = items.bestSeller || [];
+
   const [current, setCurrent] = useState(0);
   const [wishlist, setWishlist] = useState([]);
-  const maxIndex = PRODUCTS.length - VISIBLE;
+
+  const maxIndex = Math.max(0, bestSeller.length - VISIBLE);
 
   const handlePrev = () => setCurrent((c) => Math.max(0, c - 1));
   const handleNext = () => setCurrent((c) => Math.min(maxIndex, c + 1));
 
+  // 🔥 API call (Redux)
+  useEffect(() => {
+    dispatch(fetchHomeProducts());
+  }, [dispatch]);
+
   const toggleWishlist = (id, e) => {
     e.stopPropagation();
-    setWishlist((w) => w.includes(id) ? w.filter((i) => i !== id) : [...w, id]);
+    setWishlist((w) =>
+      w.includes(id) ? w.filter((i) => i !== id) : [...w, id]
+    );
   };
 
-  const CARD_WIDTH = 240; // px approx
-  const GAP = 20;
-  const translateX = current * (CARD_WIDTH + GAP);
+  if (loading) {
+    return <h2 style={{ textAlign: "center" }}>Loading...</h2>;
+  }
 
   return (
     <section className="trending-section">
       <div className="trending-heading">
-       <span> <h2>Best Sellers</h2>
-        <p>Based On Your Recent Activity</p></span>
-
+        <span>
+          <h2>Best Sellers</h2>
+          <p>Based On Your Recent Activity</p>
+        </span>
       </div>
 
       <div className="carousel-wrapper">
@@ -152,36 +86,38 @@ export default function TrendingNow() {
           className="nav-btn left"
           onClick={handlePrev}
           disabled={current === 0}
-          aria-label="Previous"
           style={{ opacity: current === 0 ? 0.38 : 1 }}
         >
           <ChevronLeft />
         </button>
 
-        {/* Cards Track */}
+        {/* Cards */}
         <div className="cards-track-outer">
           <div
             className="cards-track"
             style={{ transform: `translateX(-${current * (100 / VISIBLE)}%)` }}
           >
-            {PRODUCTS.map((p) => (
-              <div className="product-card" key={p.id}>
+            {bestSeller.map((p) => (
+              <div className="product-card" key={p._id}>
                 <div className="card-image-wrap">
-                  <img src={p.image} alt={p.name} loading="lazy" />
-
-                  {p.badge && (
-                    <span className="badge-special">Online Special Price</span>
-                  )}
+                  <img
+                    src={
+                      p?.variants?.[0]?.images?.[0] ||
+                      "https://via.placeholder.com/200"
+                    }
+                    alt={p.title}
+                  />
 
                   <div className="card-actions">
-                    <button className="action-icon" aria-label="Add to cart">
+                    <button className="action-icon">
                       <CartIcon />
                     </button>
+
                     <button
-                      className={`action-icon wishlist${wishlist.includes(p.id) ? " active" : ""}`}
-                      aria-label="Wishlist"
-                      onClick={(e) => toggleWishlist(p.id, e)}
-                      style={wishlist.includes(p.id) ? { background: "#e74c3c", borderColor: "#e74c3c" } : {}}
+                      className={`action-icon wishlist ${
+                        wishlist.includes(p._id) ? "active" : ""
+                      }`}
+                      onClick={(e) => toggleWishlist(p._id, e)}
                     >
                       <HeartIcon />
                     </button>
@@ -189,14 +125,15 @@ export default function TrendingNow() {
                 </div>
 
                 <div className="card-info">
-                  <div className="card-brand">{p.brand}</div>
-                  <div className="card-name">{p.name}</div>
-                  <div className="card-pricing">
-                    <span className="price-current">₹ {p.currentPrice.toLocaleString()}</span>
-                    <span className="price-original">₹ {p.originalPrice.toLocaleString()}</span>
-                    <span className="price-discount">{p.discount}% OFF</span>
+                  <div className="card-brand">
+                    {p.specifications?.Brand}
                   </div>
-                  <div className="card-gst">Inclusive of GST benefit</div>
+                  <div className="card-name">{p.title}</div>
+
+                  <div className="card-pricing">
+                    <span className="price-current">₹ {p.price}</span>
+                    <span className="price-original">₹ {p.discount}</span>
+                  </div>
                 </div>
               </div>
             ))}
@@ -208,13 +145,11 @@ export default function TrendingNow() {
           className="nav-btn right"
           onClick={handleNext}
           disabled={current >= maxIndex}
-          aria-label="Next"
           style={{ opacity: current >= maxIndex ? 0.38 : 1 }}
         >
           <ChevronRight />
         </button>
       </div>
-
     </section>
   );
 }

@@ -1,5 +1,6 @@
 const Product = require("../models/Product");
 const asyncHandler = require("../Untils/asyncHandler");
+const slugify = require("slugify");
 
 const createProduct = asyncHandler(async (req, res) => {
 
@@ -7,61 +8,151 @@ const createProduct = asyncHandler(async (req, res) => {
     title,
     description,
     shortDescription,
+    discount,
     price,
     category,
     subCategory,
     productType,
+    tags,
     collections,
     isBestSeller,
     isTrending,
     isNewArrival,
     isGenZ,
-    specifications
+    specifications,
+    occasion,
+    gender 
   } = req.body;
 
-  // 🔥 PARSE DATA
-  const parsedSpecifications = JSON.parse(specifications || "{}");
-
-  const parsedCollections = collections
-    ? Array.isArray(collections)
-      ? collections
-      : [collections]
-    : [];
-
+  // ✅ BOOLEAN HELPER
   const toBool = (val) => val === "true" || val === true;
 
-  // 🔥 CREATE PRODUCT
+  // ✅ PARSE SAFE
+  let parsedSpecifications = {};
+  try {
+    parsedSpecifications = JSON.parse(specifications || "{}");
+  } catch {
+    parsedSpecifications = {};
+  }
+
+  const parsedCollections = collections
+    ? Array.isArray(collections) ? collections : [collections]
+    : [];
+
+  const parsedTags = tags
+    ? Array.isArray(tags) ? tags : [tags]
+    : [];
+const parsedOccasion = occasion
+  ? Array.isArray(occasion) ? occasion : [occasion]
+  : [];
+
+  // ✅ TAG LOGIC
+  let finalTags = [...parsedTags];
+
+  if (toBool(isBestSeller)) finalTags.push("Best Seller");
+  if (toBool(isTrending)) finalTags.push("Trending");
+  if (toBool(isNewArrival)) finalTags.push("New Arrival");
+  if (toBool(isGenZ)) finalTags.push("GenZ");
+
+  const numPrice = Number(price);
+  const numDiscount = Number(discount);
+
+  if (numPrice < 500) finalTags.push("Budget Pick");
+  if (numDiscount > 30) finalTags.push("Hot Deal");
+
+  finalTags = [...new Set(finalTags)];
+
+  // 🔥 SLUG GENERATION
+  let slug = slugify(title || "", {
+    lower: true,
+    strict: true
+  });
+
+  const existingSlug = await Product.findOne({ slug });
+
+  if (existingSlug) {
+    slug = slug + "-" + Date.now();
+  }
+
+  // 🔥 IMAGE MAP
+  const imageMap = {};
+
+  req.files?.forEach(file => {
+    const match = file.fieldname.match(/variants\[(\d+)\]/);
+
+    if (match) {
+      const index = match[1];
+
+      if (!imageMap[index]) {
+        imageMap[index] = [];
+      }
+
+      imageMap[index].push(file.path);
+    }
+  });
+
+  // 🔥 VARIANTS PARSE
+  let finalVariants = [];
+
+  if (req.body.variants) {
+    const bodyVariants = Array.isArray(req.body.variants)
+      ? req.body.variants
+      : [req.body.variants];
+
+    finalVariants = bodyVariants.map((v, i) => ({
+      color: v.color,
+      images: imageMap[i] || [],
+      sizes: (v.sizes || []).map(s => ({
+        size: s.size,
+        stock: Number(s.stock),
+        isOutOfStock: Number(s.stock) === 0
+      }))
+    }));
+  }
+
+  // ❌ VALIDATION
+  if (!title || !price || !category || !subCategory || !productType) {
+    return res.status(400).json({
+      message: "Required fields missing ❌"
+    });
+  }
+
+  if (finalVariants.length === 0) {
+    return res.status(400).json({
+      message: "Variants not received properly ❌"
+    });
+  }
+
+  // ✅ CREATE PRODUCT
   const product = await Product.create({
     title,
+    slug, // 🔥 IMPORTANT
     description,
     shortDescription,
     price,
+    discount,
     category,
     subCategory,
     productType,
-
     collections: parsedCollections,
-
+    tags: finalTags,
     isBestSeller: toBool(isBestSeller),
     isTrending: toBool(isTrending),
     isNewArrival: toBool(isNewArrival),
     isGenZ: toBool(isGenZ),
-
     specifications: parsedSpecifications,
-
-    images: {
-      front: req.files?.front?.[0]?.path || "",
-      thumbnails: req.files?.thumbnails?.map(f => f.path) || [],
-      colors: req.files?.colors?.map(f => f.path) || []
-    }
+    variants: finalVariants,
+    occasion: parsedOccasion,
+    gender,
   });
 
   res.status(201).json({
     success: true,
-    message: "Product Created Successfully",
+    message: "Product Created Successfully 🚀",
     product
   });
 });
+
 
 
 // ✅ GET ALL PRODUCTS
@@ -72,6 +163,38 @@ const getAllProducts = asyncHandler(async (req, res) => {
     .populate("collections");
 
   res.json(products);
+});
+
+const getHomeProducts = asyncHandler(async (req, res) => {
+
+  const [
+    bestSeller,
+    newArrival,
+    trending,
+    clearance,
+    genZ
+  ] = await Promise.all([
+
+    Product.find({ isBestSeller: true }).limit(10),
+    Product.find({ isNewArrival: true }).limit(10),
+    Product.find({ isTrending: true }).limit(10),
+
+    // 🔥 Clearance = discount wale
+    Product.find({ discount: { $gt: 30 } }).limit(10),
+
+    // 🔥 GenZ
+    Product.find({ isGenZ: true }).limit(10)
+
+  ]);
+
+  res.json({
+    success: true,
+    bestSeller,
+    newArrival,
+    trending,
+    clearance,
+    genZ
+  });
 });
 
 // ✅ FILTER PRODUCTS
@@ -96,6 +219,11 @@ const getFilteredProducts = asyncHandler(async (req, res) => {
   if (isTrending) query.isTrending = true;
   if (isNewArrival) query.isNewArrival = true;
   if (isGenZ) query.isGenZ = true;
+
+  if (req.query.tag) {
+    const tags = req.query.tag.split(",");
+    query.tags = { $in: tags };
+  }
 
   const products = await Product.find(query)
     .populate("category")
@@ -164,5 +292,6 @@ module.exports = {
   getFilteredProducts,
   getSingleProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getHomeProducts
 };

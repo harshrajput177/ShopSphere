@@ -2,8 +2,8 @@
 
 @import "../Poppins-Font.css";
 :root {
-  --bg: #ffffff;
-  --card-bg: #ffffff;
+  --bg:  rgb(247, 250, 255);
+  --card-bg:  rgb(247, 250, 255);
   --text-primary: #1a1a1a;
   --text-secondary: #6b6b6b;
   --accent: #c8a96e;

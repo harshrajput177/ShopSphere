@@ -9,20 +9,15 @@ const {
   getFilteredProducts,
   getSingleProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getHomeProducts
 } = require("../Controller/ProductController");
 
-router.post(
-  "/",
-  upload.fields([
-    { name: "front", maxCount: 1 },
-    { name: "thumbnails", maxCount: 5 },
-    { name: "colors", maxCount: 4 }
-  ]),
-  createProduct
-);
+// 🔥 FIXED (dynamic fields support)
+router.post("/", upload.any(), createProduct);
 
 router.get("/", getAllProducts);
+router.get("/home", getHomeProducts);
 router.get("/filter", getFilteredProducts);
 router.get("/:id", getSingleProduct);
 router.put("/:id", updateProduct);

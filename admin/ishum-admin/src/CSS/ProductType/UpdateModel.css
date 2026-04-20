@@ -1,0 +1,50 @@
+.Manageproducttpye-container {
+  padding: 20px;
+}
+
+.Manageproducttpye-grid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.Manageproducttpye-card {
+  width: 180px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.Manageproducttpye-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  object-position: top;
+}
+
+/* MODAL */
+.Manageproducttpye-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Manageproducttpye-modal-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+}
+
+.Manageproducttpye-modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
