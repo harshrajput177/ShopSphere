@@ -96,9 +96,9 @@ function App() {
 
         <Route path="/Wishlist" element={<Whislist />} />
 
-        <Route path="/View" element={<ViewProduct />} />
+        <Route path="/product/:id" element={<ViewProduct />} />
         
-        <Route path="/Product-View" element={<ProductListing />} />
+        <Route path="/products/:category" element={<ProductListing />} />
    
 
       </Routes>

@@ -1,9 +1,9 @@
 const Product = require("../models/Product");
+const ProductType = require("../models/ProductType");
 const asyncHandler = require("../Untils/asyncHandler");
 const slugify = require("slugify");
 
 const createProduct = asyncHandler(async (req, res) => {
-
   const {
     title,
     description,
@@ -21,13 +21,13 @@ const createProduct = asyncHandler(async (req, res) => {
     isGenZ,
     specifications,
     occasion,
-    gender 
+    gender
   } = req.body;
 
   // ✅ BOOLEAN HELPER
   const toBool = (val) => val === "true" || val === true;
 
-  // ✅ PARSE SAFE
+  // ✅ SAFE PARSE
   let parsedSpecifications = {};
   try {
     parsedSpecifications = JSON.parse(specifications || "{}");
@@ -42,9 +42,10 @@ const createProduct = asyncHandler(async (req, res) => {
   const parsedTags = tags
     ? Array.isArray(tags) ? tags : [tags]
     : [];
-const parsedOccasion = occasion
-  ? Array.isArray(occasion) ? occasion : [occasion]
-  : [];
+
+  const parsedOccasion = occasion
+    ? Array.isArray(occasion) ? occasion : [occasion]
+    : [];
 
   // ✅ TAG LOGIC
   let finalTags = [...parsedTags];
@@ -62,26 +63,27 @@ const parsedOccasion = occasion
 
   finalTags = [...new Set(finalTags)];
 
-  // 🔥 SLUG GENERATION
+  // 🔥 SLUG
   let slug = slugify(title || "", {
     lower: true,
     strict: true
   });
 
   const existingSlug = await Product.findOne({ slug });
-
   if (existingSlug) {
     slug = slug + "-" + Date.now();
   }
 
-  // 🔥 IMAGE MAP
+  // =====================================================
+  // 🔥 IMAGE MAP (VERY IMPORTANT FIX)
+  // =====================================================
   const imageMap = {};
 
   req.files?.forEach(file => {
     const match = file.fieldname.match(/variants\[(\d+)\]/);
 
     if (match) {
-      const index = match[1];
+      const index = Number(match[1]);
 
       if (!imageMap[index]) {
         imageMap[index] = [];
@@ -91,26 +93,54 @@ const parsedOccasion = occasion
     }
   });
 
+  // =====================================================
   // 🔥 VARIANTS PARSE
-  let finalVariants = [];
+  // =====================================================
+  let bodyVariants = [];
 
-  if (req.body.variants) {
-    const bodyVariants = Array.isArray(req.body.variants)
-      ? req.body.variants
-      : [req.body.variants];
-
-    finalVariants = bodyVariants.map((v, i) => ({
-      color: v.color,
-      images: imageMap[i] || [],
-      sizes: (v.sizes || []).map(s => ({
-        size: s.size,
-        stock: Number(s.stock),
-        isOutOfStock: Number(s.stock) === 0
-      }))
-    }));
+  try {
+    bodyVariants = JSON.parse(req.body.variants || "[]");
+  } catch (err) {
+    console.log("VARIANT PARSE ERROR:", err);
+    bodyVariants = [];
   }
 
+  // =====================================================
+  // 🔥 FINAL VARIANTS (MAIN FIX)
+  // =====================================================
+  const finalVariants = bodyVariants.map((v, i) => {
+    const uploadedImages = imageMap[i] || [];
+
+
+    const mainIndex =
+      v.mainImageIndex !== undefined && v.mainImageIndex !== null
+        ? Number(v.mainImageIndex)
+        : 0;
+
+    return {
+      color: String(v.color || "").replace(/"/g, ""), // 🔥 FIX
+      images: uploadedImages,
+
+      // 🔥 MAIN IMAGE (FINAL FIX)
+      mainImage:
+        uploadedImages[mainIndex] ||
+        uploadedImages[0] ||
+        "",
+
+      sizes: (v.sizes || []).map(s => ({
+        size: String(s.size || "").replace(/"/g, ""),
+        stock: Number(s.stock),
+        price: Number(s.price),
+        isOutOfStock: Number(s.stock) === 0
+      }))
+    };
+  });
+
+    // console.log("FINAL VARIANTS", finalVariants);
+
+  // =====================================================
   // ❌ VALIDATION
+  // =====================================================
   if (!title || !price || !category || !subCategory || !productType) {
     return res.status(400).json({
       message: "Required fields missing ❌"
@@ -123,10 +153,10 @@ const parsedOccasion = occasion
     });
   }
 
-  // ✅ CREATE PRODUCT
+
   const product = await Product.create({
     title,
-    slug, // 🔥 IMPORTANT
+    slug,
     description,
     shortDescription,
     price,
@@ -143,7 +173,7 @@ const parsedOccasion = occasion
     specifications: parsedSpecifications,
     variants: finalVariants,
     occasion: parsedOccasion,
-    gender,
+    gender
   });
 
   res.status(201).json({
@@ -154,8 +184,6 @@ const parsedOccasion = occasion
 });
 
 
-
-// ✅ GET ALL PRODUCTS
 const getAllProducts = asyncHandler(async (req, res) => {
   const products = await Product.find()
     .populate("category")
@@ -165,8 +193,8 @@ const getAllProducts = asyncHandler(async (req, res) => {
   res.json(products);
 });
 
-const getHomeProducts = asyncHandler(async (req, res) => {
 
+const getHomeProducts = asyncHandler(async (req, res) => {
   const [
     bestSeller,
     newArrival,
@@ -175,15 +203,25 @@ const getHomeProducts = asyncHandler(async (req, res) => {
     genZ
   ] = await Promise.all([
 
-    Product.find({ isBestSeller: true }).limit(10),
-    Product.find({ isNewArrival: true }).limit(10),
-    Product.find({ isTrending: true }).limit(10),
+    Product.find({ isBestSeller: true })
+      .sort({ createdAt: -1 })
+      .limit(20),
 
-    // 🔥 Clearance = discount wale
-    Product.find({ discount: { $gt: 30 } }).limit(10),
+    Product.find({ isNewArrival: true })
+      .sort({ createdAt: -1 })
+      .limit(20),
 
-    // 🔥 GenZ
-    Product.find({ isGenZ: true }).limit(10)
+    Product.find({ isTrending: true })
+      .sort({ createdAt: -1 })
+      .limit(50),
+
+    Product.find({ discount: { $gt: 30 } })
+      .sort({ createdAt: -1 })
+      .limit(20),
+
+    Product.find({ isGenZ: true })
+      .sort({ createdAt: -1 })
+      .limit(20)
 
   ]);
 
@@ -238,7 +276,9 @@ const getSingleProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id)
     .populate("category")
     .populate("subCategory")
-    .populate("collections");
+    .populate("collections")
+    .populate("productType");
+    
 
   if (!product) {
     res.status(404);
@@ -248,7 +288,7 @@ const getSingleProduct = asyncHandler(async (req, res) => {
   res.json(product);
 });
 
-// ✅ UPDATE PRODUCT
+
 const updateProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
 
@@ -257,15 +297,133 @@ const updateProduct = asyncHandler(async (req, res) => {
     throw new Error("Product not found");
   }
 
-  Object.assign(product, req.body);
+  let { variants, ...rest } = req.body;
+
+  // ✅ BASIC FIELDS UPDATE
+  Object.assign(product, rest);
+
+  // =====================================================
+  // 🔥 IMAGE MAP FOR NEW UPLOADED FILES
+  // =====================================================
+  const imageMap = {};
+
+  req.files?.forEach((file) => {
+    const match = file.fieldname.match(/variants\[(\d+)\]/);
+
+    if (match) {
+      const index = Number(match[1]);
+
+      if (!imageMap[index]) {
+        imageMap[index] = [];
+      }
+
+      imageMap[index].push(file.path);
+    }
+  });
+
+  // =====================================================
+  // 🔥 SAFE VARIANTS PARSE
+  // =====================================================
+  if (variants) {
+    if (typeof variants === "string") {
+      try {
+        variants = JSON.parse(variants);
+      } catch (err) {
+        console.log("Variants Parse Error:", err);
+        variants = [];
+      }
+    }
+
+    if (!Array.isArray(variants)) {
+      variants = [];
+    }
+
+    // =====================================================
+    // 🔥 FINAL VARIANTS UPDATE
+    // =====================================================
+    product.variants = variants.map((v, i) => {
+      const uploadedImages = imageMap[i] || [];
+
+   const finalImages =
+  uploadedImages.length > 0
+    ? uploadedImages   // 🔥 new upload aaye toh old hata do
+    : (v.images || []);
+
+let finalMainImage =
+  uploadedImages.length > 0
+    ? uploadedImages[0]
+    : (
+        v.mainImage ||
+        finalImages[0] ||
+        ""
+      );
+
+ 
+
+      // agar selected main image new upload me hai
+      if (!finalImages.includes(finalMainImage)) {
+        finalMainImage = finalImages[0] || "";
+      }
+
+      return {
+        color: v.color || "",
+        images: finalImages,
+
+        // ✅ MAIN IMAGE FIX
+        mainImage: finalMainImage,
+
+        sizes: (v.sizes || []).map((s) => ({
+          size: s.size || "",
+          stock: Number(s.stock || 0),
+          price: Number(s.price || 0),
+          isOutOfStock: Number(s.stock || 0) === 0
+        }))
+      };
+    });
+  }
 
   const updated = await product.save();
 
   res.json({
     success: true,
-    message: "Product Updated",
+    message: "Product Updated Successfully 🚀",
     product: updated
   });
+});
+
+
+
+const getProductsByProductType = asyncHandler(async (req, res) => {
+  const { productType } = req.params;
+
+  // slug -> normal text
+  const formattedType = productType
+    .replace(/-/g, " ")
+    .toLowerCase();
+
+  // first find ProductType document
+  const productTypeDoc = await ProductType.findOne({
+    name: {
+      $regex: new RegExp(`^${formattedType}$`, "i")
+    }
+  });
+
+  if (!productTypeDoc) {
+    return res.status(404).json({
+      success: false,
+      message: "Product Type not found"
+    });
+  }
+
+  // now fetch products using ObjectId
+  const products = await Product.find({
+    productType: productTypeDoc._id
+  })
+    .populate("category")
+    .populate("subCategory")
+    .populate("productType");
+
+  res.status(200).json(products);
 });
 
 // ✅ DELETE PRODUCT
@@ -293,5 +451,6 @@ module.exports = {
   getSingleProduct,
   updateProduct,
   deleteProduct,
-  getHomeProducts
+  getHomeProducts,
+  getProductsByProductType
 };

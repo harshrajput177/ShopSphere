@@ -1,13 +1,14 @@
 .ViewProduct-product-container {
   display: flex;
   gap: 40px;
-  max-width: 1460px;
+  max-width: 1340px;
   width: 100%;
   margin: 20px auto;
   padding: 80px 0 20px; /* FIXED */
   box-sizing: border-box;
-  background: #ffffff;
+  background-color: rgb(248, 249, 255);
   border-bottom: 0.2px solid rgb(239, 239, 239);
+   align-items: flex-start;
 }
 
 
@@ -16,23 +17,71 @@
   display: flex;
   gap: 20px;
   flex: 1;
-  min-width: 0;
+    min-width: 0;
+
+  position: sticky;
+  top: 100px;
+  height: fit-content;
 }
+
+/* THUMBNAIL SECTION */
 
 .thumbnail-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  gap: 12px;
+
+  height: 700px;          /* fixed height */
+  overflow: hidden;       /* only 5 visible */
+  position: relative;
+}
+
+/* scrollable thumbnails wrapper */
+.thumbnail-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  max-height: 620px;      /* approx 5 images */
+}
+
+.thumbnail-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .thumbnail-list img {
   width: 120px;
   height: 120px;
   object-fit: cover;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
   border: 2px solid transparent;
+  flex-shrink: 0;
 }
+
+.active-thumb {
+  border: 2px solid black;
+}
+
+/* arrows */
+
+.thumb-arrow {
+  font-size: 28px;
+  cursor: pointer;
+  user-select: none;
+  color: #111;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.thumb-arrow:hover {
+  color: #ff3f6c;
+}
+
 
 .active-thumb {
   border: 2px solid black;
@@ -59,12 +108,30 @@
 /* RIGHT SIDE */
 .ViewProduct-details-section {
   flex: 1;
+    max-height: calc(110vh - 10px);
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.ViewProduct-details-section::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ViewProduct-details-section::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+.ViewProduct-brand{
+    font-size: 24px;
+  font-weight: 400;
 }
 
 .ViewProduct-title {
-  font-size: 28px;
-  font-weight: 600;
-  margin-bottom: 10px;
+  color: #555;
+  font-size: 22px;
+  font-weight: 400;
+  margin: 10px 0;
 }
 
 .ViewProduct-rating {
@@ -74,7 +141,7 @@
 
 .ViewProduct-price {
   font-size: 26px;
-  font-weight: bold;
+  font-weight: 400;
   margin-bottom: 20px;
 }
 
@@ -83,7 +150,7 @@
   text-decoration: line-through;
   color: gray;
   margin-left: 10px;
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .ViewProduct-discount {
@@ -104,9 +171,10 @@
 }
 
 .ViewProduct-sizes button {
-  padding: 10px 15px;
+  padding: 14px 18px;
+  font-size: 16px;
   border: 1px solid #ccc;
-  background: white;
+ background-color: rgb(248, 249, 255);
   cursor: pointer;
   border-radius: 6px;
   transition: 0.3s;
@@ -133,7 +201,7 @@
 .ViewProduct-cart-btn {
   width: 100%;
   padding: 14px;
-  background: white;
+ background-color: rgb(248, 249, 255);
   border: 1px solid #ccc;
   border-radius: 8px;
   cursor: pointer;
@@ -177,8 +245,8 @@
 
 /* COLOR IMAGE */
 .ViewProduct-color-list img {
-  width: 80px;
-  height: 100px;
+  width: 100px;
+  height: 130px;
   object-fit: cover;
   border-radius: 6px;
   cursor: pointer;
@@ -232,6 +300,142 @@
 /* hover effect */
 .View-extra span:hover {
   color: #ff3f6c;
+}
+
+
+/* DELIVERY LOCATION */
+
+.delivery-location-box {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+   background-color: rgb(248, 249, 255);
+}
+
+.delivery-location-box h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.delivery-location-box p {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.pincode-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #e91e63;
+  padding-bottom: 10px;
+}
+
+.pincode-box span {
+  font-size: 13px;
+  color: #777;
+}
+
+.pincode-box h4 {
+  margin: 4px 0 0;
+  font-size: 20px;
+}
+
+.pincode-box button {
+  border: none;
+  background: none;
+  color: #e91e63;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.delivery-status {
+  margin: 15px 0;
+  font-size: 13px;
+  color: #444;
+}
+
+.delivery-features {
+  display: flex;
+  gap: 30px;
+  margin-top: 15px;
+}
+
+.delivery-features div {
+  flex: 1;
+}
+
+.delivery-features h4 {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.delivery-features span {
+  color: #e91e63;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+
+/* COUPONS */
+
+.coupon-box {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+     background-color: rgb(248, 249, 255);
+}
+
+.coupon-box h3 {
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+.coupon-list {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+}
+
+.single-coupon {
+  min-width: 300px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 18px;
+   background-color: rgb(248, 249, 255);
+}
+
+.single-coupon h4 {
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.single-coupon p {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.coupon-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.coupon-footer span {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.coupon-footer button {
+  border: none;
+  background: none;
+  color: #e91e63;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 @media (max-width: 1024px) {

@@ -43,9 +43,11 @@ export default function BestSeller() {
   const dispatch = useDispatch();
 
   // 🔥 Redux state
-  const { items, loading } = useSelector((state) => state.products);
+  const { homeItems, loading } = useSelector(
+  (state) => state.products
+);
 
-  const bestSeller = items.bestSeller || [];
+  const bestSeller = homeItems.bestSeller || [];
 
   const [current, setCurrent] = useState(0);
   const [wishlist, setWishlist] = useState([]);

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { sizeChartConfig } from "./FashionAttributes/SizeConfig";
 import "../../CSS/AddProduct.css";
 
 const AddProduct = () => {
@@ -18,7 +17,6 @@ const AddProduct = () => {
   const [collections, setCollections] = useState([]);
   const [tags, setTags] = useState([]);
 
-  const [productName, setProductName] = useState("");
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [discount, setDiscount] = useState("");
@@ -32,7 +30,7 @@ const AddProduct = () => {
   const [showGender, setShowGender] = useState(false);
   const [gender, setGender] = useState("");
   const [selectedMainImage, setSelectedMainImage] = useState(null);
-
+const [selectedMainImageIndex, setSelectedMainImageIndex] = useState(null);
   const [activeAttributes, setActiveAttributes] = useState([]);
   const [attributesData, setAttributesData] = useState({});
   const [sizes, setSizes] = useState([]);
@@ -42,7 +40,7 @@ const AddProduct = () => {
   const [isGenZ, setIsGenZ] = useState(false);
   const [occasion, setOccasion] = useState([]);
   const [sizeChart, setSizeChart] = useState([]);
-const [sizeFields, setSizeFields] = useState([]);
+  const [sizeFields, setSizeFields] = useState([]);
 
   const [loading, setLoading] = useState(false);
 
@@ -70,17 +68,11 @@ const [sizeFields, setSizeFields] = useState([]);
     fetchCollections();
   }, []);
 
-  useEffect(() => {
-  if (productName && !title) {
-    setTitle(productName);
-  }
-}, [productName]);
-
-const sizeAttribute =
-  activeAttributes.find(attr => attr.isSize) ||
-  activeAttributes.find(attr =>
-    attr.name.toLowerCase().includes("size")
-  );
+  const sizeAttribute =
+    activeAttributes.find(attr => attr.isSize) ||
+    activeAttributes.find(attr =>
+      attr.name.toLowerCase().includes("size")
+    );
 
   const fetchCategories = async () => {
     const res = await axios.get("http://localhost:4000/api/category");
@@ -93,14 +85,28 @@ const sizeAttribute =
   };
 
   const fetchAttributes = async (productTypeId) => {
-  const res = await axios.get(`/api/attribute/product/${productTypeId}`);
-  setActiveAttributes(res.data);
-};
+    console.log("CALLING API WITH:", productTypeId);
+    const res = await axios.get(
+      `http://localhost:4000/api/attribute/product/${productTypeId}`
+    );
+    setActiveAttributes(res.data);
+  };
 
-const fetchSizeChart = async (productTypeId) => {
-  const res = await axios.get(`/api/sizechart/${productTypeId}`);
-  setSizeFields(res.data.fields);
-};
+
+
+  // 🔥 functions section (useEffect ke niche rakh)
+  const fetchSizeChart = async (productTypeId) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:4000/api/sizechart/${productTypeId}`
+      );
+
+      setSizeFields(res.data.fields || []);
+    } catch (err) {
+      console.log(err);
+      setSizeFields([]);
+    }
+  };
 
   const normalize = (str) =>
     str?.toLowerCase().replace(/\s+/g, "").trim();
@@ -139,38 +145,25 @@ const fetchSizeChart = async (productTypeId) => {
     setProductTypes(res.data.productTypes);
   };
 
- const handleProductType = (id) => {
-  setProductType(id);
 
-  const selectedProduct = productTypes.find(p => p._id === id);
-  if (!selectedProduct) {
-    setActiveAttributes([]);
-    setSizeFields([]);
-    return;
-  }
+  const handleProductType = (id) => {
+    setProductType(id);
 
-  const normalize = (str) =>
-    str?.toLowerCase().replace(/\s+/g, "").replace(/-/g, "").trim();
-  
+    const selectedProduct = productTypes.find(p => p._id === id);
 
-  if (!attrs) {
-    const keys = Object.keys(allAttributes);
-    const matchedKey = keys.find(key =>
-      productKey.includes(normalize(key)) || normalize(key).includes(productKey)
-    );
-
-    if (matchedKey) {
-      attrs = allAttributes[matchedKey];
+    if (!selectedProduct) {
+      setActiveAttributes([]);
+      setSizeFields([]);
+      return;
     }
-  }
 
-  fetchAttributes(id);
-  fetchSizeChart(id);
-  setAttributesData({});
+    // 🔥 IMPORTANT CALLS
+    fetchAttributes(id);
+    fetchSizeChart(id);
 
-  // 🔥 SIZE CHART LOGIC ADD
-  setSizeChart([]); // reset jab product change ho
-};
+    setAttributesData({});
+    setSizeChart([]);
+  };
 
   const handleAttributeChange = (name, value) => {
     setAttributesData(prev => ({
@@ -181,32 +174,48 @@ const fetchSizeChart = async (productTypeId) => {
 
 
   const addVariant = () => {
-    if (!color.trim() || variantImages.length === 0 || sizes.length === 0) {
-      alert("Add proper color, size & images");
+    // 🔥 Attribute se color uthao
+    const selectedColor = attributesData["Color"];
+
+    // 🔥 Validation
+    if (!selectedColor || variantImages.length === 0 || sizes.length === 0) {
+      alert("Select color, size & images ⚠️");
       return;
     }
 
+    if (sizes.some(s => !s.price || Number(s.price) <= 0)) {
+  alert("Enter price for all selected sizes ⚠️");
+  return;
+}
+
+    // 🔥 Duplicate color check
+    if (variants.some(v => v.color === selectedColor)) {
+      alert("This color already added ❌");
+      return;
+    }
+
+    // 🔥 Variant add
     setVariants(prev => [
       ...prev,
       {
-        color,
+        color: selectedColor, // 👉 yaha auto color aa raha
         sizes: [...sizes],
         images: [...variantImages],
-        mainImage: selectedMainImage // 🔥 yaha save
+        mainImageIndex: 0
       }
     ]);
 
-    setColor("");
+    // reset
     setVariantImages([]);
     setSizes([]);
   };
 
   const addSizeRow = () => {
-  setSizeChart([
-    ...sizeChart,
-    { size: "", values: {} }
-  ]);
-};
+    setSizeChart([
+      ...sizeChart,
+      { size: "", values: {} }
+    ]);
+  };
 
 
   const handleSubmit = async () => {
@@ -214,12 +223,10 @@ const fetchSizeChart = async (productTypeId) => {
       setLoading(true);
 
       const formData = new FormData();
-      formData.append("productName", productName);
       formData.append("title", title);
-      formData.append("price", price);
       formData.append("discount", discount);
       formData.append("description", description);
-      formData.append("stock", stock);
+      formData.append("stock", Number(stock));
       formData.append("category", category);
       formData.append("subCategory", subcategory);
       formData.append("productType", productType);
@@ -229,11 +236,27 @@ const fetchSizeChart = async (productTypeId) => {
       formData.append("isNewArrival", isNewArrival);
       formData.append("isGenZ", isGenZ);
       formData.append("gender", gender);
+      formData.append("sizeChart", JSON.stringify(sizeChart));
 
 
       collections.forEach(c => formData.append("collections", c));
       tags.forEach(t => formData.append("tags", t));
       occasion.forEach(o => formData.append("occasion", o));
+
+    const allPrices = variants.flatMap(v =>
+  v.sizes
+    .map(s => Number(s.price))
+    .filter(p => p > 0)
+);
+
+      const minPrice = Math.min(...allPrices);
+
+      formData.append("price", minPrice);
+
+      if (variants.some(v => v.mainImageIndex === null || v.mainImageIndex === undefined)) {
+  alert("Please select main image ⚠️");
+  return;
+}
 
 
       if (variants.length === 0) {
@@ -241,19 +264,13 @@ const fetchSizeChart = async (productTypeId) => {
         return;
       }
 
-      variants.forEach((variant, i) => {
-        formData.append(`variants[${i}][color]`, variant.color);
-        formData.append(`variants[${i}][mainImage]`, variant.mainImage);
+      formData.append("variants", JSON.stringify(variants));
 
-        variant.sizes.forEach((s, idx) => {
-          formData.append(`variants[${i}][sizes][${idx}][size]`, s.size);
-          formData.append(`variants[${i}][sizes][${idx}][stock]`, s.stock);
-        });
-
-        variant.images.forEach((img) => {
-          formData.append(`variants[${i}][images]`, img);
-        });
-      });
+variants.forEach((variant, i) => {
+  variant.images.forEach((img) => {
+    formData.append(`variants[${i}]`, img);
+  });
+});
 
       await axios.post("http://localhost:4000/api/products", formData);
 
@@ -272,7 +289,6 @@ const fetchSizeChart = async (productTypeId) => {
 
   // ✅ RESET FIX
   const resetForm = () => {
-    setProductName("");
     setTitle("");
     setPrice("");
     setDiscount("");
@@ -354,11 +370,6 @@ const fetchSizeChart = async (productTypeId) => {
         <h3>Product Info</h3>
 
         <div className="grid">
-          <input
-            placeholder="Product Name"
-            value={productName}
-            onChange={(e) => setProductName(e.target.value)}
-          />
           <input placeholder="Product Title" value={title} onChange={(e) => setTitle(e.target.value)} />
           <input type="number" placeholder="Discount %" value={discount} onChange={(e) => setDiscount(e.target.value)} />
 
@@ -406,7 +417,7 @@ const fetchSizeChart = async (productTypeId) => {
       </div>
 
       {/* ===== ATTRIBUTES SECTION ===== */}
-      {activeAttributes.length > 0 && (
+      {activeAttributes?.length > 0 && (
         <div className="card">
           <h3>Product Attributes</h3>
 
@@ -424,7 +435,7 @@ const fetchSizeChart = async (productTypeId) => {
                       onChange={(e) => handleAttributeChange(attr.name, e.target.value)}
                     >
                       <option value="">Select {attr.name}</option>
-                      {attr.options.map((opt, idx) => (
+                      {attr.options?.map((opt, idx) => (
                         <option key={idx} value={opt}>{opt}</option>
                       ))}
                     </select>
@@ -493,12 +504,6 @@ const fetchSizeChart = async (productTypeId) => {
       <div className="card">
         <h3>Add Color Variants</h3>
 
-        {/* COLOR */}
-        <input
-          placeholder="Enter Color (Red, Black)"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-        />
 
         <div className="size-options">
           {sizeAttribute?.options?.map((size) => (
@@ -512,7 +517,7 @@ const fetchSizeChart = async (productTypeId) => {
                 checked={sizes.some(s => s.size === size)}
                 onChange={(e) => {
                   if (e.target.checked) {
-                    setSizes([...sizes, { size, stock: 0, price: 0 }]);
+                    setSizes([...sizes, { size, stock: 0, price: "" }]);
                   } else {
                     setSizes(sizes.filter(s => s.size !== size));
                   }
@@ -592,13 +597,13 @@ const fetchSizeChart = async (productTypeId) => {
                   src={URL.createObjectURL(img)}
                   width="60"
                   style={{
-                    border: v.mainImage === img ? "3px solid red" : "1px solid gray",
+                   border: v.mainImageIndex === idx ? "3px solid red" : "1px solid gray",
                     cursor: "pointer"
                   }}
                   onClick={() => {
-                    const updated = [...variants];
-                    updated[i].mainImage = img; // 🔥 direct save in variant
-                    setVariants(updated);
+                     const updated = [...variants];
+  updated[i].mainImageIndex = idx;
+  setVariants(updated);
                   }}
                 />
               ))}
@@ -612,53 +617,61 @@ const fetchSizeChart = async (productTypeId) => {
           ))}
         </div>
       </div>
+      {sizeFields?.length > 0 && (
+        <div className="card">
+          <h3>Size Chart</h3>
 
-      {sizeFields.length > 0 && (
-  <div className="card">
-    <h3>Size Chart</h3>
+          <button onClick={addSizeRow}>+ Add Size</button>
 
-    <button onClick={addSizeRow}>+ Add Size</button>
+          {sizeChart.map((row, i) => (
+            <div key={i} style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
 
-    {sizeChart.map((row, i) => (
-      <div key={i} style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-        
-        {/* SIZE */}
-        <input
-          placeholder="Size (M)"
-          value={row.size}
-          onChange={(e) => {
-            const updated = [...sizeChart];
-            updated[i].size = e.target.value;
-            setSizeChart(updated);
-          }}
-        />
+              {/* SIZE */}
+              <select
+                value={row.size}
+                onChange={(e) => {
+                  const updated = [...sizeChart];
+                  updated[i].size = e.target.value;
+                  setSizeChart(updated);
+                }}
+              >
+                <option value="">Select Size</option>
 
-        {/* 🔥 DYNAMIC FIELDS */}
-        {sizeFields.map((field, idx) => (
-          <input
-            key={idx}
-            placeholder={field}
-            onChange={(e) => {
-              const updated = [...sizeChart];
-              updated[i].values = {
-                ...updated[i].values,
-                [field]: e.target.value
-              };
-              setSizeChart(updated);
-            }}
-          />
-        ))}
+                {sizeAttribute?.options
+                  ?.filter(size => !sizeChart.some(r => r.size === size)) // duplicate block
+                  .map((size, idx) => (
+                    <option key={idx} value={size}>
+                      {size}
+                    </option>
+                  ))}
+              </select>
 
-        {/* REMOVE */}
-        <button onClick={() => {
-          setSizeChart(sizeChart.filter((_, index) => index !== i));
-        }}>
-          ❌
-        </button>
-      </div>
-    ))}
-  </div>
-)}
+              {/* 🔥 DYNAMIC FIELDS */}
+              {sizeFields.map((field, idx) => (
+                <input
+                  key={idx}
+                  placeholder={field}
+                  onChange={(e) => {
+                    const updated = [...sizeChart];
+                    updated[i].values = {
+                      ...updated[i].values,
+                      [field]: e.target.value
+                    };
+                    setSizeChart(updated);
+                  }}
+                />
+              ))}
+
+              {/* REMOVE */}
+              <button onClick={() => {
+                setSizeChart(sizeChart.filter((_, index) => index !== i));
+              }}>
+                ❌
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ===== SUBMIT ===== */}
       <button className="submit-btn" onClick={handleSubmit}>

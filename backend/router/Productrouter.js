@@ -1,3 +1,5 @@
+// 🔥 Product Route FIX
+
 const express = require("express");
 const router = express.Router();
 
@@ -10,17 +12,26 @@ const {
   getSingleProduct,
   updateProduct,
   deleteProduct,
-  getHomeProducts
+  getHomeProducts,
+  getProductsByProductType
 } = require("../Controller/ProductController");
 
-// 🔥 FIXED (dynamic fields support)
+// CREATE
 router.post("/", upload.any(), createProduct);
 
 router.get("/", getAllProducts);
 router.get("/home", getHomeProducts);
 router.get("/filter", getFilteredProducts);
+router.get("/type/:productType", getProductsByProductType);
 router.get("/:id", getSingleProduct);
-router.put("/:id", updateProduct);
+
+// 🔥 IMPORTANT FIX
+// OLD:
+// router.put("/:id", updateProduct);
+
+// NEW:
+router.put("/:id", upload.any(), updateProduct);
+
 router.delete("/:id", deleteProduct);
 
 module.exports = router;

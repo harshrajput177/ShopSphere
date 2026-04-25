@@ -2,10 +2,25 @@ import { useRef, useEffect, useState } from "react";
 import axios from "axios";
 import "../../Style-CSS/Landing-css/LandingCom2.css";
 
-/* ── CARD ───────────────── */
+import { useNavigate } from "react-router-dom";
+
 function CategoryCard({ item }) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    const slug = item.name
+      .toLowerCase()
+      .replace(/\s+/g, "-");
+
+    navigate(`/products/${slug}`);
+  };
+
   return (
-    <div className="category-card">
+    <div
+      className="category-card"
+      onClick={handleClick}
+      style={{ cursor: "pointer" }}
+    >
       <div className="card-img-wrap-com2">
         <img
           src={item.image}
@@ -13,29 +28,13 @@ function CategoryCard({ item }) {
           loading="lazy"
         />
       </div>
-      <span className="card-label">{item.name}</span>
+
+      <span className="card-label">
+        {item.name}
+      </span>
     </div>
   );
 }
-
-// /* ── ROW ───────────────── */
-// function CategoryRow({ items }) {
-//   const rowRef = useRef(null);
-
-
-//   return (
-//     <div className="row-wrapper">
-//       {/* <button className="scroll-btn left" onClick={() => scroll(-1)}>←</button> */}
-
-//       <div className="categories-row-com2" ref={rowRef}>
-//         {items.map((item) => (
-//           <CategoryCard key={item._id} item={item} />
-//         ))}
-//       </div>
-
-//     </div>
-//   );
-// }
 
 export default function CategoryGrid() {
 
@@ -44,35 +43,38 @@ export default function CategoryGrid() {
     const firstRow = categories.slice(0, 13);
 const secondRow = categories.slice(13);
 
-  useEffect(() => {
-    const fetchAll = async () => {
-      try {
-        const [ptRes, subRes] = await Promise.all([
-          axios.get("http://localhost:4000/api/product-type"),
-          axios.get("http://localhost:4000/api/subcategory")
-        ]);
+useEffect(() => {
+  const fetchAll = async () => {
+    try {
+      const [ptRes, subRes] = await Promise.all([
+        axios.get("http://localhost:4000/api/product-type"),
+        axios.get("http://localhost:4000/api/subcategory")
+      ]);
 
-        const productTypes = ptRes.data.productTypes || ptRes.data;
-        const subCategories = subRes.data.subCategories || subRes.data;
+      const productTypes = ptRes.data.productTypes || ptRes.data;
+      const subCategories = subRes.data.subCategories || subRes.data;
 
-        // 🔥 merge
-        let merged = [
-          ...subCategories.map(i => ({ ...i })),
-          ...productTypes.map(i => ({ ...i }))
-        ];
+      // 🔥 only 12 productTypes
+      const limitedProductTypes = productTypes.slice(0, 15);
 
-        // 🔥 shuffle (random order)
-        merged = merged.sort(() => Math.random() - 0.5);
+      // 🔥 merge
+      let merged = [
+        ...subCategories,
+        ...limitedProductTypes
+      ];
 
-        setCategories(merged);
+      // 🔥 shuffle
+      merged = merged.sort(() => Math.random() - 0.5);
 
-      } catch (err) {
-        console.log(err);
-      }
-    };
+      setCategories(merged);
 
-    fetchAll();
-  }, []);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  fetchAll();
+}, []);
 
   return (
  <section className="category-section">

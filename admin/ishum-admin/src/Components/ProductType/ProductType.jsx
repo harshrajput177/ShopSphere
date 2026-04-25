@@ -19,7 +19,7 @@ const ProductTypeAdd = () => {
   "Topwear",
   "Bottomwear",
   "Innerwear",
-  "Combo",
+  "Co-ord Set",
   "OnePiece",
   "Outerwear",
   "other"
@@ -50,7 +50,7 @@ const ProductTypeAdd = () => {
   };
   // 🔥 PRODUCT TYPE EXAMPLES
   const examples = [
-    "T-Shirt", "Shirt", "Polo T-Shirt", "Co-ord Set", "Hoodie", "Sweatshirt", "Jacket", "Blazer", "Coat", "Sweater", "Cardigan",
+    "T-Shirt", "Shirt", "Polo T-Shirt", "Hoodie", "Sweatshirt", "Jacket", "Blazer", "Coat", "Sweater", "Cardigan",
     "Jeans", "Trousers", "Shorts", "Joggers", "Track Pant", "Cargo Pants", "Chinos", "Capri",
     "Saree", "Lehenga", "Blouse", "Kurti", "Gown", "Dress", "Skirt", "Crop Top", "Tunic", "Jumpsuit", "Playsuit",
     "Kurta", "Sherwani", "Nehru Jacket", "Dhoti", "Salwar", "Dupatta",

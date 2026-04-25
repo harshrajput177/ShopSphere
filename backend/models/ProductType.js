@@ -12,7 +12,7 @@ const productTypeSchema = new mongoose.Schema({
 
     group: {
         type: String,
-        enum: ["Topwear", "Bottomwear", "Innerwear", "Combo", "OnePiece","Outerwear", "other"],
+        enum: ["Topwear", "Bottomwear", "Innerwear", "Co-ord Set", "OnePiece","Outerwear", "other"],
         required: true
     },
 

@@ -47,6 +47,8 @@ const Sidebar = () => {
               <li><Link to="/category/add">Add Category</Link></li>
               <li><Link to="/subcategory/add">Add SubCategory</Link></li>
               <li><Link to="/product-type/add">Add Product Type</Link></li>
+              <li><Link to="/attribute/add">Add Attribute</Link></li>
+                 <li><Link to="/SizeChart/add">Add SizeChart</Link></li>
             </ul>
           )}
         </li>
@@ -66,6 +68,7 @@ const Sidebar = () => {
               <li><Link to="/category/manage">Category List</Link></li>
               <li><Link to="/subcategory/manage">SubCategory List</Link></li>
               <li><Link to="/product-type/manage">Product Type List</Link></li>
+              <li><Link to="/attribute/manage">Attribute List</Link></li>
             </ul>
           )}
         </li>
@@ -101,8 +104,7 @@ const Sidebar = () => {
           {openProducts && (
             <ul className="admin-dropdown-list">
               <li><Link to="/products/add-product">Add Product</Link></li>
-              <li><Link to="/products/add-product">Product List</Link></li>
-              <li><Link to="/manage-products">Manage Products</Link></li>
+              <li><Link to="/manage-products">Product List</Link></li>
             </ul>
           )}
         </li>

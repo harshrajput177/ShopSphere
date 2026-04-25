@@ -8,6 +8,8 @@ const CategoryRouter = require("./router/CategoryRoute");
 const SubCategoryRouter = require("./router/SubCategoryRoute");
 const ProductRouter = require("./router/Productrouter");
 const productTypeRoutes = require("./router/ProductTypeRoute");
+const AttributeRoutes = require("./router/AttributeRoute");
+const SizeChartRoutes = require("./router/SizechartRoute");
 const CollectionRoutes = require("./router/CollectionRoute");
 const compression = require("compression");
 const path = require("path");
@@ -55,6 +57,8 @@ mongoose.connect(MONGO_URI)
 
 app.use("/api/banner", BannerRoutes);
 app.use("/api/products", ProductRouter); 
+app.use("/api/attribute", AttributeRoutes); 
+app.use("/api/sizechart", SizeChartRoutes);
 app.use("/api/category", CategoryRouter); 
 app.use("/api/subcategory", SubCategoryRouter); 
 app.use("/api/product-type", productTypeRoutes);

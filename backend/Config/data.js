@@ -134,14 +134,6 @@ const allAttributes = {
       { name: "Pattern", type: "select", options: ["Solid", "Checked"] }
     ],
 
-    formalshirt: [
-      { name: "Brand", type: "text" },
-      { name: "Fit", type: "select", options: ["Slim", "Regular"] },
-      { name: "Fabric", type: "select", options: ["Cotton", "Linen", "Polyester"] },
-      { name: "Sleeve", type: "select", options: ["Half", "Full"] },
-      { name: "Collar Type", type: "select", options: ["Spread", "Mandarin"] },
-      { name: "Pattern", type: "select", options: ["Solid", "Striped", "Checked"] }
-    ],
 
     // 👖 FORMAL PANTS
     formalpants: [

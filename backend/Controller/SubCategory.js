@@ -70,9 +70,52 @@ const getSubCategoryByCategory = async (req, res) => {
   }
 };
 
+// DELETE
+const deleteSubCategory = async (req, res) => {
+  try {
+    await SubCategory.findByIdAndDelete(req.params.id);
+
+    res.json({
+      success: true,
+      message: "Deleted successfully"
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// UPDATE
+const updateSubCategory = async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    let updateData = { name };
+
+    // 🔥 IMAGE HANDLE
+    if (req.file) {
+      updateData.image = req.file.path;
+    }
+
+    const updated = await SubCategory.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      updated
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 module.exports = {
   createSubCategory,
   getSubCategories,
-  getSubCategoryByCategory
+  getSubCategoryByCategory,
+  updateSubCategory,
+  deleteSubCategory
 };

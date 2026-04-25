@@ -1,51 +1,51 @@
 .mega-menu-f {
-  position: absolute;   
-  top: 20px;          
-  left: -50px;
-  width: 900px;
-  height: auto;
+  position: absolute;
+  top: 58px;   /* navbar ke neeche proper */
+  left: -60px;
+  width: 1100px;
+  min-height: auto;
   background: #fff;
   display: flex;
   justify-content: center;
   padding: 30px 0;
-  z-index: 99 !important;         
-  
+  z-index: 99999 !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  border-top: 1px solid #eee;
 }
 
 .mega-container {
-  width: 1200px;
+  width: 100%;
+  max-width: 1100px;
   display: flex;
-  gap: 40px;
-    z-index: 99 !important;   
+  gap: 20px;
+  z-index: 99999 !important;
 }
 
 .mega-column {
   flex: 1;
-}
-
-.mega-column h4 {
-  color: #ff3f6c;
-  font-size: 14px;
-  margin-bottom: 10px;
-}
-
-.mega-column p {
-  font-size: 13px;
-  margin: 6px 0;
-  cursor: pointer;
-  color: #333;
-}
-
-.mega-column p:hover {
-  color: #ff3f6c;
-}
-
-.mega-column {
-  width: 18%;
   padding: 8px 15px;
   border-right: 1px solid #eee;
 }
 
 .mega-column:last-child {
   border-right: none;
+}
+
+.mega-column h4 {
+  color: #ff3f6c;
+  font-size: 14px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.mega-column p {
+  font-size: 13px;
+  margin: 8px 0;
+  cursor: pointer;
+  color: #333;
+  transition: 0.2s;
+}
+
+.mega-column p:hover {
+  color: #ff3f6c;
 }

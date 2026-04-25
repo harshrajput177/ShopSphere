@@ -1,13 +1,14 @@
 @import "../Poppins-Font.css";
 
 .similar-container {
-  padding: 20px;
+  padding: 10px 20px;
     max-width: 1400px;
   margin: 0 auto;
-  background: #fefefe;
+  background-color: rgb(248, 249, 255);
 }
 
 .similar-title {
+  
      font-family: 'PoppinsSemibold';
   font-size: 18px;
   font-weight: 700;
@@ -38,7 +39,7 @@
 .similar-product-card {
     padding: 10px;
   min-width: 240px;
-  background: #fafafa;
+  background-color: rgb(248, 249, 255);
   border-radius: 6px;
   overflow: hidden;
   cursor: pointer;
@@ -85,6 +86,13 @@
 }
 
 .similar-product-title {
+    display: -webkit-box;
+  -webkit-line-clamp: 2;   /* sirf 2 line */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+  max-height: 3em; 
      font-family: 'PoppinsRegular';
   font-size: 13px;
   color: #535766;

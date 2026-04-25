@@ -367,16 +367,16 @@ font-family: 'PoppinsRegular';
   gap: 10px;
 }
 
-.price-current {
-  font-size: 1.05rem;
+.price-current-com3 {
+  font-size: 1.19rem;
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.01em;
 }
 
-.price-original {
+.price-original-com3 {
   font-family: 'PoppinsRegular';
-  font-size: 0.75rem;
+  font-size: 1rem;
   font-weight: 400;
   color: #aaa;
   text-decoration: line-through;
@@ -647,11 +647,11 @@ font-family: 'PoppinsRegular';
   }
 
   /* PRICE */
-  .price-current {
+  .price-current-com3 {
     font-size: 0.9rem;
   }
 
-  .price-original {
+  .price-original-com3 {
     font-size: 0.65rem;
   }
 

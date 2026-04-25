@@ -3,7 +3,7 @@
   padding: 0;
 }
 body{
-  background-color: #fafcff;
+ background-color: rgb(248, 249, 255);
   margin: 0;
   padding: 0;
   width: auto;
@@ -12,7 +12,7 @@ body{
 }
 
 #root{
-   background-color: #fafcff;
+   background-color: rgb(248, 249, 255);
   margin:0;
   padding:0;
   box-sizing: border-box;

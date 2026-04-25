@@ -17,10 +17,6 @@ const productSchema = new mongoose.Schema({
     type: String
   },
 
-  price: {
-    type: Number,
-    required: true
-  },
 
   discount: {
     type: Number,
@@ -40,10 +36,11 @@ const productSchema = new mongoose.Schema({
     required: true
   },
 
-  productType: {
-    type: String,
-    required: true
-  },
+productType: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "ProductType",
+  required: true
+},
 
     gender: {
   type: String,
@@ -107,20 +104,26 @@ const productSchema = new mongoose.Schema({
         }
       ],
 
+        mainImage: String,
+
       // 🔥 NEW (IMPORTANT)
-      sizes: [
-        {
-          size: String,     // S, M, L
-          stock: {
-            type: Number,
-            default: 0
-          },
-              isOutOfStock: {
+    sizes: [
+  {
+    size: String,
+    stock: {
+      type: Number,
+      default: 0
+    },
+    price: {                // 🔥 ADD THIS
+      type: Number,
+      required: true
+    },
+    isOutOfStock: {
       type: Boolean,
       default: false
     }
-        }
-      ]
+  }
+]
     }
   ],
 

@@ -13,4 +13,5 @@ const attributeSchema = new mongoose.Schema({
   isSize: { type: Boolean, default: false } // 👈 important
 });
 
+
 module.exports = mongoose.model("Attribute", attributeSchema);

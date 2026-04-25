@@ -1,29 +1,44 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../Style-CSS/ProductPage/ViewProduct.css";
 import { FaRegHeart } from "react-icons/fa";
 import { FiMessageCircle, FiShare2 } from "react-icons/fi";
-
-const images = [
-  "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab",
-  "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d",
-  "https://images.unsplash.com/photo-1603252109303-2751441dd157",
-  "https://images.unsplash.com/photo-1593032465171-8c0c4b7c1c77"
-];
-
-const colors = [
-  "https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03",
-  "https://images.unsplash.com/photo-1618354691373-d851f9c0f3b8",
-  "https://images.unsplash.com/photo-1593032465171-8c0c4b7c1c77",
-  "https://images.unsplash.com/photo-1603252109303-2751441dd157",
-  "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab",
-  "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d",
-  "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb"
-];
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 const ProductPage = () => {
-  const [activeImage, setActiveImage] = useState(images[0]);
+  const { id } = useParams();
+
+  const [product, setProduct] = useState(null);
+  const [activeImage, setActiveImage] = useState("");
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedVariant, setSelectedVariant] = useState(null);
   const [zoomStyle, setZoomStyle] = useState({});
 
+  // 🔥 FETCH PRODUCT
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await axios.get(`http://localhost:4000/api/products/${id}`);
+        const data = res.data;
+
+        setProduct(data);
+
+        // default variant
+        const firstVariant = data?.variants?.[0];
+        setSelectedVariant(firstVariant);
+
+        setActiveImage(
+          firstVariant?.mainImage || firstVariant?.images?.[0]
+        );
+      } catch (err) {
+        console.log("Error fetching product", err);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  // 🔍 ZOOM
   const handleMouseMove = (e) => {
     const { left, top, width, height } =
       e.currentTarget.getBoundingClientRect();
@@ -38,27 +53,68 @@ const ProductPage = () => {
   };
 
   const handleMouseLeave = () => {
-    setZoomStyle({
-      transform: "scale(1)"
-    });
+    setZoomStyle({ transform: "scale(1)" });
   };
+
+  if (!product) {
+    return <h2 style={{ textAlign: "center" }}>Loading...</h2>;
+  }
+
+  // 💰 PRICE LOGIC
+  const prices =
+    selectedVariant?.sizes?.map((s) => Number(s.price)) || [];
+
+  const originalPrice = prices.length ? Math.min(...prices) : 0;
+  const discount = product.discount || 0;
+  const finalPrice = Math.max(0, originalPrice - discount);
 
   return (
     <div className="ViewProduct-product-container">
-      {/* LEFT SIDE */}
+      {/* LEFT */}
       <div className="ViewProduct-image-section">
-        <div className="thumbnail-list">
-          {images.map((img, i) => (
-            <img
-              key={i}
-              src={img}
-              alt=""
-              onClick={() => setActiveImage(img)}
-              className={activeImage === img ? "active-thumb" : ""}
-            />
-          ))}
-        </div>
+        {/* THUMBNAILS */}
+     <div className="thumbnail-list">
+  {/* <div
+    className="thumb-arrow"
+    onClick={() => {
+      document.querySelector(".thumbnail-scroll")
+        .scrollBy({
+          top: -150,
+          behavior: "smooth"
+        });
+    }}
+  >
+  
+  </div> */}
 
+  <div className="thumbnail-scroll">
+    {selectedVariant?.images?.map((img, i) => (
+      <img
+        key={i}
+        src={img}
+        onClick={() => setActiveImage(img)}
+        className={
+          activeImage === img ? "active-thumb" : ""
+        }
+      />
+    ))}
+  </div>
+
+  {/* <div
+    className="thumb-arrow"
+    onClick={() => {
+      document.querySelector(".thumbnail-scroll")
+        .scrollBy({
+          top: 150,
+          behavior: "smooth"
+        });
+    }}
+  >
+    ▼
+  </div> */}
+</div>
+
+        {/* MAIN IMAGE */}
         <div
           className="main-image-container"
           onMouseMove={handleMouseMove}
@@ -73,75 +129,178 @@ const ProductPage = () => {
         </div>
       </div>
 
-      {/* RIGHT SIDE */}
+      {/* RIGHT */}
       <div className="ViewProduct-details-section">
-       <h2 className="ViewProduct-title">
-  This Ben Hogan Men's Solid Ottoman Golf Polo Shirt
-</h2>
-
-<p className="ViewProduct-description">
-  Premium quality ottoman fabric polo shirt designed for comfort and performance.
-  Perfect for casual wear and golf sessions, offering a breathable feel and modern fit.
-</p>
-
-        <div className="ViewProduct-rating">
-          ⭐⭐⭐⭐⭐ <span>4.8</span> • 188 Reviews
-        </div>
-
-        <div className="ViewProduct-price">
-          ₹187.500 <span className="ViewProduct-old-price">MRP 250.000</span>
-          <span className="ViewProduct-discount">25% off</span>
-          <h3  className="ViewProduct-inclusive-taxes">inclusive of all taxes</h3>
-        </div>
-
-
-        {/* MORE COLORS */}
-<div className="ViewProduct-color-section">
-  <p className="ViewProduct-section-title">More Colors</p>
-
-  <div className="ViewProduct-color-list">
-    {colors.map((img, i) => (
-      <img
-        key={i}
-        src={img}
-        alt="color"
-        onClick={() => setActiveImage(img)}
-        className={activeImage === img ? "active-color" : ""}
-      />
-    ))}
-  </div>
+<div className="ViewProduct-brand">
+  {product.specifications?.Brand?.replace(/"/g, "").trim() || "No Brand"}
 </div>
 
-        <div className="ViewProduct-size-section">
-          <p>Select Size</p>
-          <div className="ViewProduct-sizes">
-            {["S", "M", "L", "XL", "2XL"].map((size) => (
-              <button key={size}>{size}</button>
+<h2 className="ViewProduct-title">
+  {product.title}
+</h2>
+
+
+        {/* ⭐ Rating */}
+        <div className="ViewProduct-rating">
+          ⭐⭐⭐⭐⭐ <span>{product.rating || 4.5}</span>
+        </div>
+
+        {/* 💰 PRICE */}
+        <div className="ViewProduct-price">
+          ₹{finalPrice}
+          <span className="ViewProduct-old-price">
+            ₹{originalPrice}
+          </span>
+          <span className="ViewProduct-discount">
+            {Math.round((discount / originalPrice) * 100) || 0}% off
+          </span>
+
+          <h3 className="ViewProduct-inclusive-taxes">
+            inclusive of all taxes
+          </h3>
+        </div>
+
+        {/* 🎨 VARIANTS (COLORS) */}
+        <div className="ViewProduct-color-section">
+          <p className="ViewProduct-section-title">Colors</p>
+
+          <div className="ViewProduct-color-list">
+            {product.variants?.map((variant, i) => (
+              <img
+                key={i}
+                src={variant.mainImage || variant.images?.[0]}
+                onClick={() => {
+                  setSelectedVariant(variant);
+                  setActiveImage(
+                    variant.mainImage || variant.images?.[0]
+                  );
+                  setSelectedSize(null);
+                }}
+                className={
+                  selectedVariant === variant ? "active-color" : ""
+                }
+              />
             ))}
           </div>
         </div>
 
-        <button className="ViewProduct-buy-btn">Add to Wishlist</button>
-        <button className="ViewProduct-cart-btn">Add to Bag</button>
+        {/* 📏 SIZES */}
+        <div className="ViewProduct-size-section">
+          <p>Select Size</p>
 
-       <div className="View-extra">
+          <div className="ViewProduct-sizes">
+            {selectedVariant?.sizes?.map((s) => (
+              <button
+                key={s.size}
+                onClick={() => setSelectedSize(s)}
+                className={
+                  selectedSize?.size === s.size ? "active-size" : ""
+                }
+              >
+                {s.size}
+              </button>
+            ))}
+          </div>
+        </div>
 
-  <span>
-    <FiMessageCircle className="view-icon" />
-    Chat
-  </span>
+   {/* 🛒 BUTTONS */}
+<button className="ViewProduct-buy-btn">
+  ❤️ Add to Wishlist
+</button>
 
-  <span>
-    <FaRegHeart className="view-icon" />
-    Wishlist
-  </span>
+<button className="ViewProduct-cart-btn">
+  🛍 Add to Bag
+</button>
 
-  <span>
-    <FiShare2 className="view-icon" />
-    Share
-  </span>
+{/* 📍 DELIVERY LOCATION */}
+<div className="delivery-location-box">
+  <h3>Select Delivery Location</h3>
+  <p>
+    Enter the pincode of your area to check product
+    availability and delivery options
+  </p>
 
+  <div className="pincode-box">
+    <div>
+      <span>Enter Pincode</span>
+      <h4>203001</h4>
+    </div>
+    <button>Edit</button>
+  </div>
+
+  <div className="delivery-status">
+    Delivers to Bulandshahr - 203001 ✓
+  </div>
+
+  <div className="delivery-features">
+    <div>
+      <h4>COD available</h4>
+      <span>Know More</span>
+    </div>
+
+    <div>
+      <h4>7-day return & size exchange</h4>
+      <span>Know More</span>
+    </div>
+
+    <div>
+      <h4>Delivery by Tue, 28 Apr</h4>
+      <span>Know More</span>
+    </div>
+  </div>
 </div>
+
+{/* 🎟 COUPONS */}
+<div className="coupon-box">
+  <h3>Coupons • 3 available</h3>
+
+  <div className="coupon-list">
+    <div className="single-coupon">
+      <h4>Extra 15% off</h4>
+      <p>
+        Extra 15% off upto ₹200 on a minimum order
+      </p>
+
+      <div className="coupon-footer">
+        <span>NFNEW15</span>
+        <button>Copy Code</button>
+      </div>
+    </div>
+
+    <div className="single-coupon">
+      <h4>Extra 10% off</h4>
+      <p>
+        Get extra 10% off on your purchase
+      </p>
+
+      <div className="coupon-footer">
+        <span>NFFLAT10</span>
+        <button>Copy Code</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{/* EXTRA */}
+<div className="View-extra"></div>
+
+        {/* EXTRA */}
+        <div className="View-extra">
+          <span>
+            <FiMessageCircle className="view-icon" />
+            Chat
+          </span>
+
+          <span>
+            <FaRegHeart className="view-icon" />
+            Wishlist
+          </span>
+
+          <span>
+            <FiShare2 className="view-icon" />
+            Share
+          </span>
+        </div>
       </div>
     </div>
   );
