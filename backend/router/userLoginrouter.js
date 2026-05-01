@@ -1,22 +1,21 @@
-const express = require('express');
+const express = require("express");
+const router = express.Router();
+
 const {
-    registerUser,
-    verifyOtp,
-    socialLogin,
-    // resendOtp,
-    sendOtp,
-    getUser
-} = require('../Controller/userLoginController');
-const authMiddleware = require('../MiddleWare/MiddleWare');
+  mobileAuth,
+  googleLogin,
+  getMe,
+  logout,
+} = require("../Controller/userLoginController");
 
-const userRouter = express.Router();
+const { protect } = require("../MiddleWare/authmiddleware");
 
+router.post("/mobile-login", mobileAuth);
 
-userRouter.get("/get-user", authMiddleware, getUser);
-userRouter.post("/register", registerUser);
-userRouter.post("/verify-otp", verifyOtp);
-userRouter.post("/send-otp", sendOtp); // Optional OTP route
-userRouter.post('/social-login', socialLogin);
+router.post("/google-login", googleLogin);
 
+router.get("/me", protect, getMe);
 
-module.exports = userRouter;
+router.post("/logout", logout);
+
+module.exports = router;

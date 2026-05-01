@@ -246,6 +246,66 @@
   display: none;
 }
 
+.cart-icon-wrapper {
+  position: relative;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  background: red;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 7px;
+  border-radius: 50%;
+  width: px;
+  height: 11px;
+  text-align: center;
+}
+@media (max-width: 1300px) {
+  .navb-menu {
+    gap: 22px;
+    font-size: 15px;
+  }
+
+  .nav-left-logo {
+    gap: 25px;
+  }
+
+  .navb-search-box {
+    width: 24rem;
+    padding: 8px 10px;
+  }
+
+  .logo {
+    width: 55px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .navb-menu {
+    gap: 16px;
+  }
+
+  .navb-menu li {
+    font-size: 14px;
+  }
+
+  .navb-search-box {
+    width: 20rem;
+  }
+
+  .nav-icon p {
+    font-size: 11px;
+  }
+
+  .navb-nav-right {
+    gap: 18px;
+  }
+}
+
 /* ===================== */
 /* TABLET VIEW */
 /* ===================== */

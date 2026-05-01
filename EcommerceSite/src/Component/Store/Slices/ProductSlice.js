@@ -9,17 +9,7 @@ API: /api/products/home
 */
 export const fetchHomeProducts = createAsyncThunk(
   "products/fetchHomeProducts",
-  async (_, { getState }) => {
-    const state = getState();
-
-    // cache check
-    if (
-      state.products.homeItems &&
-      Object.keys(state.products.homeItems).length > 0
-    ) {
-      return state.products.homeItems;
-    }
-
+  async () => {
     const res = await axios.get(
       "http://localhost:4000/api/products/home"
     );

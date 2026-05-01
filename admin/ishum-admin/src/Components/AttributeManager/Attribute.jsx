@@ -7,22 +7,23 @@ const AttributeManager = () => {
     type: "text",
     options: "",
     productTypes: "",
-  isSize: false
+    isSize: false,
+    numberValue: ""
   });
 
   const [attributes, setAttributes] = useState([]);
   const [productTypes, setProductTypes] = useState([]);
   const [selectedProductType, setSelectedProductType] = useState("");
-  const [editingId, setEditingId] = useState(null);
 
-
-  // 🔥 GET ALL PRODUCT TYPES
+  // GET ALL PRODUCT TYPES
   useEffect(() => {
     const fetchProductTypes = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/api/product-type");
-        console.log(res.data);
-        setProductTypes(res.data.productTypes);
+        const res = await axios.get(
+          "http://localhost:4000/api/product-type"
+        );
+
+        setProductTypes(res.data.productTypes || []);
       } catch (err) {
         console.error(err);
       }
@@ -31,56 +32,76 @@ const AttributeManager = () => {
     fetchProductTypes();
   }, []);
 
-
-
-  // 🔥 HANDLE INPUT
+  // HANDLE INPUT
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+
     setForm({
       ...form,
       [name]: type === "checkbox" ? checked : value
     });
   };
 
-  // 🔥 CREATE ATTRIBUTE
+  // CREATE ATTRIBUTE
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-const payload = {
-  ...form,
-  options: form.options ? form.options.split(",") : [],
-  productTypes: [form.productTypes]
-};
+      const payload = {
+        ...form,
+        options: form.options
+          ? form.options.split(",").map((item) => item.trim())
+          : [],
+        productTypes: [form.productTypes]
+      };
 
-      await axios.post("http://localhost:4000/api/attribute/create", payload);
+      await axios.post(
+        "http://localhost:4000/api/attribute/create",
+        payload
+      );
 
-      alert("Attribute Created ✅");
+      alert("Attribute Created Successfully ✅");
+
+      setForm({
+        name: "",
+        type: "text",
+        options: "",
+        productTypes: "",
+        isSize: false,
+        numberValue: ""
+      });
+
     } catch (err) {
       console.error(err);
       alert("Error ❌");
     }
   };
 
- 
-const fetchAttributes = async () => {
-  if (!selectedProductType) {
-    return alert("Select Product Type");
-  }
+  // FETCH ATTRIBUTES
+  const fetchAttributes = async () => {
+    if (!selectedProductType) {
+      return alert("Select Product Type");
+    }
 
-  const res = await axios.get(
-    `http://localhost:4000/api/attribute/product/${selectedProductType}`
-  );
+    try {
+      const res = await axios.get(
+        `http://localhost:4000/api/attribute/product/${selectedProductType}`
+      );
 
-  setAttributes(res.data);
-};
+      setAttributes(res.data || []);
 
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div style={{ padding: "20px" }}>
       <h2>Create Attribute</h2>
 
       <form onSubmit={handleSubmit}>
+
+        {/* ATTRIBUTE NAME */}
         <input
           type="text"
           name="name"
@@ -91,7 +112,12 @@ const fetchAttributes = async () => {
 
         <br /><br />
 
-        <select name="type" value={form.type} onChange={handleChange}>
+        {/* TYPE */}
+        <select
+          name="type"
+          value={form.type}
+          onChange={handleChange}
+        >
           <option value="text">Text</option>
           <option value="select">Select</option>
           <option value="number">Number</option>
@@ -99,12 +125,13 @@ const fetchAttributes = async () => {
 
         <br /><br />
 
+        {/* SELECT OPTIONS */}
         {form.type === "select" && (
           <>
             <input
               type="text"
               name="options"
-              placeholder="Options (S,M,L)"
+              placeholder="Options (S, M, L)"
               value={form.options}
               onChange={handleChange}
             />
@@ -112,36 +139,47 @@ const fetchAttributes = async () => {
           </>
         )}
 
+        {/* NUMBER VALUE */}
         {form.type === "number" && (
-  <>
-    <input
-      type="number"
-      name="numberValue"
-      placeholder="Enter number (e.g. 6 pockets)"
-      value={form.numberValue || ""}
-      onChange={handleChange}
-    />
-    <br /><br />
-  </>
-)}
+          <>
+            <input
+              type="number"
+              name="numberValue"
+              placeholder="Enter number (e.g. 6 pockets)"
+              value={form.numberValue}
+              onChange={handleChange}
+            />
+            <br /><br />
+          </>
+        )}
 
-        {/* 🔥 PRODUCT TYPE DROPDOWN */}
+        {/* PRODUCT TYPE DROPDOWN */}
         <select
           name="productTypes"
           value={form.productTypes}
           onChange={handleChange}
         >
           <option value="">Select Product Type</option>
+
           {productTypes.map((pt) => (
-            <option key={pt._id} value={pt._id}>
+            <option
+              key={pt._id}
+              value={pt._id}
+            >
               {pt.name}
+              {" "}
+              (
+              {pt.subCategory?.name}
+              {" - "}
+              {pt.subCategory?.gender?.name}
+              )
             </option>
           ))}
         </select>
 
-
         <br /><br />
 
+        {/* IS SIZE */}
         <label>
           <input
             type="checkbox"
@@ -149,40 +187,63 @@ const fetchAttributes = async () => {
             checked={form.isSize}
             onChange={handleChange}
           />
+          {" "}
           Is Size
         </label>
 
         <br /><br />
 
-        <button type="submit">Create</button>
+        <button type="submit">
+          Create
+        </button>
       </form>
 
       <hr />
 
       <h2>Get Attributes</h2>
 
-      {/* 🔥 NAME BASED DROPDOWN */}
+      {/* FETCH ATTRIBUTES PRODUCT TYPE */}
       <select
         value={selectedProductType}
-        onChange={(e) => setSelectedProductType(e.target.value)}
+        onChange={(e) =>
+          setSelectedProductType(e.target.value)
+        }
       >
-        <option value="">Select Product Type</option>
+        <option value="">
+          Select Product Type
+        </option>
+
         {productTypes.map((pt) => (
-      <option key={pt._id} value={pt._id}>
+          <option
+            key={pt._id}
+            value={pt._id}
+          >
             {pt.name}
+            {" "}
+            (
+            {pt.subCategory?.name}
+            {" - "}
+            {pt.subCategory?.gender?.name}
+            )
           </option>
         ))}
       </select>
 
-
-      <button onClick={fetchAttributes}>Fetch</button>
+      <button onClick={fetchAttributes}>
+        Fetch
+      </button>
 
       <ul>
         {attributes.map((attr) => (
           <li key={attr._id}>
-            <strong>{attr.name}</strong> ({attr.type})
+            <strong>{attr.name}</strong>
+            {" "}
+            ({attr.type})
+
             {attr.options?.length > 0 && (
-              <div>{attr.options.join(", ")}</div>
+              <div>
+                {attr.options.join(", ")}
+              </div>
             )}
           </li>
         ))}

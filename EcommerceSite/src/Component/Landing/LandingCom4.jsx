@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchHomeProducts } from "../Store/Slices/ProductSlice";
 import "../../Style-CSS/Landing-css/LandingCom4.css";
@@ -37,27 +37,15 @@ function ChevronRight() {
   );
 }
 
-const VISIBLE = 5;
-
 export default function BestSeller() {
   const dispatch = useDispatch();
+  const scrollRef = useRef(null);
 
-  // 🔥 Redux state
-  const { homeItems, loading } = useSelector(
-  (state) => state.products
-);
-
+  const { homeItems, loading } = useSelector((state) => state.products);
   const bestSeller = homeItems.bestSeller || [];
 
-  const [current, setCurrent] = useState(0);
   const [wishlist, setWishlist] = useState([]);
 
-  const maxIndex = Math.max(0, bestSeller.length - VISIBLE);
-
-  const handlePrev = () => setCurrent((c) => Math.max(0, c - 1));
-  const handleNext = () => setCurrent((c) => Math.min(maxIndex, c + 1));
-
-  // 🔥 API call (Redux)
   useEffect(() => {
     dispatch(fetchHomeProducts());
   }, [dispatch]);
@@ -67,6 +55,21 @@ export default function BestSeller() {
     setWishlist((w) =>
       w.includes(id) ? w.filter((i) => i !== id) : [...w, id]
     );
+  };
+
+  // 🔥 SIMPLE SCROLL
+  const handleNext = () => {
+    scrollRef.current.scrollBy({
+      left: 300,
+      behavior: "smooth",
+    });
+  };
+
+  const handlePrev = () => {
+    scrollRef.current.scrollBy({
+      left: -300,
+      behavior: "smooth",
+    });
   };
 
   if (loading) {
@@ -83,27 +86,20 @@ export default function BestSeller() {
       </div>
 
       <div className="carousel-wrapper">
-        {/* Left Button */}
-        <button
-          className="nav-btn left"
-          onClick={handlePrev}
-          disabled={current === 0}
-          style={{ opacity: current === 0 ? 0.38 : 1 }}
-        >
+        {/* Left */}
+        <button className="nav-btn-com4 left" onClick={handlePrev}>
           <ChevronLeft />
         </button>
 
         {/* Cards */}
-        <div className="cards-track-outer">
-          <div
-            className="cards-track"
-            style={{ transform: `translateX(-${current * (100 / VISIBLE)}%)` }}
-          >
+        <div ref={scrollRef} className="cards-track-outer">
+          <div className="cards-track">
             {bestSeller.map((p) => (
               <div className="product-card" key={p._id}>
                 <div className="card-image-wrap">
                   <img
                     src={
+                      p?.variants?.[0]?.mainImage ||
                       p?.variants?.[0]?.images?.[0] ||
                       "https://via.placeholder.com/200"
                     }
@@ -130,11 +126,19 @@ export default function BestSeller() {
                   <div className="card-brand">
                     {p.specifications?.Brand}
                   </div>
+
                   <div className="card-name">{p.title}</div>
 
                   <div className="card-pricing">
-                    <span className="price-current">₹ {p.price}</span>
-                    <span className="price-original">₹ {p.discount}</span>
+                    <span className="price-current">
+                      ₹{" "}
+                      {(p?.variants?.[0]?.sizes?.[0]?.price || 0) -
+                        (p?.discount || 0)}
+                    </span>
+
+                    <span className="price-original">
+                      ₹ {p?.variants?.[0]?.sizes?.[0]?.price || 0}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -142,13 +146,8 @@ export default function BestSeller() {
           </div>
         </div>
 
-        {/* Right Button */}
-        <button
-          className="nav-btn right"
-          onClick={handleNext}
-          disabled={current >= maxIndex}
-          style={{ opacity: current >= maxIndex ? 0.38 : 1 }}
-        >
+        {/* Right */}
+        <button className="nav-btn-com4 right" onClick={handleNext}>
           <ChevronRight />
         </button>
       </div>
@@ -156,68 +155,3 @@ export default function BestSeller() {
   );
 }
 
-
-
-
-
-
-
-
-
-
-// const products = [
-//   {
-//     id: 1,
-//     brand: "Forever Glam",
-//     name: "Gold Shell Hinged Earrings",
-//     price: 399,
-//     image:
-//       "https://images.unsplash.com/photo-1630018548695-a5d60e6a5d39?w=400&q=80",
-//     bg: "#f5e9e2",
-//   },
-//   {
-//     id: 2,
-//     brand: "Forever Glam",
-//     name: "Gold Shell Hinged Earrings",
-//     price: 399,
-//     image:
-//       "https://images.unsplash.com/photo-1630018548695-a5d60e6a5d39?w=400&q=80",
-//     bg: "#ede0d4",
-//   },
-//   {
-//     id: 3,
-//     brand: "Peter England",
-//     name: "Medium Grey Textured Formal Men...",
-//     price: 2499,
-//     image:
-//       "https://images.unsplash.com/photo-1594938298603-c8148c4b4b54?w=400&q=80",
-//     bg: "#eef0ed",
-//   },
-//   {
-//     id: 4,
-//     brand: "Forever Glam",
-//     name: "Multicoloured No-Show Socks - Pa...",
-//     price: 299,
-//     image:
-//       "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?w=400&q=80",
-//     bg: "#ececec",
-//   },
-//   {
-//     id: 5,
-//     brand: "Pantaloons Junior",
-//     name: "Pink Anime Graphic Sweatshirt",
-//     price: 799,
-//     image:
-//       "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=400&q=80",
-//     bg: "#fce4ec",
-//   },
-//   {
-//     id: 6,
-//     brand: "Pantaloons Junior",
-//     name: "White Heart Print Sweatshirt",
-//     price: 699,
-//     image:
-//       "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&q=80",
-//     bg: "#e8f4fd",
-//   },
-// ];

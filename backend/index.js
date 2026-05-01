@@ -11,18 +11,20 @@ const productTypeRoutes = require("./router/ProductTypeRoute");
 const AttributeRoutes = require("./router/AttributeRoute");
 const SizeChartRoutes = require("./router/SizechartRoute");
 const CollectionRoutes = require("./router/CollectionRoute");
+const authRoutes = require("./router/userLoginrouter");
+const genderRoutes = require("./router/GenderRoute")
 const compression = require("compression");
 const path = require("path");
 const app = express();
 const PORT = 4000;
 const MONGO_URI = process.env.MONGO_URI;
+const cookieParser = require("cookie-parser");
 
 const allowedOrigins = [
   'https://www.ishum.in',
   'https://ishum.in',
   'http://localhost:5173',
   'http://localhost:5174',
-  'https://ishum-frontend.onrender.com',
 ];
 
 app.use(cors({
@@ -40,6 +42,9 @@ app.use(cors({
 
 
 app.use(express.json());
+app.use(cookieParser());
+
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(compression()); // for gzip compression
@@ -55,6 +60,8 @@ mongoose.connect(MONGO_URI)
     .catch(err => console.log(err));
 
 
+app.use("/api/auth", authRoutes);
+app.use("/api/gender", genderRoutes);
 app.use("/api/banner", BannerRoutes);
 app.use("/api/products", ProductRouter); 
 app.use("/api/attribute", AttributeRoutes); 

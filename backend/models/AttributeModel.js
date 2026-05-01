@@ -1,17 +1,53 @@
-
 const mongoose = require("mongoose");
-const attributeSchema = new mongoose.Schema({
-  name: String, // Fabric, Size, Pattern
-  type: String, // text | select | number
-  options: [String], // ["S","M","L"]
-  productTypes: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "ProductType"
+
+const attributeSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true
+    },
+
+    // text | select | number
+    type: {
+      type: String,
+      enum: ["text", "select", "number"],
+      required: true
+    },
+
+    // for select type
+    options: [
+      {
+        type: String
+      }
+    ],
+
+    // multiple product types support
+    productTypes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ProductType",
+        required: true
+      }
+    ],
+
+    // size related attribute
+    isSize: {
+      type: Boolean,
+      default: false
+    },
+
+    // optional default number value
+    numberValue: {
+      type: Number,
+      default: null
     }
-  ],
-  isSize: { type: Boolean, default: false } // 👈 important
-});
+  },
+  {
+    timestamps: true
+  }
+);
 
-
-module.exports = mongoose.model("Attribute", attributeSchema);
+module.exports = mongoose.model(
+  "Attribute",
+  attributeSchema
+);

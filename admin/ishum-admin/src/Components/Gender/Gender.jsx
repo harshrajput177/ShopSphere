@@ -1,53 +1,28 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const AddSubCategory = () => {
+const AddGender = () => {
   const [name, setName] = useState("");
   const [image, setImage] = useState(null);
-
   const [category, setCategory] = useState("");
-  const [gender, setGender] = useState("");
 
   const [categories, setCategories] = useState([]);
-  const [genders, setGenders] = useState([]);
 
-  const examples = [
-    "Ethnic Wear",
-    "Western Wear",
-    "Fusion Wear",
-    "Sports & Activewear",
-    "Night wear",
-    "Loungewear",
-    "Rainwear",
-    "Formal Wear",
-    "Beachwear",
-    "Maternity Wear",
-    "Plus Size",
-    "Footwear",
-    "Accessories"
-  ];
-
-  // FETCH CATEGORY + GENDER
+  // FETCH CATEGORIES
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchCategories = async () => {
       try {
-        const categoryRes = await axios.get(
+        const res = await axios.get(
           "http://localhost:4000/api/category"
         );
 
-        const genderRes = await axios.get(
-          "http://localhost:4000/api/gender"
-        );
-
-        setCategories(categoryRes.data.categories || []);
-        setGenders(genderRes.data.genders || []);
-
+        setCategories(res.data.categories || []);
       } catch (error) {
         console.log(error);
       }
     };
 
-    fetchData();
+    fetchCategories();
   }, []);
 
   // SUBMIT
@@ -57,11 +32,10 @@ const AddSubCategory = () => {
 
       formData.append("name", name);
       formData.append("category", category);
-      formData.append("gender", gender); // Gender ObjectId
       formData.append("image", image);
 
       const res = await axios.post(
-        "http://localhost:4000/api/subcategory",
+        "http://localhost:4000/api/gender",
         formData,
         {
           headers: {
@@ -71,43 +45,34 @@ const AddSubCategory = () => {
       );
 
       console.log(res.data);
-      alert("SubCategory Added Successfully ✅");
+      alert("Gender Added Successfully ✅");
 
-      // reset
+      // RESET
       setName("");
       setCategory("");
-      setGender("");
       setImage(null);
 
     } catch (error) {
       console.log(error);
-      alert("Failed to Add SubCategory ❌");
+      alert("Failed to Add Gender ❌");
     }
   };
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>Add SubCategory</h2>
+      <h2>Add Gender</h2>
 
       {/* NAME */}
-      <input
-        type="text"
-        placeholder="SubCategory Name"
+      <select
         value={name}
         onChange={(e) => setName(e.target.value)}
-      />
-
-      <div className="example-chips">
-        {examples.map((ex, i) => (
-          <span
-            key={i}
-            className="chip"
-            onClick={() => setName(ex)}
-          >
-            {ex}
-          </span>
-        ))}
-      </div>
+      >
+        <option value="">Select Gender</option>
+        <option value="Men">Men</option>
+        <option value="Women">Women</option>
+        <option value="Kids">Kids</option>
+        <option value="Unisex">Unisex</option>
+      </select>
 
       <br /><br />
 
@@ -121,22 +86,6 @@ const AddSubCategory = () => {
         {categories.map((cat) => (
           <option key={cat._id} value={cat._id}>
             {cat.name}
-          </option>
-        ))}
-      </select>
-
-      <br /><br />
-
-      {/* GENDER MODEL DROPDOWN */}
-      <select
-        value={gender}
-        onChange={(e) => setGender(e.target.value)}
-      >
-        <option value="">Select Gender</option>
-
-        {genders.map((item) => (
-          <option key={item._id} value={item._id}>
-            {item.name} ({item.category?.name})
           </option>
         ))}
       </select>
@@ -163,10 +112,10 @@ const AddSubCategory = () => {
       <br /><br />
 
       <button onClick={handleSubmit}>
-        Save SubCategory
+        Save Gender
       </button>
     </div>
   );
 };
 
-export default AddSubCategory;
+export default AddGender;

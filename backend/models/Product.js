@@ -42,12 +42,6 @@ productType: {
   required: true
 },
 
-    gender: {
-  type: String,
-  enum: ["Men", "Women", "Kids", "Unisex"],
-  required: true
-},
-
   tags: [String],
 
   slug: {

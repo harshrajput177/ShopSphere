@@ -21,7 +21,6 @@ const createProduct = asyncHandler(async (req, res) => {
     isGenZ,
     specifications,
     occasion,
-    gender
   } = req.body;
 
   // ✅ BOOLEAN HELPER
@@ -173,7 +172,6 @@ const createProduct = asyncHandler(async (req, res) => {
     specifications: parsedSpecifications,
     variants: finalVariants,
     occasion: parsedOccasion,
-    gender
   });
 
   res.status(201).json({
@@ -184,17 +182,59 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 
+// ✅ GET ALL PRODUCTS
 const getAllProducts = asyncHandler(async (req, res) => {
   const products = await Product.find()
+
+    // Category
     .populate("category")
-    .populate("subCategory")
+
+    // Product -> ProductType -> SubCategory -> Gender
+    .populate({
+      path: "productType",
+      populate: {
+        path: "subCategory",
+        populate: {
+          path: "gender",
+          select: "name image"
+        }
+      }
+    })
+
+    // Direct SubCategory (optional but useful)
+    .populate({
+      path: "subCategory",
+      populate: {
+        path: "gender",
+        select: "name image"
+      }
+    })
+
     .populate("collections");
 
   res.json(products);
 });
 
-
 const getHomeProducts = asyncHandler(async (req, res) => {
+  const populateProductType = {
+    path: "productType",
+    populate: {
+      path: "subCategory",
+      populate: {
+        path: "gender",
+        select: "name image"
+      }
+    }
+  };
+
+  const populateSubCategory = {
+    path: "subCategory",
+    populate: {
+      path: "gender",
+      select: "name image"
+    }
+  };
+
   const [
     bestSeller,
     newArrival,
@@ -204,23 +244,38 @@ const getHomeProducts = asyncHandler(async (req, res) => {
   ] = await Promise.all([
 
     Product.find({ isBestSeller: true })
-      .sort({ createdAt: -1 })
+      .populate("category")
+      .populate(populateSubCategory)
+      .populate(populateProductType)
+      .sort({ updatedAt: -1 })
       .limit(20),
 
     Product.find({ isNewArrival: true })
-      .sort({ createdAt: -1 })
+      .populate("category")
+      .populate(populateSubCategory)
+      .populate(populateProductType)
+      .sort({ updatedAt: -1 })
       .limit(20),
 
     Product.find({ isTrending: true })
-      .sort({ createdAt: -1 })
+      .populate("category")
+      .populate(populateSubCategory)
+      .populate(populateProductType)
+      .sort({ updatedAt: -1 })
       .limit(50),
 
     Product.find({ discount: { $gt: 30 } })
-      .sort({ createdAt: -1 })
+      .populate("category")
+      .populate(populateSubCategory)
+      .populate(populateProductType)
+      .sort({ updatedAt: -1 })
       .limit(20),
 
     Product.find({ isGenZ: true })
-      .sort({ createdAt: -1 })
+      .populate("category")
+      .populate(populateSubCategory)
+      .populate(populateProductType)
+      .sort({ updatedAt: -1 })
       .limit(20)
 
   ]);
@@ -234,7 +289,6 @@ const getHomeProducts = asyncHandler(async (req, res) => {
     genZ
   });
 });
-
 // ✅ FILTER PRODUCTS
 const getFilteredProducts = asyncHandler(async (req, res) => {
   const {
@@ -271,14 +325,34 @@ const getFilteredProducts = asyncHandler(async (req, res) => {
   res.json(products);
 });
 
+
 // ✅ GET SINGLE PRODUCT
 const getSingleProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id)
     .populate("category")
-    .populate("subCategory")
-    .populate("collections")
-    .populate("productType");
-    
+
+    // subCategory + gender
+    .populate({
+      path: "subCategory",
+      populate: {
+        path: "gender",
+        select: "name image"
+      }
+    })
+
+    // productType + subCategory + gender
+    .populate({
+      path: "productType",
+      populate: {
+        path: "subCategory",
+        populate: {
+          path: "gender",
+          select: "name image"
+        }
+      }
+    })
+
+    .populate("collections");
 
   if (!product) {
     res.status(404);
@@ -381,6 +455,10 @@ let finalMainImage =
       };
     });
   }
+
+  console.log(
+  JSON.stringify(product.variants, null, 2)
+);
 
   const updated = await product.save();
 

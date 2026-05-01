@@ -1,19 +1,14 @@
 const ProductType = require("../models/ProductType");
+const cloudinary = require("cloudinary").v2;
+// CREATE PRODUCT TYPE
 const createProductType = async (req, res) => {
   try {
-    // console.log("📥 BODY:", req.body);
-    // console.log("📸 FILE:", req.file);
+    const { name, subCategory, group } = req.body;
 
-    const { name, subCategory , group} = req.body;
-
-    console.log("NAME:", name);
-console.log("SUBCATEGORY:", subCategory);
-console.log("FILE:", req.file);
-
-    if (!name || !subCategory) {
+    if (!name || !subCategory || !group) {
       return res.status(400).json({
         success: false,
-        message: "All fields required"
+        message: "Name, SubCategory and Group are required"
       });
     }
 
@@ -33,12 +28,13 @@ console.log("FILE:", req.file);
 
     res.status(201).json({
       success: true,
+      message: "Product Type Created Successfully ✅",
       productType
     });
 
   } catch (error) {
-  console.log("❌ ERROR MESSAGE:", error.message);
-console.log("❌ FULL ERROR:", error);
+    console.log("CREATE PRODUCT TYPE ERROR:", error);
+
     res.status(500).json({
       success: false,
       message: error.message
@@ -46,11 +42,35 @@ console.log("❌ FULL ERROR:", error);
   }
 };
 
-// ✅ GET ALL PRODUCT TYPES
+
+// GET ALL PRODUCT TYPES
 const getAllProductTypes = async (req, res) => {
   try {
-    const productTypes = await ProductType.find()
-      .populate("subCategory", "name");
+    const { gender } = req.query;
+
+    let productTypes = await ProductType.find()
+      .populate({
+        path: "subCategory",
+        select: "name gender category",
+        populate: [
+          {
+            path: "gender",
+            select: "name image"
+          },
+          {
+            path: "category",
+            select: "name"
+          }
+        ]
+      });
+
+    // 🔥 FILTER BY GENDER (IMPORTANT)
+    if (gender) {
+      productTypes = productTypes.filter(
+        (pt) =>
+          pt.subCategory?.gender?.name?.toLowerCase() === gender.toLowerCase()
+      );
+    }
 
     res.status(200).json({
       success: true,
@@ -58,6 +78,8 @@ const getAllProductTypes = async (req, res) => {
     });
 
   } catch (error) {
+    console.log("GET ALL PRODUCT TYPES ERROR:", error);
+
     res.status(500).json({
       success: false,
       message: error.message
@@ -66,14 +88,28 @@ const getAllProductTypes = async (req, res) => {
 };
 
 
-
+// GET PRODUCT TYPES BY SUBCATEGORY
 const getProductTypesBySubCategory = async (req, res) => {
   try {
     const { subCategoryId } = req.params;
 
     const productTypes = await ProductType.find({
-      subCategory: subCategoryId   // ✅ simple & clean
-    });
+      subCategory: subCategoryId
+    })
+      .populate({
+        path: "subCategory",
+        select: "name gender category",
+        populate: [
+          {
+            path: "gender",
+            select: "name image"
+          },
+          {
+            path: "category",
+            select: "name"
+          }
+        ]
+      });
 
     res.status(200).json({
       success: true,
@@ -81,6 +117,8 @@ const getProductTypesBySubCategory = async (req, res) => {
     });
 
   } catch (error) {
+    console.log("GET PRODUCT TYPE BY SUBCATEGORY ERROR:", error);
+
     res.status(500).json({
       success: false,
       message: error.message
@@ -88,11 +126,11 @@ const getProductTypesBySubCategory = async (req, res) => {
   }
 };
 
-// ✅ UPDATE PRODUCT TYPE
+
 const updateProductType = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, subCategory } = req.body;
+    const { name, subCategory, group } = req.body;
 
     const productType = await ProductType.findById(id);
 
@@ -103,23 +141,62 @@ const updateProductType = async (req, res) => {
       });
     }
 
-    // update fields
+    // update basic fields
     productType.name = name || productType.name;
     productType.subCategory = subCategory || productType.subCategory;
+    productType.group = group || productType.group;
 
-    // agar new image aayi hai
+    // 🔥 if new image uploaded
     if (req.file) {
+
+      // OLD IMAGE DELETE FROM CLOUDINARY
+      if (productType.image) {
+        const oldImageUrl = productType.image;
+
+        // extract public_id from cloudinary url
+        const urlParts = oldImageUrl.split("/");
+        const fileName = urlParts[urlParts.length - 1];
+        const publicId = "products/" + fileName.split(".")[0];
+
+        try {
+          await cloudinary.uploader.destroy(publicId);
+          console.log("Old image deleted from Cloudinary ✅");
+        } catch (deleteErr) {
+          console.log("Cloudinary delete error:", deleteErr);
+        }
+      }
+
+      // SAVE NEW IMAGE
       productType.image = req.file.path;
     }
 
     await productType.save();
 
+    const updatedProductType = await ProductType.findById(id)
+      .populate({
+        path: "subCategory",
+        select: "name gender category",
+        populate: [
+          {
+            path: "gender",
+            select: "name image"
+          },
+          {
+            path: "category",
+            select: "name"
+          }
+        ]
+      });
+
     res.status(200).json({
       success: true,
-      productType
+      message: "Product Type Updated Successfully ✅",
+      productType: updatedProductType
     });
 
   } catch (error) {
+    console.log("UPDATE PRODUCT TYPE ERROR:", error);
+
     res.status(500).json({
       success: false,
       message: error.message
@@ -127,30 +204,41 @@ const updateProductType = async (req, res) => {
   }
 };
 
-// ✅ DELETE PRODUCT TYPE
+
+// DELETE PRODUCT TYPE
 const deleteProductType = async (req, res) => {
   try {
     const { id } = req.params;
 
-    await ProductType.findByIdAndDelete(id);
+    const deleted = await ProductType.findByIdAndDelete(id);
+
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        message: "Product Type not found"
+      });
+    }
 
     res.status(200).json({
       success: true,
-      message: "Product Type deleted successfully"
+      message: "Product Type deleted successfully ✅"
     });
 
   } catch (error) {
+    console.log("DELETE PRODUCT TYPE ERROR:", error);
+
     res.status(500).json({
       success: false,
       message: error.message
     });
   }
 };
+
 
 module.exports = {
   createProductType,
   getAllProductTypes,
   getProductTypesBySubCategory,
-  deleteProductType,
-    updateProductType
+  updateProductType,
+  deleteProductType
 };

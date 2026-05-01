@@ -16,14 +16,14 @@ const ProductTypeAdd = () => {
 
 
   const groupOptions = [
-  "Topwear",
-  "Bottomwear",
-  "Innerwear",
-  "Co-ord Set",
-  "OnePiece",
-  "Outerwear",
-  "other"
-];
+    "Topwear",
+    "Bottomwear",
+    "Innerwear",
+    "Co-ord Set",
+    "OnePiece",
+    "Outerwear",
+    "other"
+  ];
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -103,10 +103,10 @@ const ProductTypeAdd = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-  if (!name || !selectedSubCategory || !group) {
-  alert("All fields are required");
-  return;
-}
+    if (!name || !selectedSubCategory || !group) {
+      alert("All fields are required");
+      return;
+    }
 
     try {
       const formData = new FormData();
@@ -162,30 +162,30 @@ const ProductTypeAdd = () => {
           <option value="">Select SubCategory</option>
 
           {subCategories.length > 0 ? (
-            subCategories.map((sub) => (
-              <option key={sub._id} value={sub._id}>
-                {sub.name}
-              </option>
-            ))
+        subCategories.map((sub) => (
+  <option key={sub._id} value={sub._id}>
+    {sub.name} ({sub.gender?.name} - {sub.category?.name})
+  </option>
+))
           ) : (
             <option disabled>Loading or No SubCategory</option>
           )}
         </select>
 
-   <label>Group</label>
+        <label>Group</label>
 
-<div className="group-checkbox">
-  {groupOptions.map((g, i) => (
-    <label key={i} className="checkbox-item">
-      <input
-        type="checkbox"
-        checked={group === g}
-        onChange={() => setGroup(g)}
-      />
-      <span>{g}</span>
-    </label>
-  ))}
-</div>
+        <div className="group-checkbox">
+          {groupOptions.map((g, i) => (
+            <label key={i} className="checkbox-item">
+              <input
+                type="checkbox"
+                checked={group === g}
+                onChange={() => setGroup(g)}
+              />
+              <span>{g}</span>
+            </label>
+          ))}
+        </div>
 
         {/* PRODUCT TYPE NAME */}
         <label>Product Type Name</label>

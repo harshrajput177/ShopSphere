@@ -5,6 +5,9 @@ import { useParams, useNavigate } from "react-router-dom";
 const EditProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+const [subcategories, setSubcategories] = useState([]);
+const [productTypes, setProductTypes] = useState([]);
 
   const [form, setForm] = useState({
     title: "",
@@ -13,7 +16,6 @@ const EditProduct = () => {
     category: "",
     subCategory: "",
     productType: "",
-    gender: "",
     tags: [],
     collections: [],
     occasion: []
@@ -21,6 +23,27 @@ const EditProduct = () => {
 
   const [variants, setVariants] = useState([]);
   const [newImages, setNewImages] = useState({});
+
+  const fetchCategories = async () => {
+  const res = await axios.get(
+    "http://localhost:4000/api/category"
+  );
+  setCategories(res.data.categories);
+};
+
+const fetchSubCategories = async (categoryId) => {
+  const res = await axios.get(
+    `http://localhost:4000/api/subcategory?category=${categoryId}`
+  );
+  setSubcategories(res.data.subCategories);
+};
+
+const fetchProductTypes = async (subCategoryId) => {
+  const res = await axios.get(
+    `http://localhost:4000/api/product-type/subcategory/${subCategoryId}`
+  );
+  setProductTypes(res.data.productTypes);
+};
 
   // 🔥 MAIN IMAGE SELECT
   const handleMainImage = (vIndex, img) => {
@@ -48,18 +71,36 @@ const EditProduct = () => {
 
       const product = res.data;
 
-      setForm({
-        title: product.title || "",
-        description: product.description || "",
-        discount: product.discount || "",
-        category: product.category?._id || product.category || "",
-        subCategory: product.subCategory?._id || product.subCategory || "",
-        productType: product.productType?._id || product.productType || "",
-        gender: product.gender || "",
-        tags: product.tags || [],
-        collections: product.collections || [],
-        occasion: product.occasion || []
-      });
+      if (product.category) {
+  fetchSubCategories(
+    product.category?._id || product.category
+  );
+}
+
+if (product.subCategory) {
+  fetchProductTypes(
+    product.subCategory?._id || product.subCategory
+  );
+}
+
+// 🔥 FETCH PRODUCT → setForm update
+setForm({
+  title: product.title || "",
+  description: product.description || "",
+  discount: product.discount || "",
+  category: product.category?._id || product.category || "",
+  subCategory:
+    product.subCategory?._id ||
+    product.subCategory ||
+    "",
+  productType:
+    product.productType?._id ||
+    product.productType ||
+    "",
+  tags: product.tags || [],
+  collections: product.collections || [],
+  occasion: product.occasion || []
+});
 
       setVariants(product.variants || []);
     } catch (err) {
@@ -67,9 +108,13 @@ const EditProduct = () => {
     }
   };
 
-  useEffect(() => {
-    if (id) fetchProduct();
-  }, [id]);
+useEffect(() => {
+  fetchCategories();
+
+  if (id) {
+    fetchProduct();
+  }
+}, [id]);
 
   // 🔥 HANDLE INPUT CHANGE
   const handleChange = (e) => {
@@ -101,14 +146,14 @@ const EditProduct = () => {
     const formData = new FormData();
 
     // BASIC FIELDS
-    formData.append("title", form.title);
-    formData.append("description", form.description);
-    formData.append("discount", Number(form.discount));
-    formData.append("category", form.category);
-    formData.append("subCategory", form.subCategory);
-    formData.append("productType", form.productType);
-    formData.append("gender", form.gender);
-    formData.append("tags", JSON.stringify(form.tags));
+// 🔥 HANDLE UPDATE → gender remove
+formData.append("title", form.title);
+formData.append("description", form.description);
+formData.append("discount", Number(form.discount));
+formData.append("category", form.category);
+formData.append("subCategory", form.subCategory);
+formData.append("productType", form.productType);
+formData.append("tags", JSON.stringify(form.tags));
 
     // CLEAN VARIANTS
    const cleanedVariants = variants.map((v, index) => ({
@@ -193,43 +238,94 @@ const EditProduct = () => {
         />
         <br /><br />
 
-        {/* CATEGORY */}
-        <input
-          name="category"
-          value={form.category || ""}
-          onChange={handleChange}
-          placeholder="Category ID"
-        />
-        <br /><br />
+      <select
+  name="category"
+  value={form.category}
+  onChange={async (e) => {
+    const value = e.target.value;
 
-        <input
-          name="subCategory"
-          value={form.subCategory || ""}
-          onChange={handleChange}
-          placeholder="SubCategory ID"
-        />
-        <br /><br />
+    setForm({
+      ...form,
+      category: value,
+      subCategory: "",
+      productType: ""
+    });
 
-        <input
-          name="productType"
-          value={form.productType || ""}
-          onChange={handleChange}
-          placeholder="Product Type ID"
-        />
+    await fetchSubCategories(value);
+  }}
+>
+  <option value="">Select Category</option>
+
+  {categories.map((cat) => (
+    <option key={cat._id} value={cat._id}>
+      {cat.name}
+    </option>
+  ))}
+</select>
+
+<br /><br />
+
+<select
+  name="subCategory"
+  value={form.subCategory}
+  onChange={async (e) => {
+    const value = e.target.value;
+
+    setForm({
+      ...form,
+      subCategory: value,
+      productType: ""
+    });
+
+    await fetchProductTypes(value);
+  }}
+>
+  <option value="">Select SubCategory</option>
+
+  {subcategories.map((sub) => (
+    <option
+      key={sub._id}
+      value={sub._id}
+    >
+      {sub.name}
+      {" "}
+      (
+      {sub.gender?.name}
+      )
+    </option>
+  ))}
+</select>
+
+<br /><br />
+
+<select
+  name="productType"
+  value={form.productType}
+  onChange={handleChange}
+>
+  <option value="">
+    Select Product Type
+  </option>
+
+  {productTypes.map((pt) => (
+    <option
+      key={pt._id}
+      value={pt._id}
+    >
+      {pt.name}
+      {" "}
+      (
+      {pt.subCategory?.name}
+      {" - "}
+      {pt.subCategory?.gender?.name}
+      )
+    </option>
+  ))}
+</select>
         <br /><br />
 
         {/* GENDER */}
-        <select
-          name="gender"
-          value={form.gender || ""}
-          onChange={handleChange}
-        >
-          <option value="">Select Gender</option>
-          <option value="Men">Men</option>
-          <option value="Women">Women</option>
-          <option value="Kids">Kids</option>
-          <option value="Unisex">Unisex</option>
-        </select>
+    
 
         <br /><br />
 

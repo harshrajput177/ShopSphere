@@ -1,25 +1,20 @@
 const mongoose = require("mongoose");
 
-const subCategorySchema = new mongoose.Schema(
+const genderSchema = new mongoose.Schema(
   {
     name: {
       type: String,
+      enum: ["Men", "Women", "Kids", "Unisex"],
       required: true
     },
 
     image: {
-      type: String
+      type: String // cloudinary URL
     },
 
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
-      required: true
-    },
-
-    gender: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Gender",
       required: true
     }
   },
@@ -28,4 +23,4 @@ const subCategorySchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("SubCategory", subCategorySchema);
+module.exports = mongoose.model("Gender", genderSchema);

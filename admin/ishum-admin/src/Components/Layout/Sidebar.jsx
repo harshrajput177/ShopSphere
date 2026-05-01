@@ -45,6 +45,7 @@ const Sidebar = () => {
           {openAdd && (
             <ul className="admin-dropdown-list">
               <li><Link to="/category/add">Add Category</Link></li>
+              <li><Link to="/gender/add">Add Gender</Link></li>
               <li><Link to="/subcategory/add">Add SubCategory</Link></li>
               <li><Link to="/product-type/add">Add Product Type</Link></li>
               <li><Link to="/attribute/add">Add Attribute</Link></li>

@@ -20,6 +20,7 @@ import ManageAttributes from './Components/AttributeManager/Manageattribute';
 import CreateSizeChart from './Components/AttributeManager/SizeChart';
 import ProductList from './Components/Products/ProductList';
 import EditProduct from './Components/Products/EditProduct';
+import AddGender from './Components/Gender/Gender';
 
 const App = () => {
   return (
@@ -44,6 +45,7 @@ const App = () => {
     
               <Route path="/products/add-product" element={<AddProduct />} />
               <Route path="/category/add" element={<AddCategory />} />
+              <Route path="/gender/add" element={<AddGender />} />
               <Route path="/subcategory/add" element={<AddSubCategory />} />
                 <Route path="/product-type/add" element={<ProductTypeAdd />} />
        

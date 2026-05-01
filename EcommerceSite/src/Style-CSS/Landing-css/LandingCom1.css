@@ -1,4 +1,4 @@
-/* wrapper */
+/* ================= WRAPPER ================= */
 .dual-banner-wrapper {
   width: 100%;
   background-color: #fafcff;
@@ -6,37 +6,40 @@
   justify-content: center;
   margin-top: 90px;
 }
-/* container */
+
+/* ================= CONTAINER ================= */
 .dual-banner-container {
   width: 100%;
   max-width: 1480px;
   height: 380px;
   overflow: hidden;
   position: relative;
+  padding: 0 10px;
 }
 
-/* track */
+/* ================= TRACK ================= */
 .dual-banner-track {
   display: flex;
   height: 100%;
-  gap: 20px;   /* 🔥 padding hata ke gap use kar */
+  gap: 20px;
   transition: transform 0.5s ease-in-out;
 }
 
-/* slide */
+/* ================= SLIDE ================= */
 .dual-banner-slide {
-  flex: 0 0 calc(50% - 10px);  /* 🔥 PERFECT WIDTH */
+  flex: 0 0 calc(50% - 10px);
   height: 100%;
 }
 
-/* image */
+/* ================= IMAGE ================= */
 .dual-banner-slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 14px;
 }
-/* arrows */
+
+/* ================= ARROWS ================= */
 .dual-arrow {
   position: absolute;
   top: 50%;
@@ -51,22 +54,17 @@
   z-index: 10;
 }
 
-.dual-arrow.left {
-  left: 10px;
-}
-
-.dual-arrow.right {
-  right: 10px;
-}
+.dual-arrow.left { left: 10px; }
+.dual-arrow.right { right: 10px; }
 
 .dual-arrow:hover {
   background: rgba(0,0,0,0.6);
 }
 
+/* ================= DOTS ================= */
 .dual-dots {
   position: absolute;
   bottom: -10px;
-  z-index: 1000;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -86,4 +84,77 @@
   width: 22px;
   border-radius: 10px;
   background: #fff;
+}
+
+/* ================= RESPONSIVE ================= */
+
+/* 🔥 1300px (Large laptops) */
+@media (max-width: 1300px) {
+  .dual-banner-container {
+    height: 320px;
+  }
+
+  .dual-banner-slide {
+    flex: 0 0 calc(50% - 10px);
+  }
+}
+
+/* 🔥 1200px (Laptop / small desktop) */
+@media (max-width: 1200px) {
+  .dual-banner-container {
+    height: 300px;
+  }
+
+  .dual-banner-slide {
+    flex: 0 0 calc(50% - 10px);
+  }
+}
+
+/* 🔥 768px (Tablet) */
+@media (max-width: 768px) {
+  .dual-banner-container {
+    height: 250px;
+  }
+
+  .dual-banner-track {
+    gap: 10px;
+  }
+
+  .dual-banner-slide {
+    flex: 0 0 100%;  /* 🔥 1 banner per row */
+  }
+
+  .dual-arrow {
+    font-size: 20px;
+    padding: 4px 8px;
+  }
+}
+
+/* 🔥 480px (Mobile) */
+@media (max-width: 480px) {
+  .dual-banner-wrapper {
+    margin-top: 60px;
+  }
+
+  .dual-banner-container {
+    height: 200px;
+  }
+
+  .dual-banner-slide img {
+    border-radius: 10px;
+  }
+
+  .dual-arrow {
+    font-size: 16px;
+    padding: 3px 6px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .dot.active {
+    width: 16px;
+  }
 }

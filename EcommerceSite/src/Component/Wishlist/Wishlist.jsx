@@ -1,108 +1,95 @@
-import React, { useState } from "react";
+import React from "react";
 import "./Wishlist.css";
-
-const initialData = [
-  {
-    id: 1,
-    brand: "KVS FAB",
-    title: "Women Orange Embroidered Kurta Set",
-    price: 2761,
-    oldPrice: 9859,
-    discount: 72,
-    image:
-      "https://images.unsplash.com/photo-1618354691373-d851c5c3a990"
-  },
-  {
-    id: 2,
-    brand: "Juniper",
-    title: "Ivory Floral Printed Rayon Lehenga",
-    price: 1728,
-    oldPrice: 4798,
-    discount: 64,
-    image:
-      "https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03"
-  },
-  {
-    id: 3,
-    brand: "LEOTUDE",
-    title: "Typography Women's Pink T-shirt",
-    price: 799,
-    oldPrice: 1099,
-    discount: 27,
-    image:
-      "https://images.unsplash.com/photo-1520975922284-9e0ce827c1dc"
-  },
-  {
-    id: 4,
-    brand: "H&M",
-    title: "Women Blue Fitted Cotton T-shirt",
-    price: 699,
-    oldPrice: null,
-    discount: null,
-    image:
-      "https://images.unsplash.com/photo-1523381294911-8d3cead13475"
-  }
-];
+import { useWishlist } from "./WishlistContext";
+import { useCart } from "../Cart/CartContext";
+import { FaTrash, FaShoppingBag } from "react-icons/fa";
 
 const Wishlist = () => {
-  const [items, setItems] = useState(initialData);
+  const { wishlistItems, removeFromWishlist } = useWishlist();
+  const { addToCart } = useCart();
 
-  const removeItem = (id) => {
-    setItems(items.filter((item) => item.id !== id));
-  };
-
+  // 🛒 Move to Cart
   const moveToBag = (item) => {
-    alert(`${item.title} moved to bag 🛒`);
+    addToCart({
+      _id: item._id,
+      title: item.title,
+      price: item.price,
+      originalPrice: item.originalPrice,
+      image: item.image,
+      qty: 1,
+    });
+
+    removeFromWishlist(item._id);
   };
 
   return (
     <div className="wishlist-container">
-      <h2 className="wishlist-title">My Wishlist</h2>
+      <h2 className="wishlist-title">
+        My Wishlist ({wishlistItems.length})
+      </h2>
 
-      <div className="wishlist-grid">
-        {items.map((item) => (
-          <div className="wishlist-card" key={item.id}>
-            {/* REMOVE BUTTON */}
-            <button
-              className="remove-btn"
-              onClick={() => removeItem(item.id)}
-            >
-              ✕
-            </button>
-
-            {/* IMAGE */}
-            <img src={item.image} alt={item.title} />
-
-            {/* CONTENT */}
-            <div className="card-content">
-              <h4>{item.brand}</h4>
-              <p>{item.title}</p>
-
-              <div className="price-box">
-                <span className="price">₹{item.price}</span>
-
-                {item.oldPrice && (
-                  <>
-                    <span className="old-price">
-                      ₹{item.oldPrice}
-                    </span>
-                    <span className="discount">
-                      {item.discount}% OFF
-                    </span>
-                  </>
-                )}
-              </div>
-
+      {/* EMPTY STATE */}
+      {wishlistItems.length === 0 ? (
+        <div className="empty-wishlist">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/4076/4076507.png"
+            alt="empty"
+          />
+          <h3>Your Wishlist is Empty</h3>
+          <p>Save items you love ❤️</p>
+        </div>
+      ) : (
+        <div className="wishlist-grid">
+          {wishlistItems.map((item) => (
+            <div className="wishlist-card" key={item._id}>
+              
+              {/* ❌ REMOVE */}
               <button
-                className="move-btn"
-                onClick={() => moveToBag(item)}
+                className="remove-btn"
+                onClick={() => removeFromWishlist(item._id)}
               >
-                Move to Bag
+                <FaTrash />
               </button>
+
+              {/* 🖼 IMAGE */}
+              <img src={item.image} alt={item.title} />
+
+              {/* 📄 DETAILS */}
+              <div className="card-content">
+                <h4>{item.title}</h4>
+
+                <div className="price-box">
+                  <span className="price">₹{item.price}</span>
+
+                  {item.originalPrice && (
+                    <>
+                      <span className="old-price">
+                        ₹{item.originalPrice}
+                      </span>
+                      <span className="discount">
+                        {Math.round(
+                          ((item.originalPrice - item.price) /
+                            item.originalPrice) *
+                            100
+                        )}
+                        % OFF
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                {/* 🛍 MOVE TO BAG */}
+                <button
+                  className="move-btn"
+                  onClick={() => moveToBag(item)}
+                >
+                  <FaShoppingBag /> Move to Bag
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

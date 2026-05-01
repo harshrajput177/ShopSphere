@@ -5,13 +5,13 @@ import { fetchHomeProducts } from "../Store/Slices/ProductSlice";
 import "../../Style-CSS/Landing-css/LandingCom3.css";
 
 const FILTERS = [
-  "Oversized T-Shirts",
+  "Men Oversized T-Shirts",
   "Shirts",
-  "Polos",
-  "Hoodies",
-  "Jackets",
+  "Women Oversized T-Shirts",
+  "Women Shorts",
   "Men Cargo Pants",
   "Men Jeans",
+  "Men Shorts",
   "Women Tops",
   "Women Cargo Pants"
 ];
@@ -20,9 +20,11 @@ function ProductCard({ product }) {
   const [wishlisted, setWishlisted] = useState(false);
 
   const allPrices =
-    product.variants?.flatMap(
-      (v) => v.sizes?.map((s) => Number(s.price)) || []
-    ) || [];
+  product?.variants?.flatMap((variant) =>
+    (variant?.sizes || [])
+      .map((size) => Number(size?.price || 0))
+      .filter((price) => price > 0)
+  ) || [];
 
   const navigate = useNavigate();
 
@@ -129,51 +131,68 @@ export default function FashionCards() {
 
   useEffect(() => {
     dispatch(fetchHomeProducts());
+    
   }, [dispatch]);
 
   // FILTER LOGIC
 const filteredProducts = trendingProducts.filter((product) => {
   const title = (product.title || "").toLowerCase();
-  const gender = (product.gender || "").toLowerCase();
-  const subCategory = (product.subCategory?.name || "").toLowerCase();
-  const productType = (product.productType?.name || "").toLowerCase();
+
+  
+
+  const gender =
+    (product.subCategory?.gender?.name || "").toLowerCase();
+
+  const subCategory =
+    (product.subCategory?.name || "").toLowerCase();
+
+  const productType =
+    (product.productType?.name || "").toLowerCase();
+
+  const fit =
+    (product.specifications?.Fit || "").toLowerCase();
+
+  //     console.log("productType:", productType);
+  // console.log("fit:", fit);
 
   const searchableText = `
     ${title}
     ${subCategory}
     ${productType}
+    ${fit}
   `.toLowerCase();
 
-  console.log(product.title, product.gender);
+switch (activeFilter) {
 
-  switch (activeFilter) {
-    case "Men Cargo Pants":
-      return (
-        gender === "men" &&
-        searchableText.includes("cargo")
-      );
+  case "Men Oversized T-Shirts":
+    return (
+      gender === "men" &&
+      productType.includes("t-shirt") &&
+      fit.includes("oversized")
+    );
 
-    case "Women Cargo Pants":
-      return (
-        gender === "women" &&
-        searchableText.includes("cargo")
-      );
+  case "Women Oversized T-Shirts":
+    return (
+      gender === "women" &&
+      productType.includes("t-shirt") &&
+      fit.includes("oversized")
+    );
 
-    case "Men Jeans":
-      return (
-        gender === "men" &&
-        searchableText.includes("jeans")
-      );
+  case "Men Cargo Pants":
+    return (
+      gender === "men" &&
+      productType.includes("cargo")
+    );
 
-    case "Women Tops":
-      return (
-        gender === "women" &&
-        searchableText.includes("top")
-      );
+  case "Women Cargo Pants":
+    return (
+      gender === "women" &&
+      productType.includes("cargo")
+    );
 
-    default:
-      return true;
-  }
+  default:
+    return true;
+}
 });
 
   if (loading) {

@@ -4,9 +4,6 @@
 :root {
   --trendbg: #fafcff;
   --card-bg: #fafcff;
-  --gold: #c9a84c;
-  --gold-light: #e8c97a;
-  --maroon: #7a1c2e;
   --text-primary: #1a1a1a;
   --text-secondary: #555;
   --text-muted: #888;
@@ -28,7 +25,7 @@
 
 /* ── Section Wrapper ── */
 .trending-section {
-  padding: 28px 20px 30px;
+  padding: 25px 20px 30px;
     max-width: 1500px;
   margin: 0 auto;
   background: var(--trendbg);
@@ -78,55 +75,62 @@ font-family: 'PoppinsRegular';
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0;
-  padding: 0;
 
 }
 
 .cards-track-outer {
-  flex: 1;
-  overflow: hidden;
+   width: 100%;
+   overflow-x: auto;
+  scroll-behavior: smooth;
   border-radius: 12px;
 }
-
+.cards-track-outer::-webkit-scrollbar {
+  display: none;
+}
 .cards-track {
   display: flex;
   gap: 20px;
   transition: transform 0.52s cubic-bezier(0.4,0,0.2,1);
   will-change: transform;
-  padding-top:3px ;
+  padding-top: 3px;
 }
 
-/* ── Nav Buttons ── */
-.nav-btn {
+.nav-btn-com4 {
   position: absolute;
-  top: 50%;
+  top: 45%;
   transform: translateY(-50%);
-  z-index: 10;
+  z-index: 20;
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  border: 1.5px solid var(--border);
-  background: var(--btn-bg);
-  box-shadow: var(--btn-shadow);
-  display: flex; align-items: center; justify-content: center;
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
   cursor: pointer;
-  transition: var(--transition);
-  color: var(--text-primary);
+  transition: all 0.3s ease;
 }
 
-.nav-btn:hover {
-  background: var(--btn-hover);
-  border-color: var(--gold);
-  color: #fff;
-  box-shadow: 0 4px 20px rgba(201,168,76,0.28);
-  transform: translateY(-50%) scale(1.08);
+.nav-btn-com4 svg {
+  width: 20px;
+  height: 20px;
+  stroke: #333;
+  stroke-width: 2.5;
 }
 
-.nav-btn.left  { left: 0; }
-.nav-btn.right { right: 0; }
+.nav-btn-com4:hover {
+  background: #000;
+  transform: translateY(-50%) scale(1.1);
+}
 
-.nav-btn svg {
+.nav-btn-com4:hover svg {
+  stroke: #fff;
+}
+
+.nav-btn-com4 svg {
+  color: black;
   width: 18px; height: 18px;
   stroke: currentColor;
   fill: none;
@@ -135,11 +139,20 @@ font-family: 'PoppinsRegular';
   stroke-linejoin: round;
 }
 
+.nav-btn-com4.left {
+  left: -20px;
+}
+
+.nav-btn-com4.right {
+  right: -20px;
+}
+
+
 /* ── Card ── */
 .product-card {
-  flex: 0 0 calc(20% - 10px);
-  min-width: 320px;
-  max-width: 300px;
+  flex: 0 0 calc(20% - 16px); /* 5 cards */
+  max-width: calc(20% - 16px);
+  min-width: unset;
   background: var(--card-bg);
   border-radius: var(--radius);
   padding: 5px;
@@ -160,7 +173,7 @@ font-family: 'PoppinsRegular';
 .card-image-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 4/4.4;
+  aspect-ratio: 3.8/5;
   background: #f0ede8;
   overflow: hidden;
 }
@@ -335,7 +348,86 @@ font-family: 'PoppinsRegular';
   width: 22px;
   border-radius: 4px;
 }
+/* ===== Laptop Small Screens (1300px and below) ===== */
+@media (max-width: 1300px) {
 
+  .trending-section {
+    padding: 24px 16px 28px;
+    max-width: 100%;
+  }
+
+  .trending-heading {
+    margin-bottom: 28px;
+  }
+
+  .trending-heading h2 {
+    font-size: 1.4rem;
+  }
+
+  .trending-heading p {
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+  }
+
+  .cards-track {
+    gap: 16px;
+  }
+
+  .product-card {
+    flex: 0 0 calc(25% - 12px);
+    min-width: 260px;
+    max-width: 280px;
+  }
+
+  .card-info {
+    padding: 12px 12px 14px;
+  }
+
+  .card-brand {
+    font-size: 0.66rem;
+  }
+
+  .card-name {
+    font-size: 0.76rem;
+  }
+
+  .price-current {
+    font-size: 0.92rem;
+  }
+
+  .price-original {
+    font-size: 0.72rem;
+  }
+
+  .price-discount {
+    font-size: 0.68rem;
+  }
+
+  .nav-btn-com4 {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav-btn-com4 svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .action-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .action-icon svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .badge-special {
+    font-size: 0.56rem;
+    padding: 18px 6px 6px;
+  }
+}
 /* ── Responsive ── */
 @media (max-width: 1200px) {
   .product-card { flex: 0 0 calc(25% - 15px); }
@@ -400,7 +492,7 @@ font-family: 'PoppinsRegular';
   }
 
   /* buttons slightly smaller */
-  .nav-btn {
+  .nav-btn-com4 {
     width: 38px;
     height: 38px;
   }
@@ -503,7 +595,7 @@ font-family: 'PoppinsRegular';
   }
 
   /* hide nav buttons (gesture better) */
-  .nav-btn {
+  .nav-btn-com4 {
     display: none;
   }
 

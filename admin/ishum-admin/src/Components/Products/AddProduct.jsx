@@ -27,8 +27,6 @@ const AddProduct = () => {
   const [color, setColor] = useState("");
   const [variantImages, setVariantImages] = useState([]);
 
-  const [showGender, setShowGender] = useState(false);
-  const [gender, setGender] = useState("");
   const [selectedMainImage, setSelectedMainImage] = useState(null);
 const [selectedMainImageIndex, setSelectedMainImageIndex] = useState(null);
   const [activeAttributes, setActiveAttributes] = useState([]);
@@ -93,20 +91,26 @@ const [selectedMainImageIndex, setSelectedMainImageIndex] = useState(null);
   };
 
 
+const fetchSizeChart = async (
+  productTypeId,
+  genderId
+) => {
+  try {
+    const res = await axios.get(
+      `http://localhost:4000/api/sizechart/${productTypeId}/${genderId}`
+    );
 
-  // 🔥 functions section (useEffect ke niche rakh)
-  const fetchSizeChart = async (productTypeId) => {
-    try {
-      const res = await axios.get(
-        `http://localhost:4000/api/sizechart/${productTypeId}`
-      );
+    console.log("SIZE CHART RESPONSE:", res.data);
 
-      setSizeFields(res.data.fields || []);
-    } catch (err) {
-      console.log(err);
-      setSizeFields([]);
-    }
-  };
+    setSizeFields(
+      res.data.chart?.fields || []
+    );
+
+  } catch (err) {
+    console.log(err);
+    setSizeFields([]);
+  }
+};
 
   const normalize = (str) =>
     str?.toLowerCase().replace(/\s+/g, "").trim();
@@ -117,20 +121,7 @@ const [selectedMainImageIndex, setSelectedMainImageIndex] = useState(null);
     setProductType("");
     setProductTypes([]);
 
-    const selectedCategory = categories.find(c => c._id === id);
 
-    const name = normalize(selectedCategory?.name);
-
-    // 🔥 SMART MATCH
-    if (
-      name.includes("cloth") ||   // clothing, clothes, cloth
-      name.includes("beauty")
-    ) {
-      setShowGender(true);
-    } else {
-      setShowGender(false);
-      setGender("");
-    }
 
     const res = await axios.get(`http://localhost:4000/api/subcategory?category=${id}`);
     setSubcategories(res.data.subCategories);
@@ -146,24 +137,44 @@ const [selectedMainImageIndex, setSelectedMainImageIndex] = useState(null);
   };
 
 
-  const handleProductType = (id) => {
-    setProductType(id);
+const handleProductType = (id) => {
+  setProductType(id);
 
-    const selectedProduct = productTypes.find(p => p._id === id);
+  const selectedProduct = productTypes.find(
+    (p) => p._id === id
+  );
 
-    if (!selectedProduct) {
-      setActiveAttributes([]);
-      setSizeFields([]);
-      return;
-    }
+  if (!selectedProduct) {
+    setActiveAttributes([]);
+    setSizeFields([]);
+    return;
+  }
 
-    // 🔥 IMPORTANT CALLS
-    fetchAttributes(id);
-    fetchSizeChart(id);
+  // selected subcategory find karo
+  const selectedSub = subcategories.find(
+    (s) => s._id === subcategory
+  );
 
-    setAttributesData({});
-    setSizeChart([]);
-  };
+  // gender ObjectId nikalo
+  const genderId =
+    selectedSub?.gender?._id ||
+    selectedSub?.gender;
+
+  console.log("SUBCATEGORY:", selectedSub);
+  console.log("GENDER ID:", genderId);
+  console.log("PRODUCT TYPE:", id);
+
+  fetchAttributes(id);
+
+  if (genderId) {
+    fetchSizeChart(id, genderId);
+  } else {
+    setSizeFields([]);
+  }
+
+  setAttributesData({});
+  setSizeChart([]);
+};
 
   const handleAttributeChange = (name, value) => {
     setAttributesData(prev => ({
@@ -235,7 +246,6 @@ const [selectedMainImageIndex, setSelectedMainImageIndex] = useState(null);
       formData.append("isTrending", isTrending);
       formData.append("isNewArrival", isNewArrival);
       formData.append("isGenZ", isGenZ);
-      formData.append("gender", gender);
       formData.append("sizeChart", JSON.stringify(sizeChart));
 
 
@@ -320,20 +330,14 @@ variants.forEach((variant, i) => {
               <option key={c._id} value={c._id}>{c.name}</option>
             ))}
           </select>
-          {showGender && (
-            <select value={gender} onChange={(e) => setGender(e.target.value)}>
-              <option value="">Select Gender</option>
-              <option value="Men">Men</option>
-              <option value="Women">Women</option>
-              <option value="Kids">Kids</option>
-              <option value="Unisex">Unisex</option>
-            </select>
-          )}
+
           <select onChange={(e) => handleSubCategory(e.target.value)}>
             <option>Select SubCategory</option>
-            {subcategories?.map(s => (
-              <option key={s._id} value={s._id}>{s.name}</option>
-            ))}
+       {subcategories?.map((s) => (
+  <option key={s._id} value={s._id}>
+    {s.name} ({s.gender?.name})
+  </option>
+))}
           </select>
 
           <select onChange={(e) => handleProductType(e.target.value)}>
@@ -617,61 +621,103 @@ variants.forEach((variant, i) => {
           ))}
         </div>
       </div>
-      {sizeFields?.length > 0 && (
-        <div className="card">
-          <h3>Size Chart</h3>
+    {sizeFields?.length > 0 && (
+  <div className="card">
+    <h3>Size Chart</h3>
 
-          <button onClick={addSizeRow}>+ Add Size</button>
+    <button onClick={addSizeRow}>
+      + Add Size
+    </button>
 
-          {sizeChart.map((row, i) => (
-            <div key={i} style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+    {/* OUTER SCROLL CONTAINER */}
+    <div
+      style={{
+        width: "100%",
+        overflowX: "auto",
+        marginTop: "15px"
+      }}
+    >
+      {sizeChart.map((row, i) => (
+        <div
+          key={i}
+          style={{
+            display: "flex",
+            gap: "10px",
+            marginBottom: "12px",
+            minWidth: "max-content",
+            alignItems: "center"
+          }}
+        >
 
-              {/* SIZE */}
-              <select
-                value={row.size}
-                onChange={(e) => {
-                  const updated = [...sizeChart];
-                  updated[i].size = e.target.value;
-                  setSizeChart(updated);
-                }}
-              >
-                <option value="">Select Size</option>
+          {/* SIZE */}
+          <select
+            value={row.size}
+            onChange={(e) => {
+              const updated = [...sizeChart];
+              updated[i].size = e.target.value;
+              setSizeChart(updated);
+            }}
+            style={{
+              minWidth: "150px",
+              flexShrink: 0
+            }}
+          >
+            <option value="">Select Size</option>
 
-                {sizeAttribute?.options
-                  ?.filter(size => !sizeChart.some(r => r.size === size)) // duplicate block
-                  .map((size, idx) => (
-                    <option key={idx} value={size}>
-                      {size}
-                    </option>
-                  ))}
-              </select>
-
-              {/* 🔥 DYNAMIC FIELDS */}
-              {sizeFields.map((field, idx) => (
-                <input
-                  key={idx}
-                  placeholder={field}
-                  onChange={(e) => {
-                    const updated = [...sizeChart];
-                    updated[i].values = {
-                      ...updated[i].values,
-                      [field]: e.target.value
-                    };
-                    setSizeChart(updated);
-                  }}
-                />
+            {sizeAttribute?.options
+              ?.filter(size =>
+                !sizeChart.some(
+                  (r, index) =>
+                    r.size === size && index !== i
+                )
+              )
+              .map((size, idx) => (
+                <option key={idx} value={size}>
+                  {size}
+                </option>
               ))}
+          </select>
 
-              {/* REMOVE */}
-              <button onClick={() => {
-                setSizeChart(sizeChart.filter((_, index) => index !== i));
-              }}>
-                ❌
-              </button>
-            </div>
+          {/* DYNAMIC FIELDS */}
+          {sizeFields.map((field, idx) => (
+            <input
+              key={idx}
+              placeholder={field}
+              value={row.values?.[field] || ""}
+              onChange={(e) => {
+                const updated = [...sizeChart];
+                updated[i].values = {
+                  ...updated[i].values,
+                  [field]: e.target.value
+                };
+                setSizeChart(updated);
+              }}
+              style={{
+                minWidth: "140px",
+                flexShrink: 0
+              }}
+            />
           ))}
+
+          {/* REMOVE */}
+          <button
+            onClick={() => {
+              setSizeChart(
+                sizeChart.filter((_, index) => index !== i)
+              );
+            }}
+            style={{
+              flexShrink: 0
+            }}
+          >
+            ❌
+          </button>
+
         </div>
-      )}
+      ))}
+    </div>
+  </div>
+)}
 
       {/* ===== SUBMIT ===== */}
       <button className="submit-btn" onClick={handleSubmit}>

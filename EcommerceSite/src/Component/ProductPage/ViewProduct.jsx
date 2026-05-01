@@ -1,18 +1,30 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../../Style-CSS/ProductPage/ViewProduct.css";
-import { FaRegHeart } from "react-icons/fa";
 import { FiMessageCircle, FiShare2 } from "react-icons/fi";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { useCart } from "../Cart/CartContext";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
+import { useWishlist } from "../Wishlist/WishlistContext";
+import { FiShoppingBag } from "react-icons/fi";
+import { useSelector } from "react-redux";
+
+
 
 const ProductPage = () => {
   const { id } = useParams();
-
+  const { user } = useSelector((state) => state.auth);
+  const { addToCart } = useCart();
+const { addToWishlist } = useWishlist();
   const [product, setProduct] = useState(null);
   const [activeImage, setActiveImage] = useState("");
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [zoomStyle, setZoomStyle] = useState({});
+  const [liked, setLiked] = useState(false);
+
+  const navigate = useNavigate();
 
   // 🔥 FETCH PRODUCT
   useEffect(() => {
@@ -52,6 +64,7 @@ const ProductPage = () => {
     });
   };
 
+
   const handleMouseLeave = () => {
     setZoomStyle({ transform: "scale(1)" });
   };
@@ -73,8 +86,8 @@ const ProductPage = () => {
       {/* LEFT */}
       <div className="ViewProduct-image-section">
         {/* THUMBNAILS */}
-     <div className="thumbnail-list">
-  {/* <div
+        <div className="thumbnail-list">
+          {/* <div
     className="thumb-arrow"
     onClick={() => {
       document.querySelector(".thumbnail-scroll")
@@ -87,20 +100,20 @@ const ProductPage = () => {
   
   </div> */}
 
-  <div className="thumbnail-scroll">
-    {selectedVariant?.images?.map((img, i) => (
-      <img
-        key={i}
-        src={img}
-        onClick={() => setActiveImage(img)}
-        className={
-          activeImage === img ? "active-thumb" : ""
-        }
-      />
-    ))}
-  </div>
+          <div className="thumbnail-scroll">
+            {selectedVariant?.images?.map((img, i) => (
+              <img
+                key={i}
+                src={img}
+                onClick={() => setActiveImage(img)}
+                className={
+                  activeImage === img ? "active-thumb" : ""
+                }
+              />
+            ))}
+          </div>
 
-  {/* <div
+          {/* <div
     className="thumb-arrow"
     onClick={() => {
       document.querySelector(".thumbnail-scroll")
@@ -112,7 +125,7 @@ const ProductPage = () => {
   >
     ▼
   </div> */}
-</div>
+        </div>
 
         {/* MAIN IMAGE */}
         <div
@@ -131,13 +144,13 @@ const ProductPage = () => {
 
       {/* RIGHT */}
       <div className="ViewProduct-details-section">
-<div className="ViewProduct-brand">
-  {product.specifications?.Brand?.replace(/"/g, "").trim() || "No Brand"}
-</div>
+        <div className="ViewProduct-brand">
+          {product.specifications?.Brand?.replace(/"/g, "").trim() || "No Brand"}
+        </div>
 
-<h2 className="ViewProduct-title">
-  {product.title}
-</h2>
+        <h2 className="ViewProduct-title">
+          {product.title}
+        </h2>
 
 
         {/* ⭐ Rating */}
@@ -174,7 +187,6 @@ const ProductPage = () => {
                   setActiveImage(
                     variant.mainImage || variant.images?.[0]
                   );
-                  setSelectedSize(null);
                 }}
                 className={
                   selectedVariant === variant ? "active-color" : ""
@@ -191,8 +203,15 @@ const ProductPage = () => {
           <div className="ViewProduct-sizes">
             {selectedVariant?.sizes?.map((s) => (
               <button
+                type="button"
                 key={s.size}
-                onClick={() => setSelectedSize(s)}
+                onClick={() => {
+                  console.log("SIZE SELECTED:", s);
+                  setSelectedSize({
+                    size: s.size,
+                    price: s.price,
+                  });
+                }}
                 className={
                   selectedSize?.size === s.size ? "active-size" : ""
                 }
@@ -203,86 +222,136 @@ const ProductPage = () => {
           </div>
         </div>
 
-   {/* 🛒 BUTTONS */}
-<button className="ViewProduct-buy-btn">
-  ❤️ Add to Wishlist
+        <div className="product-btn-group">
+
+   <button
+  className="ViewProduct-Wish-btn"
+  onClick={() => {
+    // ❌ USER NOT LOGIN
+    if (!user) {
+      alert("Please login first ❤️");
+
+      navigate("?auth=login"); // 🔥 open login modal
+      return;
+    }
+
+    // ✅ USER LOGIN
+    setLiked(!liked);
+
+    addToWishlist({
+      _id: product._id,
+      title: product.title,
+      price: finalPrice,
+      originalPrice: originalPrice,
+      image: activeImage,
+    });
+  }}
+>
+  {liked ? <FaHeart /> : <FaRegHeart />}
+  <span>Add to Wishlist</span>
 </button>
 
-<button className="ViewProduct-cart-btn">
-  🛍 Add to Bag
-</button>
+          {/* 🛍 CART */}
+          <button
+            type="button"
+            className="ViewProduct-cart-btn"
+            onClick={() => {
+              if (!selectedSize || !selectedSize.size) {
+                alert("Please select size");
+                return;
+              }
 
-{/* 📍 DELIVERY LOCATION */}
-<div className="delivery-location-box">
-  <h3>Select Delivery Location</h3>
-  <p>
-    Enter the pincode of your area to check product
-    availability and delivery options
-  </p>
+              const mrp = selectedSize.price;
+              const discount = product.discount || 0;
+              const final = Math.max(0, mrp - discount);
 
-  <div className="pincode-box">
-    <div>
-      <span>Enter Pincode</span>
-      <h4>203001</h4>
-    </div>
-    <button>Edit</button>
-  </div>
+              addToCart({
+                _id: product._id,
+                title: product.title,
+                price: final,
+                originalPrice: mrp,
+                image: activeImage,
+                size: selectedSize.size,
+                qty: 1,
+              });
+            }}
+          >
+            <FiShoppingBag />
+            <span>Add to Bag</span>
+          </button>
 
-  <div className="delivery-status">
-    Delivers to Bulandshahr - 203001 ✓
-  </div>
+        </div>
+     
+        <div className="delivery-location-box">
+          <h3>Select Delivery Location</h3>
+          <p>
+            Enter the pincode of your area to check product
+            availability and delivery options
+          </p>
 
-  <div className="delivery-features">
-    <div>
-      <h4>COD available</h4>
-      <span>Know More</span>
-    </div>
+          <div className="pincode-box">
+            <div>
+              <span>Enter Pincode</span>
+              <h4>203001</h4>
+            </div>
+            <button>Edit</button>
+          </div>
 
-    <div>
-      <h4>7-day return & size exchange</h4>
-      <span>Know More</span>
-    </div>
+          <div className="delivery-status">
+            Delivers to Bulandshahr - 203001 ✓
+          </div>
 
-    <div>
-      <h4>Delivery by Tue, 28 Apr</h4>
-      <span>Know More</span>
-    </div>
-  </div>
-</div>
+          <div className="delivery-features">
+            <div>
+              <h4>COD available</h4>
+              <span>Know More</span>
+            </div>
 
-{/* 🎟 COUPONS */}
-<div className="coupon-box">
-  <h3>Coupons • 3 available</h3>
+            <div>
+              <h4>7-day return & size exchange</h4>
+              <span>Know More</span>
+            </div>
 
-  <div className="coupon-list">
-    <div className="single-coupon">
-      <h4>Extra 15% off</h4>
-      <p>
-        Extra 15% off upto ₹200 on a minimum order
-      </p>
+            <div>
+              <h4>Delivery by Tue, 28 Apr</h4>
+              <span>Know More</span>
+            </div>
+          </div>
+        </div>
 
-      <div className="coupon-footer">
-        <span>NFNEW15</span>
-        <button>Copy Code</button>
-      </div>
-    </div>
+        {/* 🎟 COUPONS */}
+        <div className="coupon-box">
+          <h3>Coupons • 3 available</h3>
 
-    <div className="single-coupon">
-      <h4>Extra 10% off</h4>
-      <p>
-        Get extra 10% off on your purchase
-      </p>
+          <div className="coupon-list">
+            <div className="single-coupon">
+              <h4>Extra 15% off</h4>
+              <p>
+                Extra 15% off upto ₹200 on a minimum order
+              </p>
 
-      <div className="coupon-footer">
-        <span>NFFLAT10</span>
-        <button>Copy Code</button>
-      </div>
-    </div>
-  </div>
-</div>
+              <div className="coupon-footer">
+                <span>NFNEW15</span>
+                <button>Copy Code</button>
+              </div>
+            </div>
 
-{/* EXTRA */}
-<div className="View-extra"></div>
+            <div className="single-coupon">
+              <h4>Extra 10% off</h4>
+              <p>
+                Get extra 10% off on your purchase
+              </p>
+
+              <div className="coupon-footer">
+                <span>NFFLAT10</span>
+                <button>Copy Code</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* EXTRA */}
+        <div className="View-extra"></div>
 
         {/* EXTRA */}
         <div className="View-extra">
