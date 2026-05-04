@@ -13,6 +13,8 @@ const SizeChartRoutes = require("./router/SizechartRoute");
 const CollectionRoutes = require("./router/CollectionRoute");
 const authRoutes = require("./router/userLoginrouter");
 const genderRoutes = require("./router/GenderRoute")
+const CartRoutes = require("./router/Cartrouter");
+const WishlistRoutes = require("./router/WishlistRoutes")
 const compression = require("compression");
 const path = require("path");
 const app = express();
@@ -60,6 +62,7 @@ mongoose.connect(MONGO_URI)
     .catch(err => console.log(err));
 
 
+// app.use(guestRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/gender", genderRoutes);
 app.use("/api/banner", BannerRoutes);
@@ -70,6 +73,8 @@ app.use("/api/category", CategoryRouter);
 app.use("/api/subcategory", SubCategoryRouter); 
 app.use("/api/product-type", productTypeRoutes);
 app.use("/api/collection", CollectionRoutes);
+app.use("/api/cart", CartRoutes);
+app.use("/api/wishlist", WishlistRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend is running");

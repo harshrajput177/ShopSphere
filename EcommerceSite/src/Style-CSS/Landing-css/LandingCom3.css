@@ -4,14 +4,9 @@
 :root {
   --bg:  rgb(247, 250, 255);
   --card-bg:  rgb(247, 250, 255);
+  --badge-sale: rgb(255, 34, 34);
   --text-primary: #1a1a1a;
   --text-secondary: #6b6b6b;
-  --accent: #c8a96e;
-  --accent-dark: #9e7c45;
-  --badge-sale: #e74c3c;
-  --badge-new: #2ecc71;
-  --badge-premium: #8e44ad;
-  --star-filled: #f0a500;
   --star-empty: #ddd;
   --shadow-sm: 0 2px 12px rgba(0,0,0,0.07);
   --shadow-md: 0 8px 32px rgba(0,0,0,0.13);
@@ -210,36 +205,7 @@ font-family: 'PoppinsSemibold';
   50%       { box-shadow: 0 4px 18px rgba(231,76,60,0.7); }
 }
 
-/* ── WISHLIST BUTTON ── */
-.wishlist-btn {
-  position: absolute;
-  top: 54px;
-  right: 14px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.94);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(0,0,0,0.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 3;
-  transition: transform 0.3s var(--transition), background 0.2s;
-  font-size: 1rem;
-}
 
-.wishlist-btn:hover {
-  transform: scale(1.22);
-  background: #fff;
-}
-
-.wishlist-btn.active {
-  background: #ffe0e0;
-}
-
-/* ── FABRIC TAG (optional overlay) ── */
 .fabric-tag {
   position: absolute;
   bottom: 14px;
@@ -420,38 +386,6 @@ font-family: 'PoppinsRegular';
   margin-left: 2px;
 }
 
-/* ── ADD TO CART BTN ── */
-.add-to-cart-btn {
-  margin-top: 14px;
-  width: 100%;
-  padding: 11px;
-  background: var(--text-primary);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background 0.25s, transform 0.3s var(--transition), box-shadow 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.add-to-cart-btn:hover {
-  background: var(--accent-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(158,124,69,0.35);
-}
-
-.add-to-cart-btn:active {
-  transform: translateY(0);
-}
-
 /* ── "NEW" LABEL ── */
 .new-label {
   position: absolute;
@@ -466,6 +400,93 @@ font-family: 'PoppinsRegular';
   padding: 3px 9px;
   border-radius: 4px;
   z-index: 3;
+}
+
+.wishlist-btn {
+  position: absolute;
+  top: 52px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  background: white;
+  border-radius: 50%;
+  border: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 5;
+}
+
+.wishlist-btn svg {
+  font-size: 16px;
+  color: #333;
+}
+
+.wishlist-btn.active svg {
+  color: red;
+}
+
+
+/* CART BUTTON */
+.cart-btn-circle {
+  position: absolute;
+  top: 100px;
+  right: 10px;
+
+  width: 36px;
+  height: 36px;
+
+  border-radius: 50%;
+  border: none;
+
+  background: white;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 5;
+}
+
+.cart-btn-circle svg {
+  font-size: 16px;
+  color: #333;
+}
+
+.cart-btn-circle.active {
+  background: black;
+}
+
+.cart-btn-circle.active svg {
+  color: white;
+}
+@media (max-width: 1300px) {
+
+  .cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .product-card-com3 {
+    padding: 4px;
+  }
+
+  .wishlist-btn {
+    top: 10px;
+    right: 10px;
+  }
+
+  .cart-btn-circle {
+    bottom: 10px;
+    right: 10px;
+  }
+
 }
 
 @media (min-width: 601px) and (max-width: 1024px) {
@@ -528,9 +549,40 @@ font-family: 'PoppinsRegular';
     font-size: 0.75rem;
     padding: 10px;
   }
+ 
 }
 
-@media (max-width: 600px) {
+@media (max-width: 600px) {   
+  .wishlist-btn {
+    top: 48px;
+    right: 8px;
+    width: 30px;
+    height: 30px;
+  }
+
+  .wishlist-btn svg {
+    font-size: 14px;
+  }
+
+  .cart-btn-circle {
+    width: 32px;
+    height: 32px;
+    top: 80px;
+    right: 8px;
+  }
+
+  .cart-btn-circle svg {
+    font-size: 14px;
+  }
+
+  .card-title {
+    font-size: 0.9rem;
+  }
+
+  .price-current-com3 {
+    font-size: 1rem;
+  }
+
 
   .page-wrapper {
     padding: 16px 10px 20px;

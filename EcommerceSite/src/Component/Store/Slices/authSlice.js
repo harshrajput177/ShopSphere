@@ -3,9 +3,10 @@ import axios from "axios";
 
 const API = "http://localhost:4000/api/auth";
 
+// 👤 GET USER
 export const getMe = createAsyncThunk(
   "auth/getMe",
-  async (_, thunkAPI) => {
+  async (_, { rejectWithValue }) => {
     try {
       const res = await axios.get(`${API}/me`, {
         withCredentials: true,
@@ -13,27 +14,24 @@ export const getMe = createAsyncThunk(
 
       return res.data.user;
     } catch (error) {
-      return thunkAPI.rejectWithValue(null);
+      return rejectWithValue(null);
     }
   }
 );
 
-
+// 🚪 LOGOUT
 export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
-  async (_, thunkAPI) => {
+  async (_, { rejectWithValue }) => {
     try {
       await axios.post(
         `${API}/logout`,
         {},
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
-
       return null;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data);
     }
   }
 );
@@ -43,6 +41,7 @@ const authSlice = createSlice({
   initialState: {
     user: null,
     loading: false,
+    error: null,
   },
 
   reducers: {
@@ -54,7 +53,7 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      // getMe
+      // 👤 GET ME
       .addCase(getMe.pending, (state) => {
         state.loading = true;
       })
@@ -67,9 +66,17 @@ const authSlice = createSlice({
         state.user = null;
       })
 
-      // logout
+      // 🚪 LOGOUT
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(logoutUser.fulfilled, (state) => {
+        state.loading = false;
         state.user = null;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

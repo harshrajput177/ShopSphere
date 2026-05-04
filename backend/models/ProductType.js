@@ -9,7 +9,7 @@ const productTypeSchema = new mongoose.Schema(
     },
 
     image: {
-      type: String // cloudinary URL
+      type: String 
     },
 
     group: {

@@ -1,94 +1,150 @@
-const Cart = require('../models/Cart');
-const Product = require('../models/ProductSchema');
+const Cart = require("../models/Cart");
+const Product = require("../models/Product");
 
-// Add to Cart
 exports.addToCart = async (req, res) => {
-  const { userId, productId, size, color, quantity } = req.body;
-
   try {
+    const userId = req.user?.id;
+    const guestId = req.cookies.guestId;
+
+
+    const { productId, size } = req.body;
+
+    let cart;
+
+    if (userId) {
+      cart = await Cart.findOne({ userId });
+    } else {
+      cart = await Cart.findOne({ guestId });
+    }
+
     const product = await Product.findById(productId);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+    const variant = product.variants[0];
 
-    let cart = await Cart.findOne({ userId });
+    let sizeObj = variant.sizes.find(
+      (s) => String(s.size) === String(size)
+    );
 
-    const newItem = {
-      productId: product._id,
-      title: product.name,
-      image: product.image,
-      price: product.price,
-      size,
-      color,
-      quantity
+    if (!sizeObj) sizeObj = variant.sizes[0];
+
+    const discount = product.discount || 0;
+const finalPrice = Math.max(0, sizeObj.price - discount);
+
+    const item = {
+      productId,
+      size: sizeObj.size,
+    price: finalPrice,           // ✅ 1150 - 400 = 750
+  originalPrice: sizeObj.price,
+      image: variant.mainImage,
+      title: product.title,
+      qty: 1,
     };
 
     if (!cart) {
-      cart = new Cart({ userId, items: [newItem] });
+      cart = new Cart({
+        userId: userId || null,
+        guestId: guestId || null,
+        items: [item],
+      });
     } else {
-      const existingItem = cart.items.find(
-        i => i.productId.toString() === productId && i.size === size && i.color === color
+      const exist = cart.items.find(
+        (i) =>
+          i.productId.toString() === productId &&
+          i.size === sizeObj.size
       );
 
-      if (existingItem) {
-        existingItem.quantity += quantity;
+      if (exist) exist.qty += 1;
+      else cart.items.push(item);
+    }
+
+    await cart.save();
+    res.json(cart);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.getCart = async (req, res) => {
+  const userId = req.user?.id;
+  const guestId = req.cookies.guestId;
+
+  // ✅ Ye logs lagao
+  console.log("GET CART - userId:", userId);
+  console.log("GET CART - guestId:", guestId);
+  console.log("GET CART - cookies:", req.cookies);
+
+  let cart;
+
+  if (userId) {
+    cart = await Cart.findOne({ userId });
+  } else {
+    cart = await Cart.findOne({ guestId });
+  }
+
+  console.log("GET CART - found cart:", cart); // ✅ ye bhi
+
+  res.json(cart || { items: [] });
+};
+
+exports.removeItem = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const guestId = req.cookies.guestId;
+
+    let cart = userId 
+      ? await Cart.findOne({ userId }) 
+      : await Cart.findOne({ guestId });
+
+    if (!cart) return res.json({ items: [] });
+
+    const { productId, size } = req.body;
+
+    const itemIndex = cart.items.findIndex(
+      (i) => i.productId.toString() === productId && i.size === size
+    );
+
+    if (itemIndex !== -1) {
+      if (cart.items[itemIndex].qty > 1) {
+        // ✅ Qty kam karo, delete mat karo
+        cart.items[itemIndex].qty -= 1;
       } else {
-        cart.items.push(newItem);
+        // ✅ Qty 1 hai toh remove karo
+        cart.items.splice(itemIndex, 1);
       }
     }
 
     await cart.save();
-    res.status(200).json(cart);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-// Remove from Cart
-exports.removeFromCart = async (req, res) => {
-  const { userId, productId } = req.params;
-
-  try {
-    const cart = await Cart.findOne({ userId });
-    if (!cart) return res.status(404).json({ message: 'Cart not found' });
-
- 
-    cart.items = cart.items.filter(
-      item => item.productId.toString() !== productId
-    );
-
-    await cart.save(); // Save updated cart
-    res.status(200).json(cart);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-
-exports.clearCart = async (req, res) => {
-  const { userId } = req.params;
-  try {
-    await Cart.findOneAndDelete({ userId });
-    res.status(200).json({ message: "Cart cleared successfully" });
+    res.json(cart);
   } catch (error) {
-    res.status(500).json({ message: "Failed to clear cart", error });
+    console.log("REMOVE ERROR:", error);
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
+exports.mergeCart = async (req, res) => {
+  const userId = req.user.id;
+  const guestId = req.cookies.guestId;
 
-exports.getCart = async (req, res) => {
-    const { userId } = req.params;
-     // ✅ check this shows up
-  
-    try {
-      const cart = await Cart.findOne({ userId });
-      // console.log("Cart found:", cart); 
-      if (!cart) return res.status(404).json({ message: 'Cart not found' });
-  
-      res.status(200).json({ cartItems: cart.items });
-    } catch (err) {
-      console.error("Cart fetch error:", err);
-      res.status(500).json({ error: err.message });
-    }
-  };
-  
-  
-  
+  const guestCart = await Cart.findOne({ guestId });
+  let userCart = await Cart.findOne({ userId });
+
+
+  if (!guestCart || guestCart.items.length === 0) {
+    return res.json(userCart || { items: [] });
+  }
+
+  if (!userCart) {
+    guestCart.userId = userId;
+    guestCart.guestId = null;
+    await guestCart.save();
+    return res.json(guestCart);
+  }
+
+  // ✅ User cart ko guest cart se replace karo
+  userCart.items = guestCart.items;
+  await userCart.save();
+
+  // ✅ Guest cart delete karo
+  await Cart.deleteOne({ guestId });
+
+  res.json(userCart);
+};

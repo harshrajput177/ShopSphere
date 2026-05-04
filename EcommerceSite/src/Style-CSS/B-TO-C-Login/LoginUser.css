@@ -172,3 +172,95 @@
 .Login-close-btn:hover {
   transform: scale(1.2);
 }
+
+
+@media (min-width: 769px) and (max-width: 1024px) {
+
+  .login-modal {
+    width: 90%;
+    max-width: 500px;
+  }
+
+  .login-body {
+    padding: 25px;
+  }
+
+  /* ❌ Circle remove (normal button) */
+  .social-btn {
+    width: auto;
+    height: auto;
+    border-radius: 6px;
+    padding: 10px;
+  }
+
+  .social-btn span {
+    display: inline; /* text show */
+  }
+}
+
+@media (max-width: 768px) {
+  .login-overlay {
+ padding: 0 5px;
+}
+
+  .login-modal {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 12px;
+  }
+
+  .login-body {
+    padding: 15px;
+  }
+
+  .login-header {
+    padding: 15px;
+    font-size: 16px;
+  }
+
+  /* 🔵 Social = Circle ONLY mobile */
+  .social-login {
+    justify-content: center;
+    gap: 15px;
+  }
+
+  .social-login button  {
+
+    padding: 10px 5px;
+    font-size: 14px;
+  }
+
+}
+
+
+
+
+@media (max-width: 480px) {
+  .login-modal {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 12px;
+  }
+
+  .login-body {
+    padding: 15px;
+  }
+
+  .login-header {
+    padding: 15px;
+    font-size: 16px;
+  }
+
+  .phone-input input {
+    font-size: 14px;
+  }
+
+  .otp-btn {
+    font-size: 14px;
+  }
+
+  /* social spacing */
+  .social-login {
+    gap: 14px;
+  }
+}

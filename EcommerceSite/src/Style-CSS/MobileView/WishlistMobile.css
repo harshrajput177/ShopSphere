@@ -1,0 +1,207 @@
+.mobileview-wishlist-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh; /* important */
+  background: #fff;
+  z-index: 9999;
+  overflow-y: auto; /* 🔥 scroll enable */
+  -webkit-overflow-scrolling: touch; /* smooth mobile scroll */
+}
+
+/* HEADER */
+.mobileview-wishlist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.mobileview-wishlist-header h2 {
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.mobileview-wishlist-cart-icon {
+  font-size: 18px;
+}
+
+/* GRID */
+.mobileview-wishlist-grid {
+     margin: 25px 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;            /* pehle 10px tha */
+  padding: 0 6px;
+}
+
+/* CARD */
+.mobileview-wishlist-card {
+   
+      position: relative;
+  background: #fff;
+    overflow: hidden;
+}
+
+.mobileview-wishlist-card img {
+
+   width: 100%;
+
+  object-fit: cover;   /* crop nicely */
+  border-radius: 6px;
+}
+
+/* INFO */
+.mobileview-wishlist-info h4 {
+  font-size: 13px;
+  margin: 5px 0;
+}
+
+.mobileview-wishlist-info p {
+  font-size: 12px;
+  color: gray;
+  white-space: nowrap;       /* ek line */
+  overflow: hidden;
+  text-overflow: ellipsis; 
+}
+
+/* PRICE */
+.mobileview-wishlist-price {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.mobileview-wishlist-price .mobileview-wishlist-old {
+  text-decoration: line-through;
+  margin-left: 5px;
+  color: gray;
+}
+
+.mobileview-wishlist-price .mobileview-wishlist-discount {
+  color: green;
+  margin-left: 5px;
+}
+
+/* BUTTON */
+.mobileview-wishlist-move-btn {
+  width: 100%;
+  margin-top: 5px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 6px;
+}
+.mobileview-wishlist-actions {
+  display: flex;
+  gap: 5px;
+}
+
+
+
+.remove-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: white;
+  border-radius: 50%;
+  padding: 5px 6px;
+  font-size: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.034);
+  cursor: pointer;
+  text-align: center;
+}
+
+/* overlay */
+.size-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: flex-end;
+  z-index: 9999;
+}
+
+/* modal */
+.mobile-size-modal {
+  width: 100%;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  padding: 15px;
+  animation: slideUp 0.3s ease;
+}
+
+/* animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* header */
+.size-modal-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mobile-modal-size-options {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+  overflow-x: auto;   /* 🔥 important */
+  padding-bottom: 5px;
+}
+
+.mobile-modal-size-btn {
+  min-width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.mobile-modal-size-btn.mobile-modal-active {
+  border: 2px solid black;
+}
+
+.size-text {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.price-text {
+  font-size: 11px;
+  color: gray;
+}
+
+.size-btn.active {
+  border: 1px solid black;
+}
+
+
+/* footer */
+.size-modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-to-bag-btn {
+  background: black;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+}
+
+.bag-icon{
+    font-size: 26px;
+}

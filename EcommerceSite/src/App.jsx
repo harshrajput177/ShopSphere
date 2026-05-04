@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from "react-route
 import { motion } from "framer-motion";
 import "./App.css";
 
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCart, mergeCart } from "./Component/Store/Slices/cartSlice";
 import ScrollToTop from "./Component/ScrollTop";
 import Navbar from "./Component/Navbar/Navbar";
 import Footer from "./Component/Footer";
@@ -25,49 +27,19 @@ const Whislist = lazy(() => import("./Component/Wishlist/Wishlist"));
 function App() {
 
   const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+ const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
 
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-
-  }, []);
-
-
-
-  if (loading) {
-
-    const letters = "ishum".split("");
-
-    return (
-      <div className="loader-container">
-        <div className="khadija-logo">
-          {letters.map((letter, index) => (
-
-            <motion.span
-              key={index}
-              initial={{ y: 0 }}
-              animate={{ y: [0, -30, 0] }}
-              transition={{
-                duration: 1,
-                repeat: Infinity,
-                delay: index * 0.1,
-                ease: "easeInOut",
-              }}
-              className="letter"
-            >
-              {letter}
-            </motion.span>
-
-          ))}
-        </div>
-      </div>
-    );
-  }
-
+  useEffect(() => {
+    if (user) {
+      dispatch(mergeCart()); 
+      dispatch(fetchCart());
+    }
+  }, [user, dispatch]);
 
 
   return (
@@ -99,6 +71,7 @@ function App() {
         <Route path="/product/:id" element={<ViewProduct />} />
         
         <Route path="/products/:category" element={<ProductListing />} />
+     
    
 
       </Routes>

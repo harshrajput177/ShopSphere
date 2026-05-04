@@ -1,31 +1,35 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { addCart } from "../Store/Slices/cartSlice";
+import { addWishlist } from "../Store/Slices/wishlistSlice";
+import { fetchWishlist } from "../Store/Slices/wishlistSlice";
 import { useNavigate } from "react-router-dom";
 import "../../Style-CSS/ProductPage/ViewProduct.css";
 import { FiMessageCircle, FiShare2 } from "react-icons/fi";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { useCart } from "../Cart/CartContext";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
-import { useWishlist } from "../Wishlist/WishlistContext";
 import { FiShoppingBag } from "react-icons/fi";
-import { useSelector } from "react-redux";
+
 
 
 
 const ProductPage = () => {
   const { id } = useParams();
   const { user } = useSelector((state) => state.auth);
-  const { addToCart } = useCart();
-const { addToWishlist } = useWishlist();
+  const dispatch = useDispatch();
   const [product, setProduct] = useState(null);
   const [activeImage, setActiveImage] = useState("");
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [zoomStyle, setZoomStyle] = useState({});
-  const [liked, setLiked] = useState(false);
+const wishlistItems = useSelector((state) => state.wishlist.items);
 
   const navigate = useNavigate();
 
+
+  
   // 🔥 FETCH PRODUCT
   useEffect(() => {
     const fetchProduct = async () => {
@@ -50,7 +54,23 @@ const { addToWishlist } = useWishlist();
     fetchProduct();
   }, [id]);
 
-  // 🔍 ZOOM
+  useEffect(() => {
+  if (user) {
+    dispatch(fetchWishlist());
+  }
+}, [dispatch, user]);
+
+const getId = (item) =>
+  item?.productId?._id || item?.productId || null;
+
+const isWishlisted =
+  product &&
+  wishlistItems &&
+  wishlistItems.some((item) => {
+    const id = getId(item);
+    return id && id === product._id;
+  });
+
   const handleMouseMove = (e) => {
     const { left, top, width, height } =
       e.currentTarget.getBoundingClientRect();
@@ -87,18 +107,6 @@ const { addToWishlist } = useWishlist();
       <div className="ViewProduct-image-section">
         {/* THUMBNAILS */}
         <div className="thumbnail-list">
-          {/* <div
-    className="thumb-arrow"
-    onClick={() => {
-      document.querySelector(".thumbnail-scroll")
-        .scrollBy({
-          top: -150,
-          behavior: "smooth"
-        });
-    }}
-  >
-  
-  </div> */}
 
           <div className="thumbnail-scroll">
             {selectedVariant?.images?.map((img, i) => (
@@ -113,18 +121,6 @@ const { addToWishlist } = useWishlist();
             ))}
           </div>
 
-          {/* <div
-    className="thumb-arrow"
-    onClick={() => {
-      document.querySelector(".thumbnail-scroll")
-        .scrollBy({
-          top: 150,
-          behavior: "smooth"
-        });
-    }}
-  >
-    ▼
-  </div> */}
         </div>
 
         {/* MAIN IMAGE */}
@@ -153,12 +149,12 @@ const { addToWishlist } = useWishlist();
         </h2>
 
 
-        {/* ⭐ Rating */}
+        
         <div className="ViewProduct-rating">
           ⭐⭐⭐⭐⭐ <span>{product.rating || 4.5}</span>
         </div>
 
-        {/* 💰 PRICE */}
+       
         <div className="ViewProduct-price">
           ₹{finalPrice}
           <span className="ViewProduct-old-price">
@@ -173,7 +169,7 @@ const { addToWishlist } = useWishlist();
           </h3>
         </div>
 
-        {/* 🎨 VARIANTS (COLORS) */}
+
         <div className="ViewProduct-color-section">
           <p className="ViewProduct-section-title">Colors</p>
 
@@ -196,7 +192,7 @@ const { addToWishlist } = useWishlist();
           </div>
         </div>
 
-        {/* 📏 SIZES */}
+
         <div className="ViewProduct-size-section">
           <p>Select Size</p>
 
@@ -224,31 +220,33 @@ const { addToWishlist } = useWishlist();
 
         <div className="product-btn-group">
 
-   <button
+  <button
   className="ViewProduct-Wish-btn"
   onClick={() => {
-    // ❌ USER NOT LOGIN
     if (!user) {
-      alert("Please login first ❤️");
-
-      navigate("?auth=login"); // 🔥 open login modal
+      alert("Please login first!");
+      navigate("?auth=login");
       return;
     }
 
-    // ✅ USER LOGIN
-    setLiked(!liked);
-
-    addToWishlist({
-      _id: product._id,
-      title: product.title,
-      price: finalPrice,
-      originalPrice: originalPrice,
-      image: activeImage,
-    });
+    if (isWishlisted) {
+      dispatch(removeWishlist({ productId: product._id }));
+    } else {
+      dispatch(
+        addWishlist({
+          productId: product._id,
+          title: product.title,
+          price: finalPrice,
+          originalPrice: originalPrice,
+          image: activeImage,
+          sizes: selectedVariant?.sizes || [],
+        })
+      );
+    }
   }}
 >
-  {liked ? <FaHeart /> : <FaRegHeart />}
-  <span>Add to Wishlist</span>
+  {isWishlisted ? <FaHeart color="black" /> : <FaRegHeart />}
+  <span>Wishlist</span>
 </button>
 
           {/* 🛍 CART */}
@@ -265,15 +263,14 @@ const { addToWishlist } = useWishlist();
               const discount = product.discount || 0;
               const final = Math.max(0, mrp - discount);
 
-              addToCart({
-                _id: product._id,
-                title: product.title,
-                price: final,
-                originalPrice: mrp,
-                image: activeImage,
-                size: selectedSize.size,
-                qty: 1,
-              });
+dispatch(addCart({
+  productId: product._id,
+  size: selectedSize.size,
+  title: product.title,
+  image: activeImage,
+  price: finalPrice,
+  originalPrice: originalPrice,
+}));
             }}
           >
             <FiShoppingBag />

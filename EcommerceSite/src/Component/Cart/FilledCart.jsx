@@ -1,19 +1,21 @@
-import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchCart, removeCart, addCart } from "../Store/Slices/cartSlice";
 import "../../Style-CSS/Cart/FilledCart.css";
 import { X, Trash2 } from "lucide-react";
 import { FaCheckCircle, FaShieldAlt, FaUndo } from "react-icons/fa";
-import { useCart } from "../Cart/CartContext";
-
-
+import { useEffect } from "react";
 
 const CartDrawer = ({ onClose }) => {
+const dispatch = useDispatch();
+const cartItems = useSelector((state) => state.cart.items);
 
-  const {
-    cartItems,
-    increaseQty,
-    decreaseQty,
-    removeItem,
-  } = useCart();
+
+// CartDrawer.js mein temporarily add karo
+useEffect(() => {
+  dispatch(fetchCart()).then((res) => {
+    console.log("FETCH CART RESULT:", res.payload);
+  });
+}, [dispatch]);
 
   const bagTotal = cartItems.reduce(
     (acc, item) => acc + (item.originalPrice || item.price) * item.qty,
@@ -32,6 +34,7 @@ const CartDrawer = ({ onClose }) => {
     0
   );
 
+
   return (
     <div className="Filled-cart-overlay" onClick={(e) => e.stopPropagation()}>
       <div className="Filled-cart-container"  >
@@ -46,7 +49,6 @@ const CartDrawer = ({ onClose }) => {
     
   {cartItems.length === 0 ? (
 
-    // 🔴 EMPTY CART UI
     <div className="empty-cart">
       <img
         src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png"
@@ -67,34 +69,66 @@ const CartDrawer = ({ onClose }) => {
 
   ) : (
 
-    // 🟢 NORMAL CART ITEMS
     <>
       {cartItems.map((item, i) => (
-        <div className="Filled-cart-product" key={i}>
-          <img src={item.image} alt="product" />
+  <div className="Filled-cart-product" key={i}>
+    <img src={item.image} alt="product" />
 
-          <div className="Filled-product-details">
-            <h4>{item.title}</h4>
+    <div className="Filled-product-details">
+      <h4>{item.title}</h4>
 
-            <div className="Filled-product-options">
-              <span>Size {item.size}</span>
+   <div className="Filled-product-options">
+  <span className="size-pill">Size {item.size}</span>
 
-              <div className="qty-box">
-                <button onClick={() => decreaseQty(item)}>-</button>
-                <span>{item.qty}</span>
-                <button onClick={() => increaseQty(item)}>+</button>
-              </div>
-            </div>
+  <div className="qty-box">
+    <button
+      className="qty-btn"
+      onClick={() =>
+        dispatch(removeCart({
+          productId: item.productId,
+          size: item.size,
+        }))
+      }
+    >
+      −
+    </button>
 
-            <p className="return">7 Day Return</p>
-          </div>
+    <span className="qty-value">{item.qty}</span>
 
-          <Trash2
-            className="remove-icon"
-            onClick={() => removeItem(item)}
-          />
-        </div>
-      ))}
+    <button
+      className="qty-btn"
+      onClick={() =>
+        dispatch(addCart({
+          productId: item.productId,
+          size: item.size,
+          price: item.price,
+          originalPrice: item.originalPrice,
+          image: item.image,
+          title: item.title,
+        }))
+      }
+    >
+      +
+    </button>
+  </div>
+</div>
+
+      <p className="return">7 Day Return</p>
+    </div>
+
+<div
+  className="cart-remove-btn"
+  onClick={() =>
+    dispatch(removeCart({
+      productId: item.productId,
+      size: item.size,
+    }))
+  }
+>
+  <Trash2 size={16} />
+</div>
+  </div>
+))}
  
 
           <div className="Filled-cart-price">
@@ -178,13 +212,13 @@ const CartDrawer = ({ onClose }) => {
           </div>
 
           {/* Bottom */}
-          <div className="Filled-cart-footer">
-            <div>
-              <h3>₹1,000</h3>
-              <p>View Details</p>
-            </div>
-            <button>Proceed to Buy</button>
-          </div>
+         <div className="Filled-cart-footer">
+  <div>
+    <h3>₹{finalTotal}</h3>
+    <p>View Details</p>
+  </div>
+  <button>Proceed to Buy</button>
+</div>
              </>
   )}
         </div>

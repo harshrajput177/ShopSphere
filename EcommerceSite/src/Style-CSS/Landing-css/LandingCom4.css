@@ -225,38 +225,61 @@ font-family: 'PoppinsRegular';
 }
 
 .action-icon {
-  width: 34px; height: 34px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.92);
-  border: 1px solid rgba(255,255,255,0.7);
-  display: flex; align-items: center; justify-content: center;
+
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   cursor: pointer;
-  transition: var(--transition);
-  box-shadow: 0 1px 6px rgba(0,0,0,0.1);
-  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
-.action-icon:hover {
-  background: var(--gold);
-  border-color: var(--gold);
-}
-
+/* ICON STYLE */
 .action-icon svg {
-  width: 15px; height: 15px;
-  stroke: #444;
+  width: 18px;
+  height: 18px;
+
+  stroke: #333;
   fill: none;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  transition: stroke 0.2s;
+  stroke-width: 2;
+
+  transition: all 0.25s ease;
+}
+
+/* 🔥 HOVER EFFECT */
+.action-icon:hover {
+  background: #000;
+  transform: scale(1.08);
 }
 
 .action-icon:hover svg {
   stroke: #fff;
 }
 
-.action-icon.wishlist:hover svg {
-  fill: #fff;
+.action-icon.wishlist.active {
+  background: #fff; /* always white */
+}
+
+.action-icon.wishlist.active svg {
+  fill: #e63946;
+  stroke: #e63946;
+}
+
+/* 🛒 CART ACTIVE */
+.action-icon.active {
+  background: #000;
+}
+
+.action-icon.active svg {
+  stroke: #fff;
 }
 
 /* ── Card Info ── */
@@ -555,9 +578,9 @@ font-family: 'PoppinsRegular';
 
   /* ICONS */
   .card-actions {
-    top: 8px;
+    top: 28px;
     right: 8px;
-    gap: 6px;
+    gap: 14px;
   }
 
   .action-icon {

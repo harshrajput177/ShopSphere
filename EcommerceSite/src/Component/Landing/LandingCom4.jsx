@@ -1,17 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchHomeProducts } from "../Store/Slices/ProductSlice";
+import { addWishlist, removeWishlist } from "../Store/Slices/wishlistSlice";
+
 import "../../Style-CSS/Landing-css/LandingCom4.css";
 
-function CartIcon() {
-  return (
-    <svg viewBox="0 0 24 24">
-      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <path d="M16 10a4 4 0 0 1-8 0" />
-    </svg>
-  );
-}
 
 function HeartIcon() {
   return (
@@ -42,22 +35,50 @@ export default function BestSeller() {
   const scrollRef = useRef(null);
 
   const { homeItems, loading } = useSelector((state) => state.products);
-  const bestSeller = homeItems.bestSeller || [];
+  const wishlistItems = useSelector((state) => state.wishlist.items);
 
-  const [wishlist, setWishlist] = useState([]);
+  const bestSeller = homeItems.bestSeller || [];
 
   useEffect(() => {
     dispatch(fetchHomeProducts());
   }, [dispatch]);
 
-  const toggleWishlist = (id, e) => {
+  // 🔥 HELPER
+  const getId = (item) =>
+    item?.productId?._id || item?.productId;
+
+  const isWishlisted = (id) =>
+    wishlistItems?.some((item) => getId(item) === id);
+
+
+  // ❤️ WISHLIST
+  const handleWishlist = (p, e) => {
     e.stopPropagation();
-    setWishlist((w) =>
-      w.includes(id) ? w.filter((i) => i !== id) : [...w, id]
-    );
+
+    if (isWishlisted(p._id)) {
+      dispatch(removeWishlist({ productId: p._id }));
+    } else {
+      dispatch(
+        addWishlist({
+          productId: p._id,
+          title: p.title,
+          price:
+            (p?.variants?.[0]?.sizes?.[0]?.price || 0) -
+            (p?.discount || 0),
+          originalPrice:
+            p?.variants?.[0]?.sizes?.[0]?.price || 0,
+          image:
+            p?.variants?.[0]?.mainImage ||
+            p?.variants?.[0]?.images?.[0],
+          sizes: p?.variants?.[0]?.sizes || [],
+        })
+      );
+    }
   };
 
-  // 🔥 SIMPLE SCROLL
+
+
+  // 🔥 SCROLL
   const handleNext = () => {
     scrollRef.current.scrollBy({
       left: 300,
@@ -86,12 +107,12 @@ export default function BestSeller() {
       </div>
 
       <div className="carousel-wrapper">
-        {/* Left */}
+        {/* LEFT */}
         <button className="nav-btn-com4 left" onClick={handlePrev}>
           <ChevronLeft />
         </button>
 
-        {/* Cards */}
+        {/* CARDS */}
         <div ref={scrollRef} className="cards-track-outer">
           <div className="cards-track">
             {bestSeller.map((p) => (
@@ -100,22 +121,21 @@ export default function BestSeller() {
                   <img
                     src={
                       p?.variants?.[0]?.mainImage ||
-                      p?.variants?.[0]?.images?.[0] ||
-                      "https://via.placeholder.com/200"
+                      p?.variants?.[0]?.images?.[0]
                     }
                     alt={p.title}
                   />
 
+                  {/* 🔥 ACTION BUTTONS */}
                   <div className="card-actions">
-                    <button className="action-icon">
-                      <CartIcon />
-                    </button>
+                
 
+                    {/* WISHLIST */}
                     <button
                       className={`action-icon wishlist ${
-                        wishlist.includes(p._id) ? "active" : ""
+                        isWishlisted(p._id) ? "active" : ""
                       }`}
-                      onClick={(e) => toggleWishlist(p._id, e)}
+                      onClick={(e) => handleWishlist(p, e)}
                     >
                       <HeartIcon />
                     </button>
@@ -146,7 +166,7 @@ export default function BestSeller() {
           </div>
         </div>
 
-        {/* Right */}
+        {/* RIGHT */}
         <button className="nav-btn-com4 right" onClick={handleNext}>
           <ChevronRight />
         </button>
@@ -154,4 +174,3 @@ export default function BestSeller() {
     </section>
   );
 }
-

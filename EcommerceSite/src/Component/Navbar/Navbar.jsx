@@ -10,10 +10,13 @@ import { CiSearch } from "react-icons/ci";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
+ import { mergeCart, fetchCart } from "../Store/Slices/cartSlice";
 import Men from "./Men";
+import Women from "./Women";
+import Kids from "./Kids";
 import LoginModal from "../B-TO-C-Login/LoginUser";
 import SearchMobile from "../Landing/SearchMobileView/SearchMobile";
-import { useCart } from "../Cart/CartContext";
+
 
 import {
   getMe,
@@ -26,7 +29,9 @@ const Navbar = () => {
   const [showProfile, setShowProfile] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
-  const { cartItems } = useCart();
+  const [showWomen, setShowWomen] = useState(false);
+  const [showKids, setShowKids] = useState(false);
+  const cartItems = useSelector((state) => state.cart.items);
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -38,19 +43,24 @@ const Navbar = () => {
   const timeoutRef = useRef(null);
 
   const totalQty = cartItems.reduce(
-  (acc, item) => acc + item.qty,
-  0
-);
+    (acc, item) => acc + item.qty,
+    0
+  );
 
-  useEffect(() => {
-    dispatch(getMe());
-  }, [dispatch]);
 
-  /*
-  =========================================
-  PROFILE DROPDOWN HOVER
-  =========================================
-  */
+useEffect(() => {
+  dispatch(getMe());
+  dispatch(fetchCart()); //  IMPORTANT
+}, [dispatch]);
+
+
+useEffect(() => {
+  if (user) {
+    dispatch(mergeCart());   //  guest → user
+    dispatch(fetchCart());   //  updated cart
+  }
+}, [user]);
+
 
   const handleMouseEnter = () => {
     clearTimeout(timeoutRef.current);
@@ -63,29 +73,12 @@ const Navbar = () => {
     }, 200);
   };
 
-  /*
-  =========================================
-  LOGOUT
-  =========================================
-  */
-
   const handleLogout = () => {
     dispatch(logoutUser());
     navigate("/");
   };
 
-  /*
-  =========================================
-  PROFILE DROPDOWN
-  =========================================
-  */
-
   const ProfileDropdown = () => {
-    /*
-    ==============================
-    LOGIN NAHI HAI
-    ==============================
-    */
 
     if (!user) {
       return (
@@ -111,11 +104,7 @@ const Navbar = () => {
       );
     }
 
-    /*
-    ==============================
-    LOGIN HO CHUKA HAI
-    ==============================
-    */
+
 
     return (
       <div className="profile-dropdown">
@@ -171,9 +160,8 @@ const Navbar = () => {
 
           {/* MENU */}
           <ul
-            className={`navb-menu ${
-              mobileMenu ? "open" : ""
-            }`}
+            className={`navb-menu ${mobileMenu ? "open" : ""
+              }`}
           >
             <li
               className={
@@ -202,8 +190,42 @@ const Navbar = () => {
               )}
             </li>
 
-            <li>Women</li>
-            <li>Kids</li>
+            <li
+              className={
+                showWomen
+                  ? "real-nav-item active"
+                  : "real-nav-item"
+              }
+              onMouseEnter={() => setShowWomen(true)}
+              onMouseLeave={() => setShowWomen(false)}
+            >
+              Women
+
+              {showWomen && !mobileMenu && (
+                <Women
+                  onEnter={() => setShowWomen(true)}
+                  onLeave={() => setShowWomen(false)}
+                />
+              )}
+            </li>
+            <li
+              className={
+                showKids
+                  ? "real-nav-item active"
+                  : "real-nav-item"
+              }
+              onMouseEnter={() => setShowKids(true)}
+              onMouseLeave={() => setShowKids(false)}
+            >
+              Kids
+
+              {showKids && !mobileMenu && (
+                <Kids
+                  onEnter={() => setShowKids(true)}
+                  onLeave={() => setShowKids(false)}
+                />
+              )}
+            </li>
             <li>Genz</li>
             <li>Wedding</li>
           </ul>
@@ -247,24 +269,24 @@ const Navbar = () => {
           </div>
 
           {/* WISHLIST */}
-          <div className="nav-icon">
+          <div className="nav-icon" onClick={() => navigate("/wishlist")}>
             <CiHeart className="nav-icon-react" />
             <p>Wishlist</p>
           </div>
 
-      <div
-  className="nav-icon cart-icon-wrapper"
-  onClick={() => setShowCart(true)}
->
-  <CiShoppingCart className="nav-icon-react" />
+          <div
+            className="nav-icon cart-icon-wrapper"
+            onClick={() => setShowCart(true)}
+          >
+            <CiShoppingCart className="nav-icon-react" />
 
-  {totalQty > 0 && (
-    <span className="cart-badge">{totalQty}</span>
-  )}
+            {totalQty > 0 && (
+              <span className="nav-cart-badge">{totalQty}</span>
+            )}
 
-  <p>Bag</p>
-</div>
-     
+            <p>Bag</p>
+          </div>
+
         </div>
 
         {/* LOGIN MODAL */}

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { addWishlist, removeWishlist } from "../Store/Slices/wishlistSlice";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { fetchHomeProducts } from "../Store/Slices/ProductSlice";
 import "../../Style-CSS/Landing-css/LandingCom3.css";
 
@@ -17,7 +19,10 @@ const FILTERS = [
 ];
 
 function ProductCard({ product }) {
-  const [wishlisted, setWishlisted] = useState(false);
+  const dispatch = useDispatch();
+ const wishlistItems = useSelector((state) => state.wishlist.items);
+const [selectedSize, setSelectedSize] = useState(null);
+const { user } = useSelector((state) => state.auth);
 
   const allPrices =
   product?.variants?.flatMap((variant) =>
@@ -27,6 +32,12 @@ function ProductCard({ product }) {
   ) || [];
 
   const navigate = useNavigate();
+
+  const isWishlisted = wishlistItems?.some(
+  (item) =>
+    (item.productId?._id || item.productId) === product._id
+);
+
 
   const originalPrice =
     allPrices.length > 0 ? Math.min(...allPrices) : 0;
@@ -61,27 +72,34 @@ function ProductCard({ product }) {
           {discountPercent}% OFF
         </div>
 
-        <button
-          className={`wishlist-btn${
-            wishlisted ? " active" : ""
-          }`}
-          onClick={(e) => {
-            e.stopPropagation();
-            setWishlisted(!wishlisted);
-          }}
-        >
-          {wishlisted ? "❤️" : "🤍"}
-        </button>
+           <button
+  className={`wishlist-btn ${isWishlisted ? "active" : ""}`}
+ onClick={(e) => {
+  e.stopPropagation();
 
-        <button
-          className="cart-btn-circle"
-          onClick={(e) => {
-            e.stopPropagation();
-            console.log("Add to cart");
-          }}
-        >
-          🛒
-        </button>
+  if (!user) {
+    // 🔥 login modal open trigger
+    navigate("?auth=login");
+    return;
+  }
+
+  if (isWishlisted) {
+    dispatch(removeWishlist({ productId: product._id }));
+  } else {
+    dispatch(addWishlist({
+      productId: product._id,
+      title: product.title,
+      price: finalPrice,
+      originalPrice,
+      image: product?.variants?.[0]?.mainImage,
+      sizes: product?.variants?.[0]?.sizes || []
+    }));
+  }
+}}
+>
+  {isWishlisted ? <FaHeart /> : <FaRegHeart />}
+</button>
+
       </div>
 
       <div className="card-body">
@@ -124,7 +142,7 @@ export default function FashionCards() {
   const trendingProducts =
     homeItems?.trending || [];
 
-      console.log(trendingProducts);
+      // console.log(trendingProducts);
 
   const [activeFilter, setActiveFilter] =
     useState("Men Cargo Pants");

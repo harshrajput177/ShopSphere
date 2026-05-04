@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import OtpModal from "./OtpVerification";
 import axios from "axios";
 import "../../Style-CSS/B-TO-C-Login/LoginUser.css";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebookF, FaApple } from "react-icons/fa";
+
 
 
 import { initializeApp } from "firebase/app";
@@ -29,10 +31,9 @@ const googleProvider = new GoogleAuthProvider();
 
 const LoginModal = ({ onClose }) => {
   const [mobile, setMobile] = useState("");
-  const [otp, setOtp] = useState("");
-  const [showOtpBox, setShowOtpBox] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
 
   const setupRecaptcha = () => {
     if (!window.recaptchaVerifier) {
@@ -41,7 +42,7 @@ const LoginModal = ({ onClose }) => {
         "recaptcha-container",
         {
           size: "invisible",
-          callback: () => {},
+          callback: () => { },
         }
       );
     }
@@ -67,9 +68,9 @@ const LoginModal = ({ onClose }) => {
       );
 
       setConfirmationResult(result);
-      setShowOtpBox(true);
 
-      alert("OTP Sent Successfully");
+      setShowOtpModal(true);
+
     } catch (error) {
       console.log(error);
       alert("OTP send failed");
@@ -78,49 +79,7 @@ const LoginModal = ({ onClose }) => {
     }
   };
 
-  /*
-  ========================================
-  VERIFY OTP + BACKEND LOGIN
-  ========================================
-  */
 
-  const handleVerifyOtp = async () => {
-    try {
-      if (!otp) {
-        return alert("Enter OTP");
-      }
-
-      setLoading(true);
-
-      await confirmationResult.confirm(otp);
-
-      await axios.post(
-        "http://localhost:4000/api/auth/mobile-login",
-        {
-          mobile,
-          name: "User",
-        },
-        {
-          withCredentials: true,
-        }
-      );
-
-      alert("Login Successful");
-      onClose();
-      window.location.reload();
-    } catch (error) {
-      console.log(error);
-      alert("Invalid OTP");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /*
-  ========================================
-  GOOGLE LOGIN
-  ========================================
-  */
 
   const handleGoogleLogin = async () => {
     try {
@@ -154,60 +113,48 @@ const LoginModal = ({ onClose }) => {
   };
 
   return (
-    <div className="login-overlay" onClick={onClose}>
-      <div
-        className="login-modal"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Close */}
-        <button
-          className="Login-close-btn"
-          onClick={onClose}
+    <>
+      {!showOtpModal && (
+      <div className="login-overlay" onClick={onClose}>
+        <div
+          className="login-modal"
+          onClick={(e) => e.stopPropagation()}
         >
-          ×
-        </button>
+          {/* Close */}
+          <button
+            className="Login-close-btn"
+            onClick={onClose}
+          >
+            ×
+          </button>
 
-        {/* Header */}
-        <div className="login-header">
-          <h2>NYKAA FASHION</h2>
-        </div>
-
-        {/* Body */}
-        <div className="login-body">
-          <h3>Log in or sign up</h3>
-          <p>Get personalised suggestions, offers & more</p>
-
-          {/* Phone Input */}
-          <div className="phone-input">
-            <span>+91</span>
-
-            <input
-              type="text"
-              placeholder="Enter Mobile Number"
-              value={mobile}
-              maxLength={10}
-              onChange={(e) =>
-                setMobile(e.target.value)
-              }
-            />
+          {/* Header */}
+          <div className="login-header">
+            <h2>NYKAA FASHION</h2>
           </div>
 
-          {/* OTP INPUT */}
-          {showOtpBox && (
-            <div className="phone-input otp-box">
+          {/* Body */}
+          <div className="login-body">
+            <h3>Log in or sign up</h3>
+            <p>Get personalised suggestions, offers & more</p>
+
+            {/* Phone Input */}
+            <div className="phone-input">
+              <span>+91</span>
+
               <input
                 type="text"
-                placeholder="Enter OTP"
-                value={otp}
+                placeholder="Enter Mobile Number"
+                value={mobile}
+                maxLength={10}
                 onChange={(e) =>
-                  setOtp(e.target.value)
+                  setMobile(e.target.value)
                 }
               />
             </div>
-          )}
 
-          {/* Button */}
-          {!showOtpBox ? (
+
+
             <button
               className="otp-btn"
               onClick={handleSendOtp}
@@ -215,50 +162,55 @@ const LoginModal = ({ onClose }) => {
             >
               {loading ? "Sending..." : "Get OTP"}
             </button>
-          ) : (
-            <button
-              className="otp-btn"
-              onClick={handleVerifyOtp}
-              disabled={loading}
-            >
-              {loading ? "Verifying..." : "Verify OTP"}
-            </button>
-          )}
 
-          {/* Divider */}
-          <div className="or-divider">OR</div>
 
-          {/* Social Login */}
-          <div className="social-login">
-            <button
-              className="social-btn google"
-              onClick={handleGoogleLogin}
-            >
-              <FcGoogle className="icon" />
-              Google
-            </button>
+            {/* Divider */}
+            <div className="or-divider">OR</div>
 
-            <button className="social-btn apple">
-              <FaApple className="icon" />
-              Apple
-            </button>
+            {/* Social Login */}
+            <div className="social-login">
+              <button
+                className="social-btn google"
+                onClick={handleGoogleLogin}
+              >
+                <FcGoogle className="icon" />
+                Google
+              </button>
 
-            <button className="social-btn facebook">
-              <FaFacebookF className="icon" />
-              Facebook
-            </button>
+              <button className="social-btn apple">
+                <FaApple className="icon" />
+                Apple
+              </button>
+
+              <button className="social-btn facebook">
+                <FaFacebookF className="icon" />
+                Facebook
+              </button>
+            </div>
+
+            <p className="terms">
+              By continuing, I agree to Terms &
+              Conditions and Privacy Policy.
+            </p>
+
+            {/* Firebase Recaptcha */}
+            <div id="recaptcha-container"></div>
           </div>
-
-          <p className="terms">
-            By continuing, I agree to Terms &
-            Conditions and Privacy Policy.
-          </p>
-
-          {/* Firebase Recaptcha */}
-          <div id="recaptcha-container"></div>
         </div>
       </div>
-    </div>
+    )}
+    
+   {showOtpModal && (
+      <OtpModal
+        mobile={mobile}
+        confirmationResult={confirmationResult}
+        onClose={() => {
+          setShowOtpModal(false);
+          onClose(); // 🔥 close everything after OTP
+        }}
+      />
+    )}
+    </>
   );
 };
 
