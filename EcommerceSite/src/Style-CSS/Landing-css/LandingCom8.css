@@ -4,7 +4,7 @@
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:20px;
-    max-width:1500px;   /* 👈 ye add karo */
+  max-width:1500px;   /* 👈 ye add karo */
   margin:0 auto;
   padding:30px 20px;
   background:#fafafa;
@@ -195,7 +195,6 @@
     height: 100%;
     width: 100%;
     object-fit: cover;
-    filter: brightness(0.75);
     transform: scale(1.05);
   }
 

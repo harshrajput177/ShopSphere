@@ -70,7 +70,7 @@ function App() {
 
         <Route path="/product/:id" element={<ViewProduct />} />
         
-        <Route path="/products/:category" element={<ProductListing />} />
+        <Route path="/products/:slug" element={<ProductListing />} />
      
    
 

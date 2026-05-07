@@ -1,100 +1,134 @@
 import React, { useEffect, useState } from "react";
-import "../../Style-CSS/ProductListing/ProductListing.css";
-import FilterSidebar from "../ProductListing/FilterSlider";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-
+import FilterSidebar from "./FilterSlider";
+import "../../Style-CSS/ProductListing/ProductListing.css";
+ 
 const ProductListing = () => {
-  const { category } = useParams(); // URL se category aayegi
-
+  const { slug } = useParams();
+ 
+  const [allProducts, setAllProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [attributes, setAttributes] = useState([]);
+  const [filterMeta, setFilterMeta] = useState(null);
+  const [activeFilters, setActiveFilters] = useState({});
   const [sortType, setSortType] = useState("");
-  const [products, setProducts] = useState([]);
-  const [originalProducts, setOriginalProducts] = useState([]);
-
-  /*
-  Example URL:
-  /products/cargo-pant
-
-  category = cargo-pant
-  */
-
+  const [showFilter, setShowFilter] = useState(false); // 🔥 mobile filter toggle
+ 
   useEffect(() => {
-    const fetchCategoryProducts = async () => {
+    if (!slug) return;
+ 
+    const fetchAll = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:4000/api/products/type/${category}`
+        const prodRes = await axios.get(
+          `http://localhost:4000/api/products/by-slug/${slug}`
         );
-
-        // console.log("Category Products ", res.data);
-
-        setProducts(res.data);
-        setOriginalProducts(res.data);
-      } catch (error) {
-        console.log("Fetch Error ", error);
+        const { productType, products, filterMeta } = prodRes.data;
+ 
+        const attrRes = await axios.get(
+          `http://localhost:4000/api/attribute/product/${productType._id}`
+        );
+ 
+        setAllProducts(products);
+        setFilteredProducts(products);
+        setFilterMeta(filterMeta);
+        setAttributes(attrRes.data);
+      } catch (err) {
+        console.error(err);
       }
     };
-
-    if (category) {
-      fetchCategoryProducts();
+ 
+    fetchAll();
+  }, [slug]);
+ 
+  useEffect(() => {
+    let result = [...allProducts];
+ 
+    if (activeFilters.maxPrice) {
+      result = result.filter(p =>
+        p.variants.some(v => v.sizes.some(s => s.price <= activeFilters.maxPrice))
+      );
     }
-  }, [category]);
-
-  const handleSort = (type) => {
-    setSortType(type);
-
-    let sorted = [...originalProducts];
-
-    if (type === "low") {
-      sorted.sort((a, b) => a.price - b.price);
+ 
+    if (activeFilters.Color?.length) {
+      result = result.filter(p =>
+        p.variants.some(v => activeFilters.Color.includes(v.color))
+      );
     }
-
-    else if (type === "high") {
-      sorted.sort((a, b) => b.price - a.price);
+ 
+    if (activeFilters.Occasion?.length) {
+      result = result.filter(p =>
+        p.occasion.some(o => activeFilters.Occasion.includes(o))
+      );
     }
-
-    else if (type === "rating") {
-      sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+ 
+    const sizeAttr = attributes.find(a => a.isSize);
+    if (sizeAttr && activeFilters[sizeAttr.name]?.length) {
+      result = result.filter(p =>
+        p.variants.some(v =>
+          v.sizes.some(s => activeFilters[sizeAttr.name].includes(String(s.size)))
+        )
+      );
     }
-
-    else if (type === "latest") {
-      sorted = [...originalProducts].reverse();
+ 
+    attributes.filter(a => !a.isSize).forEach(attr => {
+      if (activeFilters[attr.name]?.length) {
+        result = result.filter(p => {
+          let specValue;
+          if (typeof p.specifications?.get === "function") {
+            specValue = p.specifications.get(attr.name);
+          } else {
+            specValue = p.specifications?.[attr.name];
+          }
+          const cleanValue = String(specValue || "").replace(/^"+|"+$/g, "").trim();
+          return activeFilters[attr.name].includes(cleanValue);
+        });
+      }
+    });
+ 
+    if (sortType === "low") {
+      result.sort((a, b) => (a.variants[0]?.sizes[0]?.price || 0) - (b.variants[0]?.sizes[0]?.price || 0));
+    } else if (sortType === "high") {
+      result.sort((a, b) => (b.variants[0]?.sizes[0]?.price || 0) - (a.variants[0]?.sizes[0]?.price || 0));
+    } else if (sortType === "rating") {
+      result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    } else if (sortType === "latest") {
+      result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
-
-    setProducts(sorted);
-  };
-
+ 
+    setFilteredProducts(result);
+  }, [activeFilters, sortType, allProducts, attributes]);
+ 
   return (
     <div className="pl-container">
-
-      {/* LEFT SIDE */}
-      <div className="pl-left">
-
-        {/* Breadcrumb */}
-        <div className="pl-breadcrumb">
-          Home / Products / {category?.replace(/-/g, " ")}
-        </div>
-
-        <FilterSidebar />
+ 
+      {/* ===== DESKTOP LEFT SIDEBAR ===== */}
+      <div className="pl-left desktop-only">
+     <div className="pl-breadcrumb">
+  Home / Products / {slug?.replace(/-/g, " ")}
+</div>
+        {filterMeta && (
+          <FilterSidebar
+            attributes={attributes}
+            filterMeta={filterMeta}
+            onFilterChange={setActiveFilters}
+          />
+        )}
       </div>
-
-      {/* RIGHT SIDE */}
+ 
+      {/* ===== RIGHT PRODUCT AREA ===== */}
       <div className="pl-products">
-
-        {/* TOP BAR */}
+ 
+        {/* Mobile breadcrumb */}
+       <div className="pl-breadcrumb  mobile-pl-breadcrum">
+  Home / Products / {slug?.replace(/-/g, " ")}
+</div>
+ 
         <div className="pl-topbar">
-          <div>
-            <h2>
-              {category?.replace(/-/g, " ")} Products
-            </h2>
-          </div>
-
+          <h2>Products ({filteredProducts.length})</h2>
           <div className="pl-sort">
-            <span>Sort by:</span>
-
-            <select
-              value={sortType}
-              onChange={(e) => handleSort(e.target.value)}
-            >
+            <span className="desktop-only">Sort by:</span>
+            <select value={sortType} onChange={e => setSortType(e.target.value)}>
               <option value="">Recommended</option>
               <option value="low">Price: Low to High</option>
               <option value="high">Price: High to Low</option>
@@ -103,83 +137,97 @@ const ProductListing = () => {
             </select>
           </div>
         </div>
-
-        {/* GRID */}
+ 
+        {/* Product Grid */}
         <div className="pl-grid">
-          {products.length > 0 ? (
-            products.map((item) => (
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map(item => (
               <div className="pl-card" key={item._id}>
-
                 <div className="pl-img-wrap">
                   <img
-                    src={
-                      item?.variants?.[0]?.mainImage ||
-                      item?.variants?.[0]?.images?.[0] ||
-                      "/placeholder.png"
-                    }
+                    src={item.variants[0]?.mainImage || item.variants[0]?.images[0] || "/placeholder.png"}
                     alt={item.title}
                   />
-
-                  <span className="pl-badge">
-                    Best Price
-                  </span>
-
+                  <span className="pl-badge">Best Price</span>
                   <div className="pl-actions">
                     <button>🛒</button>
                     <button>♡</button>
                   </div>
                 </div>
-
-                <div className="pl-rating">
-                  ⭐ {item.rating || 4.5}
-                </div>
-
+                <div className="pl-rating">⭐ {item.rating || 4.5}</div>
                 <div className="pl-info">
-                  <h4 className="pl-brand">
-                    {item.brand || "Brand"}
-                  </h4>
-
-                  <p className="pl-title">
-                    {item.title}
-                  </p>
-
+                  <p className="pl-title">{item.title}</p>
                   <div className="pl-price">
-                 <span className="current">
-  ₹{
-    item?.variants?.[0]?.sizes?.[0]?.price ||
-    item?.price ||
-    0
-  }
-</span>
-
-<span className="old">
-  ₹{
-    item?.oldPrice ||
-    (
-      (item?.variants?.[0]?.sizes?.[0]?.price || item?.price || 0)
-      + 500
-    )
-  }
-</span>
-
-<span className="off">
-  {item?.discount
-    ? `${item.discount}% OFF`
-    : "20% OFF"}
-</span>
+                    <span className="current">₹{item.variants[0]?.sizes[0]?.price || 0}</span>
+                    <span className="old">₹{(item.variants[0]?.sizes[0]?.price || 0) + 500}</span>
+                    <span className="off">{item.discount ? `${item.discount}% OFF` : "20% OFF"}</span>
                   </div>
                 </div>
-
               </div>
             ))
           ) : (
             <h3>No Products Found</h3>
           )}
         </div>
-
       </div>
+ 
+      <div className="mobile-bottom-bar mobile-only">
+        <button className="mob-bar-btn" onClick={() => setSortType("")}>
+          <span>⇅</span> Sort By
+        </button>
+        <div className="mob-bar-divider" />
+        <button className="mob-bar-btn" onClick={() => setShowFilter(true)}>
+          <span>⊟</span> Filter
+          {Object.values(activeFilters).some(v =>
+            Array.isArray(v) ? v.length > 0 : v !== null
+          ) && <span className="filter-dot" />}
+        </button>
+      </div>
+ 
+      {/* ===== MOBILE FILTER DRAWER ===== */}
+      {showFilter && (
+        <div className="mobile-filter-overlay" onClick={() => setShowFilter(false)}>
+          <div
+            className={`mobile-filter-drawer ${showFilter ? "open" : ""}`}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="mobile-filter-header">
+              <h3>Filters</h3>
+              <button className="drawer-close-btn" onClick={() => setShowFilter(false)}>✕</button>
+            </div>
+ 
+            {filterMeta && (
+              <FilterSidebar
+                attributes={attributes}
+                filterMeta={filterMeta}
+                onFilterChange={(filters) => {
+                  setActiveFilters(filters);
+                }}
+              />
+            )}
+ 
+            <div className="mobile-filter-footer">
+              <button
+                className="mob-filter-clear"
+                onClick={() => {
+                  setActiveFilters({});
+                  setShowFilter(false);
+                }}
+              >
+                Clear All
+              </button>
+              <button
+                className="mob-filter-apply"
+                onClick={() => setShowFilter(false)}
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
-
+ 
 export default ProductListing;

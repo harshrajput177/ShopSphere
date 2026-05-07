@@ -11,7 +11,7 @@ const createSubCategory = async (req, res) => {
     const subCategory = await SubCategory.create({
       name,
       category,
-      gender, // now Gender model ObjectId
+      gender,
       image
     });
 
@@ -34,7 +34,7 @@ const getSubCategories = async (req, res) => {
   try {
     const subCategories = await SubCategory.find()
       .populate("category")
-      .populate("gender"); // important
+      .populate("gender");
 
     res.status(200).json({
       success: true,
@@ -54,7 +54,7 @@ const getSubCategories = async (req, res) => {
 const getSubCategoryByCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
-    const { gender } = req.query; // gender id now
+    const { gender } = req.query;
 
     let filter = {
       category: categoryId
@@ -65,6 +65,29 @@ const getSubCategoryByCategory = async (req, res) => {
     }
 
     const subCategories = await SubCategory.find(filter)
+      .populate("category")
+      .populate("gender");
+
+    res.status(200).json({
+      success: true,
+      subCategories
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+
+// ← NEW: GET BY GENDER (mobile nav ke liye)
+const getSubCategoryByGender = async (req, res) => {
+  try {
+    const { genderId } = req.params;
+
+    const subCategories = await SubCategory.find({ gender: genderId })
       .populate("category")
       .populate("gender");
 
@@ -106,36 +129,23 @@ const updateSubCategory = async (req, res) => {
   try {
     const { name, category, gender } = req.body;
 
-    let updateData = {
-      name,
-      category,
-      gender // Gender ObjectId
-    };
-
-    if (req.file) {
+    const updateData = { name, category, gender };
+    if (req.file?.path) {
       updateData.image = req.file.path;
     }
 
-    const updated = await SubCategory.findByIdAndUpdate(
+    const subCategory = await SubCategory.findByIdAndUpdate(
       req.params.id,
       updateData,
-      {
-        new: true,
-        runValidators: true
-      }
-    )
-      .populate("category")
-      .populate("gender");
+      { new: true }
+    );
 
     res.status(200).json({
       success: true,
-      message: "SubCategory Updated Successfully",
-      updated
+      subCategory
     });
 
   } catch (err) {
-    console.log(err);
-
     res.status(500).json({
       success: false,
       message: err.message
@@ -143,10 +153,12 @@ const updateSubCategory = async (req, res) => {
   }
 };
 
+
 module.exports = {
   createSubCategory,
   getSubCategories,
   getSubCategoryByCategory,
-  updateSubCategory,
-  deleteSubCategory
+  getSubCategoryByGender,   // ← export karo
+  deleteSubCategory,
+  updateSubCategory
 };

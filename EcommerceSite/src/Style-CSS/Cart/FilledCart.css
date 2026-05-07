@@ -7,7 +7,7 @@
   background: rgba(0,0,0,0.4);
   display: flex;
   justify-content: flex-end;
-  z-index: 1000;
+  z-index: 999999;
 }
 
 .Filled-cart-container {

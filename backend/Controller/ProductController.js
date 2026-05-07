@@ -26,13 +26,20 @@ const createProduct = asyncHandler(async (req, res) => {
   // ✅ BOOLEAN HELPER
   const toBool = (val) => val === "true" || val === true;
 
-  // ✅ SAFE PARSE
-  let parsedSpecifications = {};
-  try {
-    parsedSpecifications = JSON.parse(specifications || "{}");
-  } catch {
-    parsedSpecifications = {};
-  }
+
+  // specifications parse karne ke baad ye add karo
+let parsedSpecifications = {};
+try {
+  const raw = JSON.parse(specifications || "{}");
+  // Extra quotes aur spaces clean karo
+  Object.keys(raw).forEach(key => {
+    parsedSpecifications[key] = String(raw[key])
+      .replace(/^"+|"+$/g, "")  // leading/trailing quotes hatao
+      .trim();
+  });
+} catch {
+  parsedSpecifications = {};
+}
 
   const parsedCollections = collections
     ? Array.isArray(collections) ? collections : [collections]

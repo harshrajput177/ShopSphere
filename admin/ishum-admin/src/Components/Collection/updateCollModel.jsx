@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 
 const EditModal = ({ data, onClose, refresh }) => {
   const [formData, setFormData] = useState({
@@ -22,22 +23,17 @@ const EditModal = ({ data, onClose, refresh }) => {
     try {
       const form = new FormData();
       form.append("name", formData.name);
-      form.append("isFeatured", formData.isFeatured);
-      form.append("isActive", formData.isActive);
+ form.append("isFeatured", formData.isFeatured ? "true" : "false");
+form.append("isActive", formData.isActive ? "true" : "false");
 
       if (image) {
         form.append("image", image);
       }
 
-      await axios.put(
-        `http://localhost:4000/api/collection/update/${data._id}`,
-        form,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        }
-      );
+   await axios.put(
+  `http://localhost:4000/api/collection/update/${data._id}`,
+  form
+);
 
       alert("Updated Successfully ✅");
       onClose();

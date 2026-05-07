@@ -29,25 +29,32 @@ const CategoryCollection = () => {
   return (
     <div className="collection-section">
 
-      <h2>More Collection to Explore</h2>
+      {/* Header */}
+      <div className="collection-header">
+        <h2>
+          More Collections <em>to Explore</em>
+        </h2>
+        <a className="collection-view-all">
+          View All <span>→</span>
+        </a>
+      </div>
 
+      {/* Slider */}
       <div className="collection-slider">
-
         {data.map((item, index) => (
           <div className="collection-card" key={index}>
 
             <div className="card-img">
-              <img src={item.img} alt={item.title} />
+              <img src={item.img} alt={item.title} loading="lazy" />
             </div>
 
             <div className="card-bottom">
-              <span  className="category-title">{item.title}</span>
-              <FaArrowRight />
+              <span className="category-title">{item.title}</span>
+              <FaArrowRight className="card-arrow" />
             </div>
 
           </div>
         ))}
-
       </div>
 
     </div>

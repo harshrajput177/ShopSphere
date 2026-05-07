@@ -1,41 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../Style-CSS/ProductListing/FilterSlider.css";
 
-const FilterSection = ({ title, options }) => {
+// Generic section — checkboxes
+const FilterSection = ({ title, options, selected, onToggle }) => {
   const [open, setOpen] = useState(true);
   const [search, setSearch] = useState("");
 
-  const filteredOptions = options.filter((item) =>
-    item.toLowerCase().includes(search.toLowerCase())
+  const filtered = options.filter(o =>
+    o.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className="filter-section">
-      
-      {/* Header */}
       <div className="filter-header" onClick={() => setOpen(!open)}>
         <h4>{title}</h4>
-        <span>{open ? "-" : "+"}</span>
+        <span>{open ? "−" : "+"}</span>
       </div>
 
-      {/* Content */}
       {open && (
         <div className="filter-content">
-
-          {/* Search only for brand */}
-          {title === "Brand" && (
+          {options.length > 6 && (
             <input
-              type="text"
-              placeholder="Search brand..."
               className="filter-search"
-              onChange={(e) => setSearch(e.target.value)}
+              placeholder={`Search ${title}...`}
+              onChange={e => setSearch(e.target.value)}
             />
           )}
-
-          {filteredOptions.map((item, index) => (
-            <label key={index} className="custom-checkbox">
-              <input type="checkbox" />
-              <span className="checkmark"></span>
+          {filtered.map((item, i) => (
+            <label key={i} className="custom-checkbox">
+              <input
+                type="checkbox"
+                checked={selected.includes(item)}
+                onChange={() => onToggle(title, item)}
+              />
+              <span className="checkmark" />
               {item}
             </label>
           ))}
@@ -45,88 +43,117 @@ const FilterSection = ({ title, options }) => {
   );
 };
 
-const FilterSidebar = () => {
-  const [price, setPrice] = useState(5000);
+// Color section — colored circles
+const ColorSection = ({ colors, selected, onToggle }) => {
+  const [open, setOpen] = useState(true);
+
+  return (
+    <div className="filter-section">
+      <div className="filter-header" onClick={() => setOpen(!open)}>
+        <h4>Color</h4>
+        <span>{open ? "−" : "+"}</span>
+      </div>
+      {open && (
+        <div className="color-grid">
+          {colors.map((color, i) => (
+            <div
+              key={i}
+              className={`color-dot ${selected.includes(color) ? "active" : ""}`}
+              style={{ background: color.toLowerCase() }}
+              title={color}
+              onClick={() => onToggle("Color", color)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const FilterSidebar = ({ attributes, filterMeta, onFilterChange }) => {
+  const [selected, setSelected] = useState({});
+  const [price, setPrice] = useState(null);
+
+  // Set max price on load
+  useEffect(() => {
+    if (filterMeta?.priceRange?.max) {
+      setPrice(filterMeta.priceRange.max);
+    }
+  }, [filterMeta]);
+
+  const toggle = (title, item) => {
+    setSelected(prev => {
+      const curr = prev[title] || [];
+      const updated = curr.includes(item)
+        ? curr.filter(v => v !== item)
+        : [...curr, item];
+      const next = { ...prev, [title]: updated };
+      onFilterChange({ ...next, maxPrice: price });
+      return next;
+    });
+  };
+
+  const handlePrice = (e) => {
+    const val = Number(e.target.value);
+    setPrice(val);
+    onFilterChange({ ...selected, maxPrice: val });
+  };
+
+  if (!filterMeta) return null;
 
   return (
     <div className="filter-sidebar">
-
       <h3 className="filter-title">FILTERS</h3>
 
-      <FilterSection
-        title="Category"
-        options={["Kurtis", "Tops", "Tunics"]}
-      />
-
-      <FilterSection
-        title="Size"
-        options={["XS", "S", "M", "L", "XL", "XXL"]}
-      />
-
-      <FilterSection
-        title="Brand"
-        options={["SZN", "Anouk", "KALINI", "Biba", "W"]}
-      />
-
-      {/* PRICE */}
-      <div className="filter-section">
-        <div className="filter-header">
-          <h4>Price</h4>
-        </div>
-
-        <input
-          type="range"
-          min="100"
-          max="10000"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          className="price-slider"
+      {/* 1. Dynamic Attributes from DB (Fabric, Fit, Size etc.) */}
+      {attributes.map(attr => (
+        <FilterSection
+          key={attr._id}
+          title={attr.name}
+          options={attr.options}
+          selected={selected[attr.name] || []}
+          onToggle={toggle}
         />
+      ))}
 
-        <div className="price-label">
-          ₹100 - ₹{price}
-        </div>
+      {/* 2. Price — from actual product data */}
+      <div className="filter-section">
+        <div className="filter-header"><h4>Price</h4></div>
+        {price !== null && (
+          <>
+            <input
+              type="range"
+              min={filterMeta.priceRange.min}
+              max={filterMeta.priceRange.max}
+              value={price}
+              onChange={handlePrice}
+              className="price-slider"
+            />
+            <div className="price-label">
+              ₹{filterMeta.priceRange.min} – ₹{price}
+            </div>
+          </>
+        )}
       </div>
 
-      <FilterSection
-        title="Discount"
-        options={["10%+", "20%+", "30%+", "50%+", "70%+"]}
-      />
+      {/* 3. Color — from actual product variants */}
+      {filterMeta.colors?.length > 0 && (
+        <ColorSection
+          colors={filterMeta.colors}
+          selected={selected["Color"] || []}
+          onToggle={toggle}
+        />
+      )}
 
-      <FilterSection
-        title="Occasion"
-        options={["Casual", "Festive", "Party", "Wedding"]}
-      />
-
-      <FilterSection
-        title="Material"
-        options={["Cotton", "Silk", "Rayon", "Georgette"]}
-      />
-
-         <FilterSection
-        title="Dress Style"
-        options={[
-          "A-Line",
-          "Anarkali",
-          "Straight",
-          "Fit & Flare",
-          "Bodycon",
-          "Maxi",
-          "Midi",
-          "Shirt Dress"
-        ]}
-      />
-
-      <FilterSection
-        title="Color"
-        options={["Red", "Blue", "Black", "White", "Pink"]}
-      />
-
-      <FilterSection
-        title="Pattern"
-        options={["Printed", "Solid", "Embroidered", "Floral"]}
-      />
-
+      {/* 4. Occasion — from actual product data */}
+      {filterMeta.occasions?.length > 0 && (
+        <FilterSection
+          title="Occasion"
+          options={filterMeta.occasions}
+          selected={selected["Occasion"] || []}
+          onToggle={toggle}
+        />
+      )}
     </div>
   );
 };

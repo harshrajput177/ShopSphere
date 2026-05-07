@@ -7,21 +7,20 @@ import { CiShoppingCart } from "react-icons/ci";
 import { FaXmark } from "react-icons/fa6";
 import { CiMenuBurger } from "react-icons/ci";
 import { CiSearch } from "react-icons/ci";
+import { MdChevronRight } from "react-icons/md";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
- import { mergeCart, fetchCart } from "../Store/Slices/cartSlice";
+import { mergeCart, fetchCart } from "../Store/Slices/cartSlice";
 import Men from "./Men";
 import Women from "./Women";
 import Kids from "./Kids";
 import LoginModal from "../B-TO-C-Login/LoginUser";
 import SearchMobile from "../Landing/SearchMobileView/SearchMobile";
+import WishlistView from "../MobileView/WishlistMobile";
+import MobileCategoryView from "../MobileView/NavMobileCategory"; // ← NEW
 
-
-import {
-  getMe,
-  logoutUser,
-} from "../Store/Slices/authSlice";
+import { getMe, logoutUser } from "../Store/Slices/authSlice";
 
 const Navbar = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -31,36 +30,44 @@ const Navbar = () => {
   const [openSearch, setOpenSearch] = useState(false);
   const [showWomen, setShowWomen] = useState(false);
   const [showKids, setShowKids] = useState(false);
-  const cartItems = useSelector((state) => state.cart.items);
+  const [showMobileWishlist, setShowMobileWishlist] = useState(false);
+  const [genders, setGenders] = useState([]);
 
+  // ← NEW: track which category is open in mobile drill-down
+  const [activeMobileCategory, setActiveMobileCategory] = useState(null);
+  // activeMobileCategory = { name: "Men", id: "..._id" }
+
+  const cartItems = useSelector((state) => state.cart.items);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const auth = searchParams.get("auth");
-
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-
   const timeoutRef = useRef(null);
 
-  const totalQty = cartItems.reduce(
-    (acc, item) => acc + item.qty,
-    0
-  );
+  const totalQty = cartItems.reduce((acc, item) => acc + item.qty, 0);
 
+  useEffect(() => {
+    dispatch(getMe());
+    dispatch(fetchCart());
+  }, [dispatch]);
 
-useEffect(() => {
-  dispatch(getMe());
-  dispatch(fetchCart()); //  IMPORTANT
-}, [dispatch]);
+  useEffect(() => {
+    if (user) {
+      dispatch(mergeCart());
+      dispatch(fetchCart());
+    }
+  }, [user]);
 
-
-useEffect(() => {
-  if (user) {
-    dispatch(mergeCart());   //  guest → user
-    dispatch(fetchCart());   //  updated cart
-  }
-}, [user]);
-
+  useEffect(() => {
+    fetch("http://localhost:4000/api/gender")
+      .then((res) => res.json())
+      .then((data) => {
+        const list = data.genders || [];
+        setGenders(list);
+      })
+      .catch((err) => console.error("Gender fetch error:", err));
+  }, []);
 
   const handleMouseEnter = () => {
     clearTimeout(timeoutRef.current);
@@ -78,54 +85,51 @@ useEffect(() => {
     navigate("/");
   };
 
-  const ProfileDropdown = () => {
+  const handleWishlistClick = () => {
+    if (window.innerWidth <= 850) {
+      setShowMobileWishlist(true);
+    } else {
+      navigate("/wishlist");
+    }
+  };
 
+  // ← open mobile category drill-down (gender._id pass karo)
+  const handleMobileCategoryClick = (gender) => {
+    setActiveMobileCategory({ name: gender.name, genderId: gender._id });
+    setMobileMenu(false);
+  };
+
+  const categoryMeta = {
+    Women:   { desc: "Shop Westernwear, Indianwear and More", img: "../../../public/young-woman-holding-shopping-bags.jpg", path: "/women", bg: "women-bg" },
+    Men:     { desc: "Shop Formals, Casuals and Denims",      img: "../../../public/portrait-handsome-confident-stylish-hipster-lambersexual-model-sexy-man-dressed-jeans-jacket-fashion-male-isolated-blue-wall-studio-sunglasses.jpg", path: "/men", bg: "men-bg" },
+    Kids:    { desc: "Shop for Boys, Girls and Infants",      img: "../../../public/girl-posing-with-shopping-bags.jpg", path: "/kids", bg: "kids-bg" },
+    GenZ:    { desc: "Trending styles for the new generation", img: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=300&q=80", path: "/", bg: "genz-bg" },
+    Wedding: { desc: "Dress to impress for every occasion",   img: "https://images.unsplash.com/photo-1519741497674-611481863552?w=300&q=80", path: "/", bg: "wedding-bg" },
+  };
+
+  const ProfileDropdown = () => {
     if (!user) {
       return (
         <div className="profile-dropdown">
           <p className="profile-text">
-            Becoming a Nykaa Fashion member comes with
-            easy order tracking, rewards, offers and more.
+            Becoming a Nykaa Fashion member comes with easy order tracking, rewards, offers and more.
           </p>
-
-          <button
-            className="login-btn"
-            onClick={() => navigate("?auth=login")}
-          >
+          <button className="login-btn" onClick={() => navigate("?auth=login")}>
             Login/Signup Now →
           </button>
-
           <div className="dropdown-divider"></div>
-
-          <div className="dropdown-item">
-            Orders <span>📦</span>
-          </div>
+          <div className="dropdown-item">Orders <span>📦</span></div>
         </div>
       );
     }
 
-
-
     return (
       <div className="profile-dropdown">
         <h2>Hi {user.name || "User"}</h2>
-
-        <p>
-          {user.mobile || user.email}
-        </p>
-
+        <p>{user.mobile || user.email}</p>
         <div className="dropdown-divider"></div>
-
-        <div className="dropdown-item">
-          Orders <span>📦</span>
-        </div>
-
-        <button
-          className="login-btn"
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
+        <div className="dropdown-item">Orders <span>📦</span></div>
+        <button className="login-btn" onClick={handleLogout}>Logout</button>
       </div>
     );
   };
@@ -137,95 +141,44 @@ useEffect(() => {
         {/* LEFT */}
         <div className="nav-left-logo">
 
-          {/* MOBILE MENU ICON */}
-          <div
-            className="mobile-menu-icon"
-            onClick={() =>
-              setMobileMenu(!mobileMenu)
-            }
-          >
-            {mobileMenu ? (
-              <FaXmark />
-            ) : (
-              <CiMenuBurger className="bar-icon" />
-            )}
+          <div className="mobile-menu-icon" onClick={() => setMobileMenu(!mobileMenu)}>
+            {mobileMenu ? <FaXmark /> : <CiMenuBurger className="bar-icon" />}
           </div>
 
-          {/* LOGO */}
           <img
             className="logo"
             src="https://aartisto.com/wp-content/uploads/2020/11/myntra.png"
             alt=""
           />
 
-          {/* MENU */}
-          <ul
-            className={`navb-menu ${mobileMenu ? "open" : ""
-              }`}
-          >
+          <ul className="navb-menu">
             <li
-              className={
-                showMenu
-                  ? "real-nav-item active"
-                  : "real-nav-item"
-              }
-              onMouseEnter={() =>
-                setShowMenu(true)
-              }
-              onMouseLeave={() =>
-                setShowMenu(false)
-              }
+              className={showMenu ? "real-nav-item active" : "real-nav-item"}
+              onMouseEnter={() => setShowMenu(true)}
+              onMouseLeave={() => setShowMenu(false)}
             >
               Men
-
-              {showMenu && !mobileMenu && (
-                <Men
-                  onEnter={() =>
-                    setShowMenu(true)
-                  }
-                  onLeave={() =>
-                    setShowMenu(false)
-                  }
-                />
-              )}
+              {showMenu && <Men onEnter={() => setShowMenu(true)} onLeave={() => setShowMenu(false)} />}
             </li>
 
             <li
-              className={
-                showWomen
-                  ? "real-nav-item active"
-                  : "real-nav-item"
-              }
+              className={showWomen ? "real-nav-item active" : "real-nav-item"}
               onMouseEnter={() => setShowWomen(true)}
               onMouseLeave={() => setShowWomen(false)}
             >
               Women
-
-              {showWomen && !mobileMenu && (
-                <Women
-                  onEnter={() => setShowWomen(true)}
-                  onLeave={() => setShowWomen(false)}
-                />
-              )}
+              {showWomen && <Women onEnter={() => setShowWomen(true)} onLeave={() => setShowWomen(false)} />}
             </li>
+
             <li
-              className={
-                showKids
-                  ? "real-nav-item active"
-                  : "real-nav-item"
-              }
+              className={showKids ? "real-nav-item active" : "real-nav-item"}
               onMouseEnter={() => setShowKids(true)}
               onMouseLeave={() => setShowKids(false)}
             >
               Kids
-
-              {showKids && !mobileMenu && (
-                <Kids
-                  onEnter={() => setShowKids(true)}
-                  onLeave={() => setShowKids(false)}
-                />
-              )}
+              {showKids && <Kids onEnter={() => setShowKids(true)} onLeave={() => setShowKids(false)} />}
             </li>
+
             <li>Genz</li>
             <li>Wedding</li>
           </ul>
@@ -236,80 +189,92 @@ useEffect(() => {
           <i className="navb-search-icon">
             <CiSearch className="Laptop-Search-icon" />
           </i>
-
-          <input
-            placeholder="Search for products, brands and more"
-            readOnly
-          />
+          <input placeholder="Search for products, brands and more" readOnly />
         </div>
 
         {/* RIGHT */}
         <div className="navb-nav-right">
 
-          {/* PROFILE */}
-          <div
-            className="nav-icon profile-wrapper"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
+          <div className="nav-icon profile-wrapper" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <HiOutlineUser className="nav-icon-react hide-user-icon" />
             <p>Profile</p>
-
             {showProfile && <ProfileDropdown />}
           </div>
 
-          {/* MOBILE SEARCH */}
-          <div
-            className="mobile-search-icon"
-            onClick={() =>
-              setOpenSearch(true)
-            }
-          >
+          <div className="mobile-search-icon" onClick={() => setOpenSearch(true)}>
             <CiSearch className="Mobile-Search-icon" />
           </div>
 
-          {/* WISHLIST */}
-          <div className="nav-icon" onClick={() => navigate("/wishlist")}>
+          <div className="nav-icon" onClick={handleWishlistClick}>
             <CiHeart className="nav-icon-react" />
             <p>Wishlist</p>
           </div>
 
-          <div
-            className="nav-icon cart-icon-wrapper"
-            onClick={() => setShowCart(true)}
-          >
+          <div className="nav-icon cart-icon-wrapper" onClick={() => setShowCart(true)}>
             <CiShoppingCart className="nav-icon-react" />
-
-            {totalQty > 0 && (
-              <span className="nav-cart-badge">{totalQty}</span>
-            )}
-
+            {totalQty > 0 && <span className="nav-cart-badge">{totalQty}</span>}
             <p>Bag</p>
           </div>
-
         </div>
 
-        {/* LOGIN MODAL */}
-        {auth === "login" && (
-          <LoginModal
-            onClose={() => navigate("/")}
-          />
-        )}
+        {auth === "login" && <LoginModal onClose={() => navigate("/")} />}
+      </div>
+
+      {/* SIDEBAR OVERLAY */}
+      {mobileMenu && (
+        <div className="mobile-menu-overlay" onClick={() => setMobileMenu(false)} />
+      )}
+
+      {/* SIDEBAR */}
+      <div className={`mobile-sidebar ${mobileMenu ? "open" : ""}`}>
+        <div className="mobile-menu-close" onClick={() => setMobileMenu(false)}>
+          <FaXmark />
+        </div>
+
+        <h2 className="mobile-menu-heading">Categories</h2>
+
+        <div className="mobile-category-list">
+          {genders.map((gender, index) => {
+            const meta = categoryMeta[gender.name] || {};
+            return (
+              <div
+                key={gender._id || index}
+                className={`mobile-category-card ${meta.bg || ""}`}
+                style={{
+                  backgroundImage: `url(${meta.img || gender.image})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center top",
+                }}
+                onClick={() => handleMobileCategoryClick(gender)} // ← UPDATED
+              >
+                <div className="card-overlay" />
+                <div className="mobile-category-text">
+                  <h3>{gender.name}</h3>
+                  <p>{meta.desc}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* CART DRAWER */}
-      {showCart && (
-        <CartDrawer
-          onClose={() => setShowCart(false)}
-        />
+      {showCart && <CartDrawer onClose={() => setShowCart(false)} />}
+
+      {/* MOBILE SEARCH */}
+      {openSearch && <SearchMobile closeSearch={() => setOpenSearch(false)} />}
+
+      {/* MOBILE WISHLIST */}
+      {showMobileWishlist && (
+        <WishlistView onBack={() => setShowMobileWishlist(false)} />
       )}
 
-      {/* MOBILE SEARCH MODAL */}
-      {openSearch && (
-        <SearchMobile
-          closeSearch={() =>
-            setOpenSearch(false)
-          }
+      {/* ← NEW: MOBILE CATEGORY DRILL-DOWN */}
+      {activeMobileCategory && (
+        <MobileCategoryView
+          categoryName={activeMobileCategory.name}
+          genderId={activeMobileCategory.genderId}
+          onBack={() => setActiveMobileCategory(null)}
         />
       )}
     </div>

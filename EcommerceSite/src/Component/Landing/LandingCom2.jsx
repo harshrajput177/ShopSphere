@@ -1,106 +1,85 @@
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import "../../Style-CSS/Landing-css/LandingCom2.css";
-
 import { useNavigate } from "react-router-dom";
 
 function CategoryCard({ item }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    const slug = item.name
-      .toLowerCase()
-      .replace(/\s+/g, "-");
-
-    navigate(`/products/${slug}`);
+    if (!item.slug) {
+      console.error("Slug missing for:", item.name);
+      return;
+    }
+    navigate(`/products/${item.slug}`);
   };
 
   return (
     <div
-      className="category-card"
+      className="category-card-com2"
       onClick={handleClick}
       style={{ cursor: "pointer" }}
     >
       <div className="card-img-wrap-com2">
-        <img
-          src={item.image}
-          alt={item.name}
-          loading="lazy"
-        />
+        <img src={item.image} alt={item.name} loading="lazy" />
       </div>
 
-      <span className="card-label">
-        {item.name}
-      </span>
+      <span className="card-label">{item.name}</span>
     </div>
   );
 }
 
 export default function CategoryGrid() {
-
   const [categories, setCategories] = useState([]);
 
-    const firstRow = categories.slice(0, 13);
-const secondRow = categories.slice(13);
+  const firstRow = categories.slice(0, 14);
+  const secondRow = categories.slice(16);
 
-useEffect(() => {
-  const fetchAll = async () => {
-    try {
-      const [ptRes, subRes] = await Promise.all([
-        axios.get("http://localhost:4000/api/product-type"),
-        axios.get("http://localhost:4000/api/subcategory")
-      ]);
+  useEffect(() => {
+    const fetchProductTypes = async () => {
+      try {
+        const res = await axios.get("http://localhost:4000/api/product-type");
 
-      const productTypes = ptRes.data.productTypes || ptRes.data;
-      const subCategories = subRes.data.subCategories || subRes.data;
+        const productTypes = res.data.productTypes || res.data;
 
-      // 🔥 only 12 productTypes
-      const limitedProductTypes = productTypes.slice(0, 15);
+        // optional: limit if needed
+        const limited = productTypes.slice(0, 26);
 
-      // 🔥 merge
-      let merged = [
-        ...subCategories,
-        ...limitedProductTypes
-      ];
+        // shuffle (optional)
+        const shuffled = limited.sort(() => Math.random() - 0.5);
 
-      // 🔥 shuffle
-      merged = merged.sort(() => Math.random() - 0.5);
+        setCategories(shuffled);
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
-      setCategories(merged);
-
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  fetchAll();
-}, []);
+    fetchProductTypes();
+  }, []);
 
   return (
- <section className="category-section">
-  <div className="section-header">
-    <h2 className="section-title">
-      Shop by <span>Category</span>
-    </h2>
-  </div>
+    <section className="category-section">
+      <div className="section-header">
+        <h2 className="section-title">
+          Shop by <span>Category</span>
+        </h2>
+      </div>
 
-  <div className="row-wrapper">
-  
-  {/* FIRST ROW */}
-  <div className="categories-row-com2">
-    {firstRow.map((item) => (
-      <CategoryCard key={item._id} item={item} />
-    ))}
-  </div>
+      <div className="row-wrapper">
+        {/* FIRST ROW */}
+        <div className="categories-row-com2">
+          {firstRow.map((item) => (
+            <CategoryCard key={item._id} item={item} />
+          ))}
+        </div>
 
-  {/* SECOND ROW */}
-  <div className="categories-row-com2">
-    {secondRow.map((item) => (
-      <CategoryCard key={item._id} item={item} />
-    ))}
-  </div>
-
-</div>
-</section>
+        {/* SECOND ROW */}
+        <div className="categories-row-com2">
+          {secondRow.map((item) => (
+            <CategoryCard key={item._id} item={item} />
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

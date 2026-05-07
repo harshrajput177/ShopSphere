@@ -2,14 +2,12 @@ const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cloudinary = require("cloudinary").v2;
 
-// 🔥 Cloudinary config
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.API_KEY,
   api_secret: process.env.API_SECRET
 });
 
-// 🔥 Storage setup
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
@@ -17,12 +15,14 @@ const storage = new CloudinaryStorage({
     allowed_formats: ["jpg", "png", "jpeg", "webp", "avif"],
 
     public_id: (req, file) => {
-      return Date.now() + "-" + file.originalname;
+      // ✅ Extension hata do originalname se
+      const nameWithoutExt = file.originalname.replace(/\.[^/.]+$/, "");
+      return Date.now() + "-" + nameWithoutExt;
+      // "1775476630-banner" → Cloudinary .png add karega → "1775476630-banner.png" ✅
     }
   }
 });
 
-// 🔥 Multer setup
 const upload = multer({
   storage,
   limits: {
@@ -30,5 +30,4 @@ const upload = multer({
   }
 });
 
-// ✅ EXPORT
 module.exports = upload;

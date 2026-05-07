@@ -590,7 +590,7 @@ font-family: 'PoppinsRegular';
 
   /* TEXT */
   .card-info {
-    padding: 10px 10px 12px;
+    padding: 10px 5px 0;
   }
 
   .card-brand {

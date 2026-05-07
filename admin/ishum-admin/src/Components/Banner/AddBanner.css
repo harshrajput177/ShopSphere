@@ -1,20 +1,338 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Container ── */
+.add-banner-container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.add-banner-container h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 24px;
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 12px;
+}
+
+.tab-btn {
+  padding: 9px 22px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  background: #f7f7f7;
+  color: #555;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: #e8f0fb;
+  border-color: #185fa5;
+  color: #185fa5;
+}
+
+.tab-btn.active {
+  background: #185fa5;
+  color: #fff;
+  border-color: #185fa5;
+  box-shadow: 0 2px 8px rgba(24, 95, 165, 0.25);
+}
+
+/* ── Form ── */
+.add-banner-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.add-banner-form h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="url"] {
+  padding: 10px 14px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  background: #fafafa;
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="url"]:focus {
+  border-color: #185fa5;
+  background: #fff;
+}
+
+.form-group input[type="file"] {
+  padding: 10px;
+  border: 1.5px dashed #c0d4ec;
+  border-radius: 8px;
+  background: #f0f6ff;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.form-group input[type="file"]:hover {
+  border-color: #185fa5;
+}
+
+/* ── Drag Preview Box ── */
 .Banner-preview-box {
   width: 100%;
-  max-width: 1500px;
-  aspect-ratio: 1500 / 450;
-height: 500px;
-  overflow: hidden;   /* 🔥 crop karega */
-  border: 2px solid #ddd;
-  border-radius: 14px;
+  height: 220px;
+  border: 2px dashed #c0d4ec;
+  border-radius: 12px;
+  background: #f0f6ff;
   position: relative;
-  background: #000;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .Banner-preview-box img {
-
-width: 100%;
-  height: 100%;
-object-fit: cover;
-
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
   cursor: grab;
+  border-radius: 8px;
+  user-select: none;
+}
+
+.Banner-preview-box img:active {
+  cursor: grabbing;
+}
+
+/* ── Submit Button ── */
+.add-banner-form button[type="submit"] {
+  padding: 12px 28px;
+  background: #185fa5;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  align-self: flex-start;
+}
+
+.add-banner-form button[type="submit"]:hover {
+  background: #0c447c;
+}
+
+.add-banner-form button[type="submit"]:active {
+  transform: scale(0.97);
+}
+
+.add-banner-form button[type="submit"]:disabled {
+  background: #9ab8d8;
+  cursor: not-allowed;
+}
+
+/* ── Cancel Button ── */
+.add-banner-form button[type="button"] {
+  padding: 12px 22px;
+  background: #f0f0f0;
+  color: #444;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.add-banner-form button[type="button"]:hover {
+  background: #e0e0e0;
+}
+
+/* ── Banner Grid ── */
+.banner-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
+  margin-top: 10px;
+}
+
+/* ── Banner Card ── */
+.banner-card {
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.banner-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.banner-card-img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  display: block;
+  background: #f5f5f5;
+}
+
+.banner-card-body {
+  padding: 14px;
+}
+
+.banner-card-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1a1a2e;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.banner-card-link {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 12px;
+  word-break: break-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.banner-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── Edit Button ── */
+.btn-edit {
+  flex: 1;
+  padding: 7px 0;
+  background: #185fa5;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-edit:hover {
+  background: #0c447c;
+}
+
+/* ── Delete Button ── */
+.btn-delete {
+  flex: 1;
+  padding: 7px 0;
+  background: #fff;
+  color: #a32d2d;
+  border: 1.5px solid #a32d2d;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-delete:hover {
+  background: #a32d2d;
+  color: #fff;
+}
+
+/* ── Empty State ── */
+.banner-empty {
+  text-align: center;
+  padding: 50px 20px;
+  color: #aaa;
+  font-size: 15px;
+}
+
+.banner-empty span {
+  display: block;
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+/* ── Loading State ── */
+.banner-loading {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+  font-size: 14px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .add-banner-container {
+    margin: 16px;
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .banner-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tabs {
+    flex-direction: column;
+  }
+
+  .tab-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .add-banner-form button[type="submit"] {
+    width: 100%;
+    text-align: center;
+  }
+
+  .Banner-preview-box {
+    height: 170px;
+  }
 }

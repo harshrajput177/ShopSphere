@@ -1,222 +1,198 @@
 import React, { useEffect, useState } from "react";
-import "./Wishlist.css";
-import { FaTrash, FaShoppingBag } from "react-icons/fa";
-
-import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchWishlist,
-  removeWishlist,
-} from "../Store/Slices/wishlistSlice";
-
+import { useSelector, useDispatch } from "react-redux";
+import { FaTimes } from "react-icons/fa";
+import "../../Style-CSS/MobileView/WishlistMobile.css";
+import { FaArrowLeft } from "react-icons/fa";
+import { CiShoppingCart } from "react-icons/ci";
+import { fetchWishlist, removeWishlist } from "../Store/Slices/wishlistSlice";
 import { addCart } from "../Store/Slices/cartSlice";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import CartDrawer from "../Cart/FilledCart"; 
 
-const Wishlist = () => {
+const WishlistView = ({ onBack }) => {
   const dispatch = useDispatch();
-const navigate = useNavigate();
-const [showSizeModal, setShowSizeModal] = useState(false);
-const [selectedItem, setSelectedItem] = useState(null);
-const [selectedSize, setSelectedSize] = useState(null);
-  const wishlistItems = useSelector(
-    (state) => state.wishlist.items
-  );
 
-  // 🔥 LOAD DATA
+  const { user } = useSelector((state) => state.auth);
+  const { items, loading } = useSelector((state) => state.wishlist);
+  const cartItems = useSelector((state) => state.cart.items); 
+
+  const [openSizeModal, setOpenSizeModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [showCart, setShowCart] = useState(false); 
+
+  const totalQty = cartItems.reduce((acc, item) => acc + item.qty, 0);
+
   useEffect(() => {
     dispatch(fetchWishlist());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (selectedItem) {
+      console.log("Sizes Data:", selectedItem.sizes);
+    }
+  }, [selectedItem]);
 
-
-const handleMoveClick = (item) => {
-    console.log("CLICK ITEM:", item);
-  setSelectedItem(item);
-  
-  setShowSizeModal(true);
-};
-
-useEffect(() => {
-  console.log("SELECTED ITEM:", selectedItem);
-}, [selectedItem]);
-
-  const moveToBag = (item) => {
-    dispatch(
-      addCart({
-         productId: item.productId._id || item.productId,
-        title: item.title,
-        price: item.price,
-        originalPrice: item.originalPrice,
-        image: item.image,
-        size: item.size || "M",
-      })
-    );
-
-    dispatch(
-      removeWishlist({
-       productId: item.productId._id || item.productId
-      })
-    );
+  const handleRemove = (id) => {
+    dispatch(removeWishlist({ productId: id }));
   };
 
-return (
-  <>
-    <div className="wishlist-container">
-      <h2 className="wishlist-title">
-        My Wishlist ({wishlistItems.length})
-      </h2>
+  const getDiscount = (price, original) => {
+    if (!original) return null;
+    return Math.round(((original - price) / original) * 100);
+  };
 
-      {wishlistItems.length === 0 ? (
-        <div className="empty-wishlist">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/4076/4076507.png"
-            alt="empty"
-          />
-          <h3>Your Wishlist is Empty</h3>
-          <p>Save items you love ❤️</p>
-        </div>
-      ) : (
-        <div className="wishlist-grid">
-          {wishlistItems.map((item) => (
-            <div
-              className="wishlist-card"
-              key={item.productId._id || item.productId}
-              onClick={() =>
-                navigate(
-                  `/product/${item.productId._id || item.productId}`
-                )
-              }
-            >
-              <button
-                className="remove-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  dispatch(
-                    removeWishlist({
-                      productId:
-                        item.productId._id || item.productId,
-                    })
-                  );
-                }}
-              >
-                <FaTrash />
-              </button>
+  return (
+    <div className="mobileview-wishlist-container">
 
-              <img src={item.image} alt={item.title} />
+      {/* HEADER */}
+      <div className="mobileview-wishlist-header">
+        <FaArrowLeft onClick={onBack} />
+        <h2>{user?.name}'s Wishlist</h2>
 
-              <div className="card-content">
-                <h4>{item.title}</h4>
-
-                <div className="price-box">
-                  <span className="price">₹{item.price}</span>
-
-                  {item.originalPrice && (
-                    <>
-                      <span className="old-price">
-                        ₹{item.originalPrice}
-                      </span>
-                      <span className="discount">
-                        {Math.round(
-                          ((item.originalPrice - item.price) /
-                            item.originalPrice) *
-                            100
-                        )}
-                        % OFF
-                      </span>
-                    </>
-                  )}
-                </div>
-
-                <button
-                  className="move-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleMoveClick(item);
-                  }}
-                >
-                  <FaShoppingBag /> Move to Bag
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-
-{showSizeModal && selectedItem && (
-  <div className="size-modal-overlay">
-    <div className="size-modal">
-
-      {/* 🔥 PRODUCT INFO */}
-      <div className="modal-product">
-        <img src={selectedItem.image} alt="" />
-
-        <div>
-          <h4>{selectedItem.title}</h4>
-
-          <p>
-            ₹{selectedItem.price}
-            <span className="old">
-              ₹{selectedItem.originalPrice}
-            </span>
-            <span className="off">
-              {Math.round(
-                ((selectedItem.originalPrice - selectedItem.price) /
-                  selectedItem.originalPrice) *
-                  100
-              )}
-              % OFF
-            </span>
-          </p>
+        {/* CART ICON with badge */}
+        <div
+          className="wishlist-cart-icon-wrapper"
+          
+          onClick={() => {console.log("Cart icon clicked!") ; setShowCart(true)}}
+        >
+          <CiShoppingCart className="bag-icon" />
+          {totalQty > 0 && (
+            <span className="wishlist-cart-badge">{totalQty}</span>
+          )}
         </div>
       </div>
 
-      <hr />
+      {/* LOADING */}
+      {loading && <p style={{ textAlign: "center" }}>Loading...</p>}
 
-      <h3>Select Size</h3>
+      {/* EMPTY */}
+      {!loading && items.length === 0 && (
+        <p style={{ textAlign: "center" }}>No items in wishlist</p>
+      )}
 
-  <div className="size-list">
-  {selectedItem?.sizes?.map((s) => (
-    <button
-      key={s.size}
-      className={selectedSize === s.size ? "active-size" : ""}
-      onClick={() => setSelectedSize(s.size)}
-    >
-      {s.size}
-    </button>
-  ))}
-</div>
+      {/* GRID */}
+      <div className="mobileview-wishlist-grid">
+        {items.map((item) => (
+          <div key={item._id} className="mobileview-wishlist-card">
 
-      <button
-        className="done-btn"
-        onClick={() => {
-          if (!selectedSize) {
-            alert("Please select size");
-            return;
-          }
+            <img src={item.image} alt="" />
 
-          dispatch(addCart({
-            productId:
-              selectedItem.productId._id || selectedItem.productId,
-            size: selectedSize,
-          }));
+            <div className="mobileview-wishlist-info">
+              <h4>{item.brand}</h4>
+              <p>{item.title}</p>
 
-          dispatch(removeWishlist({
-            productId:
-              selectedItem.productId._id || selectedItem.productId,
-          }));
+              <div className="mobileview-wishlist-price">
+                ₹{item.price}
+                {item.originalPrice && (
+                  <span className="mobileview-wishlist-old">₹{item.originalPrice}</span>
+                )}
+                {item.originalPrice && (
+                  <span className="mobileview-wishlist-discount">
+                    {getDiscount(item.price, item.originalPrice)}%
+                  </span>
+                )}
+              </div>
+            </div>
 
-          setShowSizeModal(false);
-          setSelectedSize(null);
-        }}
-      >
-        Done
-      </button>
+            {/* ACTIONS */}
+            <div className="mobileview-wishlist-actions">
+              <button
+                className="mobileview-wishlist-move-btn"
+                onClick={() => {
+                  setSelectedItem(item);
+                  setOpenSizeModal(true);
+                }}
+              >
+                Move to Bag
+              </button>
+
+              <div className="remove-icon" onClick={() => handleRemove(item.productId)}>
+                <FaTimes />
+              </div>
+            </div>
+
+          </div>
+        ))}
+      </div>
+
+      {/* SIZE MODAL */}
+      {openSizeModal && (
+        <div className="size-modal-overlay">
+          <div className="mobile-size-modal">
+
+            <div className="size-modal-header">
+              <FaTimes onClick={() => setOpenSizeModal(false)} />
+            </div>
+
+            <h3>Select Size</h3>
+            <p>{selectedItem?.brand} • {selectedItem?.title}</p>
+
+            <div className="mobile-modal-size-options">
+              {selectedItem?.sizes?.map((s) => (
+                <button
+                  key={s._id}
+                  className={`mobile-modal-size-btn ${selectedSize?.size === s.size ? "mobile-modal-active" : ""}`}
+                  onClick={() => setSelectedSize(s)}
+                >
+                  {s.size}
+                </button>
+              ))}
+            </div>
+
+            <hr />
+            <br />
+
+            <div className="size-modal-footer">
+              <div>
+                <h4>₹{selectedSize?.price || selectedItem?.price}</h4>
+                {selectedItem?.originalPrice && (
+                  <p>
+                    {getDiscount(
+                      selectedSize?.price || selectedItem?.price,
+                      selectedItem?.originalPrice
+                    )}% Off
+                  </p>
+                )}
+              </div>
+
+              <button
+                className="add-to-bag-btn"
+                onClick={() => {
+                  if (!selectedSize) {
+                    alert("Select size first");
+                    return;
+                  }
+
+                  dispatch(addCart({
+                    productId: selectedItem.productId,
+                    size: selectedSize.size,
+                    price: selectedSize.price,
+                    quantity: 1,
+                  }));
+
+                  dispatch(removeWishlist({ productId: selectedItem._id }));
+                  setOpenSizeModal(false);
+                  setSelectedSize(null);
+
+                  // ← Move to Bag ke baad CartDrawer auto open
+                  setShowCart(true);
+                }}
+              >
+                Add to Bag
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* CART DRAWER - wishlist ke upar khulega */}
+      {showCart && (
+        <CartDrawer onClose={() => setShowCart(false)} />
+      )}
+
     </div>
-  </div>
-)}
-  </>
-);
+  );
 };
 
-export default Wishlist;
+export default WishlistView;

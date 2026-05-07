@@ -5,21 +5,26 @@ const BannerSlider = () => {
   const [images, setImages] = useState([]);
   const [index, setIndex] = useState(0);
 
-  useEffect(() => {
-    const fetchBanners = async () => {
-      try {
-        const res = await fetch("http://localhost:4000/api/banner");
-        const data = await res.json();
+useEffect(() => {
+  const fetchBanners = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/api/banner");
+      const data = await res.json();
 
-        const formatted = data.banners.map((item) => item.image);
-        setImages(formatted);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+      const formatted = data.banners.map((item) => {
+        const cleanUrl = item.image.replace(/(\.\w+)\1$/, "$1");
+    
+        return cleanUrl;
+      });
 
-    fetchBanners();
-  }, []);
+      setImages(formatted);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchBanners();
+}, []);
 
   const next = () => {
     if (index < images.length - 2) {
