@@ -14,10 +14,6 @@ import ProductListing from "./Component/ProductListing/ProductListing";
 
 const Home = lazy(() => import("./Pages/LandingPage"));
 const Login = lazy(() => import("./Component/B-TO-C-Login/LoginUser"));
-const MyOrder = lazy(() => import("./Component/Order/MyOrder"));
-
-const OrderConformation = lazy(() => import("./Component/Order/OrderConformation"));
-const OrderTracking = lazy(() => import("./Component/Order/OrderTracking"));
 
 const MobileSearch = lazy(() => import("./Component/Landing/SearchMobileView/SearchMobile"));
 
@@ -56,13 +52,6 @@ function App() {
         <Route path="/" element={<Home />} />
 
         <Route path="/login" element={<Login />} />
-
-
-        <Route path="/MyOrder" element={<MyOrder />} />
-
-        <Route path="/OrderConformation" element={<OrderConformation />} />
-
-        <Route path="/orders/:orderId" element={<OrderTracking />} />
 
         <Route path="/search" element={<MobileSearch />} />
 
