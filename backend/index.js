@@ -23,7 +23,7 @@ const MONGO_URI = process.env.MONGO_URI;
 const cookieParser = require("cookie-parser");
 
 const allowedOrigins = [
-  'https://shopsphere-q4ll.onrender.com',
+  'https://shopsphere-frontend-9zee.onrender.com',
   'http://localhost:5173',
   'http://localhost:5174',
 ];
