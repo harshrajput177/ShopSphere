@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import API from "../api/api"; 
 import OtpModal from "./OtpVerification";
 import axios from "axios";
 import "../../Style-CSS/B-TO-C-Login/LoginUser.css";
@@ -35,7 +36,6 @@ const LoginModal = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
 
-  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
 
   const setupRecaptcha = () => {
@@ -92,17 +92,17 @@ const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
 
       const user = result.user;
 
-      await axios.post(
-        "http://localhost:4000/api/auth/google-login",
-        {
-          email: user.email,
-          name: user.displayName,
-          googleId: user.uid,
-        },
-        {
-          withCredentials: true,
-        }
-      );
+  await API.post(
+  "/api/auth/google-login",
+  {
+    email: user.email,
+    name: user.displayName,
+    googleId: user.uid,
+  },
+  {
+    withCredentials: true,
+  }
+);
 
       alert("Google Login Successful");
       onClose();

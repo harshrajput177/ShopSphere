@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import "../../Style-CSS/Landing-css/LandingCom2.css";
 import { useNavigate } from "react-router-dom";
+import API from "../api/api";
 
 function CategoryCard({ item }) {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ export default function CategoryGrid() {
   useEffect(() => {
     const fetchProductTypes = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/api/product-type");
+        const res = await API.get("/api/product-type");
 
         const productTypes = res.data.productTypes || res.data;
 

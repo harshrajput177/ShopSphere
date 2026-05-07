@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import API from "../api/api"
 import axios from "axios";
 import "../B-TO-C-Login/OtpVerification.css";
 
@@ -39,14 +40,16 @@ const OtpModal = ({ mobile, confirmationResult, onClose }) => {
 
       await confirmationResult.confirm(finalOtp);
 
-      await axios.post(
-        "http://localhost:4000/api/auth/mobile-login",
-        {
-          mobile,
-          name: "User",
-        },
-        { withCredentials: true }
-      );
+  await API.post(
+  "/api/auth/mobile-login",
+  {
+    mobile,
+    name: "User",
+  },
+  {
+    withCredentials: true,
+  }
+);
 
       alert("Login Successful");
       onClose();

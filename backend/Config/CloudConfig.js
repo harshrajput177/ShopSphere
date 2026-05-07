@@ -18,7 +18,6 @@ const storage = new CloudinaryStorage({
       // ✅ Extension hata do originalname se
       const nameWithoutExt = file.originalname.replace(/\.[^/.]+$/, "");
       return Date.now() + "-" + nameWithoutExt;
-      // "1775476630-banner" → Cloudinary .png add karega → "1775476630-banner.png" ✅
     }
   }
 });

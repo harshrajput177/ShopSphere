@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../../Style-CSS/Landing-css/GenderSection.css";
+import API from "../api/api";
 
 /* ── Single Card ──────────────────────────────────── */
 function SubCategoryCard({ item, index }) {
@@ -34,16 +35,15 @@ function GenderSection({ title, tag, genderId }) {
   useEffect(() => {
     if (!genderId) return;
     setLoading(true);
-    fetch(`http://localhost:4000/api/subcategory/gender/${genderId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setSubCategories(data.subCategories || []);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("SubCategory fetch error:", err);
-        setLoading(false);
-      });
+   API.get(`/api/subcategory/gender/${genderId}`)
+  .then((res) => {
+    setSubCategories(res.data.subCategories || []);
+    setLoading(false);
+  })
+  .catch((err) => {
+    console.error("SubCategory fetch error:", err);
+    setLoading(false);
+  });
   }, [genderId]);
 
   return (
@@ -85,15 +85,17 @@ export default function GenderSubCategoryPage({ menGenderId, womenGenderId }) {
   useEffect(() => {
     // Only fetch if not passed as props
     if (menGenderId && womenGenderId) return;
-    fetch("http://localhost:4000/api/gender")
-      .then((res) => res.json())
-      .then((data) => {
-        const list = data.genders || data;
-        const men   = list.find((g) => g.name?.toLowerCase() === "men");
-        const women = list.find((g) => g.name?.toLowerCase() === "women");
-        setGenders({ men: men?._id, women: women?._id });
-      })
-      .catch((err) => console.error("Gender fetch error:", err));
+  API.get("/api/gender")
+  .then((res) => {
+    const data = res.data;
+    const list = data.genders || data;
+
+    const men = list.find((g) => g.name?.toLowerCase() === "men");
+    const women = list.find((g) => g.name?.toLowerCase() === "women");
+
+    setGenders({ men: men?._id, women: women?._id });
+  })
+  .catch((err) => console.error("Gender fetch error:", err));
   }, [menGenderId, womenGenderId]);
 
   return (

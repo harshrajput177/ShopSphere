@@ -1,30 +1,18 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-/*
-==================================================
-🔥 HOME PRODUCTS FETCH (Only Once)
-API: /api/products/home
-==================================================
-*/
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+
 export const fetchHomeProducts = createAsyncThunk(
   "products/fetchHomeProducts",
   async () => {
-    const res = await axios.get(
-      "http://localhost:4000/api/products/home"
-    );
+    const res = await axios.get(`${BASE_URL}/api/products/home`)
 
     return res.data;
   }
 );
 
-/*
-==================================================
-🔥 ALL PRODUCTS FETCH (Only Once)
-API: /api/products/
-router.get("/", getAllProducts)
-==================================================
-*/
 export const fetchAllProducts = createAsyncThunk(
   "products/fetchAllProducts",
   async (_, { getState }) => {
@@ -38,20 +26,12 @@ export const fetchAllProducts = createAsyncThunk(
       return state.products.allItems;
     }
 
-    const res = await axios.get(
-      "http://localhost:4000/api/products"
-    );
+    const res = await axios.get(`${BASE_URL}/api/products`)
 
     return res.data;
   }
 );
 
-/*
-==================================================
-🔥 SINGLE PRODUCT FETCH BY ID
-API: /api/products/:id
-==================================================
-*/
 export const fetchSingleProduct = createAsyncThunk(
   "products/fetchSingleProduct",
   async (id, { getState }) => {
@@ -62,9 +42,7 @@ export const fetchSingleProduct = createAsyncThunk(
       return state.products.singleProducts[id];
     }
 
-    const res = await axios.get(
-      `http://localhost:4000/api/products/${id}`
-    );
+    const res = await axios.get(`${BASE_URL}/api/products/${id}`)
 
     return {
       id,
@@ -90,11 +68,7 @@ const productSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      /*
-      ==============================
-      HOME PRODUCTS
-      ==============================
-      */
+    
       .addCase(fetchHomeProducts.pending, (state) => {
         state.loading = true;
       })
@@ -107,11 +81,7 @@ const productSlice = createSlice({
         state.error = action.error.message;
       })
 
-      /*
-      ==============================
-      ALL PRODUCTS
-      ==============================
-      */
+
       .addCase(fetchAllProducts.pending, (state) => {
         state.loading = true;
       })
@@ -124,11 +94,6 @@ const productSlice = createSlice({
         state.error = action.error.message;
       })
 
-      /*
-      ==============================
-      SINGLE PRODUCT
-      ==============================
-      */
       .addCase(fetchSingleProduct.pending, (state) => {
         state.loading = true;
       })

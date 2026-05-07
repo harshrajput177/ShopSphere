@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../../Style-CSS/Landing-css/LandingCom1.css";
+import API from "../api/api";
 
 const BannerSlider = () => {
   const [images, setImages] = useState([]);
@@ -7,20 +8,20 @@ const BannerSlider = () => {
 
 useEffect(() => {
   const fetchBanners = async () => {
-    try {
-      const res = await fetch("http://localhost:4000/api/banner");
-      const data = await res.json();
+  try {
+  const res = await API.get("/api/banner");
 
-      const formatted = data.banners.map((item) => {
-        const cleanUrl = item.image.replace(/(\.\w+)\1$/, "$1");
-    
-        return cleanUrl;
-      });
+  const data = res.data; // ✅ yahi use hoga
 
-      setImages(formatted);
-    } catch (err) {
-      console.error(err);
-    }
+  const formatted = data.banners.map((item) => {
+    const cleanUrl = item.image.replace(/(\.\w+)\1$/, "$1");
+    return cleanUrl;
+  });
+
+  setImages(formatted);
+} catch (err) {
+  console.error(err);
+}
   };
 
   fetchBanners();

@@ -23,8 +23,7 @@ const MONGO_URI = process.env.MONGO_URI;
 const cookieParser = require("cookie-parser");
 
 const allowedOrigins = [
-  'https://www.ishum.in',
-  'https://ishum.in',
+  'https://shopsphere-q4ll.onrender.com',
   'http://localhost:5173',
   'http://localhost:5174',
 ];
