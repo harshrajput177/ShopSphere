@@ -17,12 +17,12 @@ import {
 } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyADzh-2FKnFWIeVvXRrG3MG2gekxR5FtDQ",
-  authDomain: "clothecommerce-ff64a.firebaseapp.com",
-  projectId: "clothecommerce-ff64a",
-  storageBucket: "clothecommerce-ff64a.firebasestorage.app",
-  messagingSenderId: "911322921526",
-  appId: "1:911322921526:web:bc2b4cb298fe4ec326b697",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
@@ -34,6 +34,9 @@ const LoginModal = ({ onClose }) => {
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
+
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
 
   const setupRecaptcha = () => {
     if (!window.recaptchaVerifier) {
