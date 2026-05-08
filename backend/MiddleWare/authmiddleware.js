@@ -4,6 +4,9 @@ exports.protect = async (req, res, next) => {
   try {
     const token = req.cookies.token;
 
+      console.log("🍪 Cookie received:", req.cookies); // Add this log temporarily
+  console.log("🔑 Token:", token); 
+
     if (!token) {
       return res.status(401).json({
         success: false,

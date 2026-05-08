@@ -22,23 +22,12 @@ const PORT = 4000;
 const MONGO_URI = process.env.MONGO_URI;
 const cookieParser = require("cookie-parser");
 
-const allowedOrigins = [
-  'https://shopsphere-frontend-9zee.onrender.com',
-  'http://localhost:5173',
-  'http://localhost:5174',
-];
-
 app.use(cors({
-  origin: function(origin, callback){
-    if(!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      console.log("❌ Blocked by CORS:", origin);
-      return callback(new Error("Not allowed by CORS"));
-    }
-    return callback(null, true);
-  },
+  origin: [
+    "http://localhost:5173",
+    "https://shopsphere-frontend-9zee.onrender.com"
+  ],
   credentials: true,
-  exposedHeaders: ["set-cookie"]  
 }));
 
 
