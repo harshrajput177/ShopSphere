@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "http://localhost:4000/api/cart";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
 
 export const getCartApi = () =>
   axios.get(API, {
