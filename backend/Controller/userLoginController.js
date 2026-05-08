@@ -13,12 +13,10 @@ const generateTokenAndSetCookie = (user, res) => {
     }
   );
 
-      const isProd = process.env.NODE_ENV === "production";
-
 res.cookie("token", token, {
   httpOnly: true,
-  secure: isProd,     
-    sameSite: isProd ? "None" : "Lax",  
+    secure: true,       // ✅ Always true on Render (HTTPS)
+    sameSite: "None",  
   maxAge: 7 * 24 * 60 * 60 * 1000,
 });
 };

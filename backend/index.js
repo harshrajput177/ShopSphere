@@ -30,15 +30,15 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function(origin, callback){
-    // Allow requests with no origin (like curl, Postman)
     if(!origin) return callback(null, true);
- if (allowedOrigins.indexOf(origin) === -1) {
-  console.log("❌ Blocked by CORS:", origin);
-  return callback(null, false); // ❗ error mat throw kar
-}
+    if (allowedOrigins.indexOf(origin) === -1) {
+      console.log("❌ Blocked by CORS:", origin);
+      return callback(new Error("Not allowed by CORS"));
+    }
     return callback(null, true);
   },
-  credentials: true
+  credentials: true,
+  exposedHeaders: ["set-cookie"]  
 }));
 
 
