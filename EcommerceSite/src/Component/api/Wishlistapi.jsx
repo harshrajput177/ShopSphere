@@ -1,6 +1,9 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+
+const API = `${BASE_URL}/api/wishlist`;
 
 
 export const getWishlistApi = () =>
