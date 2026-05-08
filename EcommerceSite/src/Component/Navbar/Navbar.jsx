@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../../Style-CSS/Navbar-css/Navbar.css";
+import API from "../api/api"
 import CartDrawer from "../Cart/FilledCart";
 import { HiOutlineUser } from "react-icons/hi2";
 import { CiHeart } from "react-icons/ci";
@@ -10,7 +11,6 @@ import { CiSearch } from "react-icons/ci";
 import { MdChevronRight } from "react-icons/md";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
 import { mergeCart, fetchCart } from "../Store/Slices/cartSlice";
 import Men from "./Men";
 import Women from "./Women";
@@ -18,7 +18,7 @@ import Kids from "./Kids";
 import LoginModal from "../B-TO-C-Login/LoginUser";
 import SearchMobile from "../Landing/SearchMobileView/SearchMobile";
 import WishlistView from "../MobileView/WishlistMobile";
-import MobileCategoryView from "../MobileView/NavMobileCategory"; // ← NEW
+import MobileCategoryView from "../MobileView/NavMobileCategory";
 
 import { getMe, logoutUser } from "../Store/Slices/authSlice";
 
@@ -32,6 +32,7 @@ const Navbar = () => {
   const [showKids, setShowKids] = useState(false);
   const [showMobileWishlist, setShowMobileWishlist] = useState(false);
   const [genders, setGenders] = useState([]);
+
 
   // ← NEW: track which category is open in mobile drill-down
   const [activeMobileCategory, setActiveMobileCategory] = useState(null);
@@ -60,10 +61,9 @@ const Navbar = () => {
   }, [user]);
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/gender")
-      .then((res) => res.json())
-      .then((data) => {
-        const list = data.genders || [];
+    API.get("/api/gender")
+      .then((res) => {
+        const list = res.data.genders || [];
         setGenders(list);
       })
       .catch((err) => console.error("Gender fetch error:", err));
@@ -100,11 +100,11 @@ const Navbar = () => {
   };
 
   const categoryMeta = {
-    Women:   { desc: "Shop Westernwear, Indianwear and More", img: "../../../public/young-woman-holding-shopping-bags.jpg", path: "/women", bg: "women-bg" },
-    Men:     { desc: "Shop Formals, Casuals and Denims",      img: "../../../public/portrait-handsome-confident-stylish-hipster-lambersexual-model-sexy-man-dressed-jeans-jacket-fashion-male-isolated-blue-wall-studio-sunglasses.jpg", path: "/men", bg: "men-bg" },
-    Kids:    { desc: "Shop for Boys, Girls and Infants",      img: "../../../public/girl-posing-with-shopping-bags.jpg", path: "/kids", bg: "kids-bg" },
-    GenZ:    { desc: "Trending styles for the new generation", img: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=300&q=80", path: "/", bg: "genz-bg" },
-    Wedding: { desc: "Dress to impress for every occasion",   img: "https://images.unsplash.com/photo-1519741497674-611481863552?w=300&q=80", path: "/", bg: "wedding-bg" },
+    Women: { desc: "Shop Westernwear, Indianwear and More", img: "../../../public/young-woman-holding-shopping-bags.jpg", path: "/women", bg: "women-bg" },
+    Men: { desc: "Shop Formals, Casuals and Denims", img: "../../../public/portrait-handsome-confident-stylish-hipster-lambersexual-model-sexy-man-dressed-jeans-jacket-fashion-male-isolated-blue-wall-studio-sunglasses.jpg", path: "/men", bg: "men-bg" },
+    Kids: { desc: "Shop for Boys, Girls and Infants", img: "../../../public/girl-posing-with-shopping-bags.jpg", path: "/kids", bg: "kids-bg" },
+    GenZ: { desc: "Trending styles for the new generation", img: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=300&q=80", path: "/", bg: "genz-bg" },
+    Wedding: { desc: "Dress to impress for every occasion", img: "https://images.unsplash.com/photo-1519741497674-611481863552?w=300&q=80", path: "/", bg: "wedding-bg" },
   };
 
   const ProfileDropdown = () => {

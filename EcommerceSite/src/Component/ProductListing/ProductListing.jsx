@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import API from "../api/api";
 import FilterSidebar from "./FilterSlider";
 import "../../Style-CSS/ProductListing/ProductListing.css";
  
@@ -20,14 +21,12 @@ const ProductListing = () => {
  
     const fetchAll = async () => {
       try {
-        const prodRes = await axios.get(
-          `http://localhost:4000/api/products/by-slug/${slug}`
-        );
+        const prodRes = await API.get(`/api/products/by-slug/${slug}`);
         const { productType, products, filterMeta } = prodRes.data;
  
-        const attrRes = await axios.get(
-          `http://localhost:4000/api/attribute/product/${productType._id}`
-        );
+        const attrRes = await API.get(
+      `/api/attribute/product/${productType._id}`
+    );
  
         setAllProducts(products);
         setFilteredProducts(products);
