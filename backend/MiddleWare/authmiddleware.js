@@ -19,7 +19,6 @@ exports.protect = async (req, res, next) => {
 
 exports.optionalAuth = (req, res, next) => {
   const token = req.cookies?.token;
-  const isProduction = process.env.NODE_ENV === "production"; // ← ADD
 
   if (token) {
     try {
@@ -37,14 +36,13 @@ exports.optionalAuth = (req, res, next) => {
       res.cookie("guestId", guestId, {
         maxAge: 7 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: isProduction ? "None" : "Lax", // ← MAIN FIX
-        secure: isProduction ? true : false,      // ← MAIN FIX
+        sameSite: "None", 
+        secure: true,     
       });
 
-      req.guestId = guestId;
-    } else {
-      req.guestId = req.cookies.guestId;
+      req.cookies.guestId = guestId; 
     }
+    req.guestId = req.cookies.guestId;
   }
 
   next();

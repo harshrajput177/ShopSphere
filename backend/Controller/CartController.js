@@ -65,19 +65,14 @@ const finalPrice = Math.max(0, sizeObj.price - discount);
 
 exports.getCart = async (req, res) => {
   const userId = req.user?.id;
-  const guestId = req.cookies.guestId;
+  const guestId = req.cookies.guestId || req.guestId;
 
-  console.log("userId:", userId);        // ← ye dekho
-  console.log("guestId:", guestId);
   let cart;
-
   if (userId) {
     cart = await Cart.findOne({ userId });
-  } else {
+  } else if (guestId) {
     cart = await Cart.findOne({ guestId });
   }
-
-  console.log("GET CART - found cart:", cart); // ✅ ye bhi
 
   res.json(cart || { items: [] });
 };
