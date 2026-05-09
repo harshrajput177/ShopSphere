@@ -88,8 +88,13 @@ const Navbar = () => {
     navigate("/");
   };
 
-// Navbar.js mein — yeh replace karo handleWishlistClick ko
+
 const handleWishlistClick = () => {
+  if (!user) {
+    navigate("/?auth=login"); 
+    return;
+  }
+
   const isMobile = window.matchMedia("(max-width: 850px)").matches;
   if (isMobile) {
     setShowMobileWishlist(true);
