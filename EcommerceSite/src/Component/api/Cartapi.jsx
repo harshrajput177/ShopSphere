@@ -5,25 +5,32 @@ const BASE_URL =
 
 const API = `${BASE_URL}/api/cart`;
 
-// ✅ GET CART
-export const getCartApi = () =>
-  axios.get(API, {
-    withCredentials: true,
-  });
+export const getCartApi = async () => {
+  try {
+    return await axios.get(API, { withCredentials: true });
+  } catch (err) {
+    if (err.response?.status === 502) {
+      // 3 second wait karke retry karo
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      return await axios.get(API, { withCredentials: true });
+    }
+    throw err;
+  }
+};
 
-// ✅ ADD
+
 export const addToCartApi = (data) =>
   axios.post(`${API}/add`, data, {
     withCredentials: true,
   });
 
-// ✅ REMOVE
+//  REMOVE
 export const removeCartApi = (data) =>
   axios.post(`${API}/remove`, data, {
     withCredentials: true,
   });
 
-// ✅ MERGE
+//  MERGE
 export const mergeCartApi = () =>
   axios.post(`${API}/merge`, {}, {
     withCredentials: true,

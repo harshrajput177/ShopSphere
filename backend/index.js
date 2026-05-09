@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require("express");
 const cors = require("cors");
+const https = require("https");
 const mongoose = require("mongoose");
 const  BannerRoutes = require("./router/BannerRoute");
 const CategoryRouter = require("./router/CategoryRoute");
@@ -49,6 +50,16 @@ app.use("/uploads", express.static("uploads", {
 mongoose.connect(MONGO_URI)
     .then(() => console.log("MongoDB Connected"))
     .catch(err => console.log(err));
+
+    const keepAlive = () => {
+  https.get("https://shopsphere-q4ll.onrender.com/api/health", (res) => {
+    console.log("Keep alive ping:", res.statusCode);
+  }).on("error", (err) => {
+    console.log("Ping error:", err.message);
+  });
+};
+
+setInterval(keepAlive, 4 * 60 * 1000);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
