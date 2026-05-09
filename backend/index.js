@@ -59,7 +59,7 @@ mongoose.connect(MONGO_URI)
   });
 };
 
-setInterval(keepAlive, 4 * 60 * 1000);
+setInterval(keepAlive, 10 * 60 * 1000);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
