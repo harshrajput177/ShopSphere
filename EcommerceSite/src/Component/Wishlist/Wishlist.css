@@ -1,82 +1,80 @@
 .wishlist-container {
-  max-width: 1400px;
-  margin: 80px auto;
-  padding: 20px;
+  max-width: 1200px;
+  margin: 90px 0;
+  padding: 20px 70px;
 }
 
-.wishlist-cart-icon-wrapper {
-  position: relative;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
- 
-/* Badge */
-.wishlist-cart-badge {
-  position: absolute;
-  top: -6px;
-  right: -8px;
-  background: red;
-  color: white;
-  font-size: 10px;
-  font-weight: 700;
-  width: 17px;
-  height: 17px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-}
-
+/* TITLE */
 .wishlist-title {
-  color: #1b1b1b;
-  font-size: 24px;
-  margin-bottom: 20px;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 25px;
 }
 
+/* GRID */
 .wishlist-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
 }
 
+/* CARD */
 .wishlist-card {
-  position: relative;
   background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
   border: 1px solid #eee;
-}
-.wishlist-card {
-  cursor: pointer;
+  position: relative;
   transition: 0.3s;
 }
 
-
 .wishlist-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 25px rgba(150, 150, 150, 0.08);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
 }
 
+/* IMAGE */
 .wishlist-card img {
   width: 100%;
   height: 300px;
   object-fit: cover;
 }
 
+/* REMOVE BUTTON (X) */
+.wishlist-remove-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  padding: 5px 5.5px;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* CONTENT */
 .card-content {
   padding: 12px;
 }
 
 .card-content h4 {
-   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 13px;
-  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 5px;
 }
 
+.card-content p {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 8px;
+  letter-spacing: 1.3px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;   
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* PRICE */
 .price-box {
+  font-size: 14px;
   margin-bottom: 10px;
 }
 
@@ -86,131 +84,32 @@
 
 .old-price {
   text-decoration: line-through;
-  color: #888;
+  color: #999;
   margin-left: 6px;
 }
 
 .discount {
-  color: #111;
-  font-size: 13px;
+  color: #ff3f6c;
   margin-left: 6px;
+  font-weight: 600;
 }
 
-.remove-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  border: none;
-  background: #fff;
-  border-radius: 50%;
-  padding: 6px;
-  cursor: pointer;
-}
-
+/* BUTTON */
 .move-btn {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   border: none;
-  background: #1e1e1e;
-  color: white;
-  border-radius: 8px;
+  background: #fff;
+  border-top: 1px solid #eee;
+  color: #ff3f6c;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.2s;
 }
 
 .move-btn:hover {
-  background: #000;
+  background: #fff5f7;
 }
 
-/* EMPTY STATE */
-.empty-wishlist {
-  text-align: center;
-  margin-top: 50px;
-}
-
-.empty-wishlist img {
-  width: 120px;
-  opacity: 0.7;
-}
-
-.size-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-.size-modal {
-  background: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  width: 350px;
-  text-align: center;
-}
-
-.size-list {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin: 20px 0;
-}
-
-.size-list button {
-  border: 1px solid #ddd;
-  padding: 10px 14px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.size-list .active-size {
-  background: black;
-  color: white;
-}
-
-.done-btn {
-  width: 100%;
-  padding: 12px;
-  background: #ff3f6c;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-.modal-product {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-}
-
-.modal-product img {
-  width: 70px;
-  border-radius: 6px;
-}
-
-.modal-product h4 {
-  font-size: 14px;
-  margin-bottom: 5px;
-}
-
-.modal-product p {
-  font-size: 14px;
-}
-
-.old {
-  text-decoration: line-through;
-  margin-left: 6px;
-  color: #888;
-}
-
-.off {
-  margin-left: 6px;
-  color: #ff3f6c;
-  font-weight: 600;
+.Fatimes{
+  font-size: 16px;
 }

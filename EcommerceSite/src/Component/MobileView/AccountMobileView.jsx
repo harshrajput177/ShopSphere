@@ -7,7 +7,7 @@ import { FaUserCircle, FaLock, FaComments, FaUser } from "react-icons/fa";
 import LoginMobileModal from "./LoginUserMobile";
 import { useNavigate } from "react-router-dom";
 import ProfilePage from "./ProfileView";
-import WishlistView from "./WishlistMobile";
+import WishlistView from "../MobileView/WishlistMobile";
 
 const AccountPannel = () => {
   const [openLogin, setOpenLogin] = useState(false);

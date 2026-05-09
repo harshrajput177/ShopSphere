@@ -8,7 +8,15 @@ import { useEffect } from "react";
 const CartDrawer = ({ onClose }) => {
 const dispatch = useDispatch();
 const cartItems = useSelector((state) => state.cart.items);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated); // adjust path
 
+  useEffect(() => {
+    if (isAuthenticated) {          // ← only fetch when auth is ready
+      dispatch(fetchCart()).then((res) => {
+        console.log("FETCH CART RESULT:", res.payload);
+      });
+    }
+  }, [dispatch, isAuthenticated]);
 
 // CartDrawer.js mein temporarily add karo
 useEffect(() => {

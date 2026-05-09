@@ -2,22 +2,18 @@ import React, { useState, useEffect, lazy, Suspense } from "react";
 import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import "./App.css";
-
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCart, mergeCart } from "./Component/Store/Slices/cartSlice";
 import ScrollToTop from "./Component/ScrollTop";
-import Navbar from "./Component/Navbar/Navbar";
-import Footer from "./Component/Footer";
-import ViewProduct from "./Pages/ViewProductPage";
-import ProductListing from "./Component/ProductListing/ProductListing";
 
-
+import Navbar from "./Component/Navbar/Navbar"; 
+const Footer = lazy(() => import("./Component/Footer"));
 const Home = lazy(() => import("./Pages/LandingPage"));
 const Login = lazy(() => import("./Component/B-TO-C-Login/LoginUser"));
-
 const MobileSearch = lazy(() => import("./Component/Landing/SearchMobileView/SearchMobile"));
-
-const Whislist = lazy(() => import("./Component/Wishlist/Wishlist"));
+const Wishlist = lazy(() => import("./Component/Wishlist/Wishlist"));
+const ViewProduct = lazy(() => import("./Pages/ViewProductPage"));
+const ProductListing = lazy(() => import("./Component/ProductListing/ProductListing"));
 
 
 function App() {
@@ -55,7 +51,7 @@ function App() {
 
         <Route path="/search" element={<MobileSearch />} />
 
-        <Route path="/Wishlist" element={<Whislist />} />
+        <Route path="/Wishlist" element={<Wishlist />} />
 
         <Route path="/product/:id" element={<ViewProduct />} />
         
@@ -65,7 +61,7 @@ function App() {
 
       </Routes>
 
-          {/* 👇 Footer yaha lagao */}
+        
     <Footer />
 
     </Suspense>

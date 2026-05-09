@@ -1,36 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { FaTimes } from "react-icons/fa";
-import "../../Style-CSS/MobileView/WishlistMobile.css";
-import { FaArrowLeft } from "react-icons/fa";
-import { CiShoppingCart } from "react-icons/ci";
+import "./Wishlist.css";
+
 import { fetchWishlist, removeWishlist } from "../Store/Slices/wishlistSlice";
 import { addCart } from "../Store/Slices/cartSlice";
-import CartDrawer from "../Cart/FilledCart"; 
 
-const WishlistView = ({ onBack }) => {
+const WishlistView = () => {
   const dispatch = useDispatch();
 
-  const { user } = useSelector((state) => state.auth);
   const { items, loading } = useSelector((state) => state.wishlist);
-  const cartItems = useSelector((state) => state.cart.items); 
 
   const [openSizeModal, setOpenSizeModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
-  const [showCart, setShowCart] = useState(false); 
-
-  const totalQty = cartItems.reduce((acc, item) => acc + item.qty, 0);
 
   useEffect(() => {
     dispatch(fetchWishlist());
   }, [dispatch]);
-
-  useEffect(() => {
-    if (selectedItem) {
-      console.log("Sizes Data:", selectedItem.sizes);
-    }
-  }, [selectedItem]);
 
   const handleRemove = (id) => {
     dispatch(removeWishlist({ productId: id }));
@@ -42,25 +29,12 @@ const WishlistView = ({ onBack }) => {
   };
 
   return (
-    <div className="mobileview-wishlist-container">
-
-      {/* HEADER */}
-      <div className="mobileview-wishlist-header">
-        <FaArrowLeft onClick={onBack} />
-        <h2>{user?.name}'s Wishlist</h2>
-
-        {/* CART ICON with badge */}
-        <div
-          className="wishlist-cart-icon-wrapper"
-          
-          onClick={() => {console.log("Cart icon clicked!") ; setShowCart(true)}}
-        >
-          <CiShoppingCart className="bag-icon" />
-          {totalQty > 0 && (
-            <span className="wishlist-cart-badge">{totalQty}</span>
-          )}
-        </div>
-      </div>
+    <div className="wishlist-container">
+      
+      {/* TITLE */}
+      <h2 className="wishlist-title">
+        My Wishlist ({items.length})
+      </h2>
 
       {/* LOADING */}
       {loading && <p style={{ textAlign: "center" }}>Loading...</p>}
@@ -71,45 +45,53 @@ const WishlistView = ({ onBack }) => {
       )}
 
       {/* GRID */}
-      <div className="mobileview-wishlist-grid">
+      <div className="wishlist-grid">
         {items.map((item) => (
-          <div key={item._id} className="mobileview-wishlist-card">
+          <div key={item._id} className="wishlist-card">
 
-            <img src={item.image} alt="" />
+            {/* REMOVE */}
+            <button
+              className="wishlist-remove-btn"
+              onClick={() => handleRemove(item.productId)}
+            >
+              <FaTimes  className="Fatimes"/>
+            </button>
 
-            <div className="mobileview-wishlist-info">
+            {/* IMAGE */}
+            <img src={item.image} alt={item.title} />
+
+            {/* CONTENT */}
+            <div className="card-content">
               <h4>{item.brand}</h4>
               <p>{item.title}</p>
 
-              <div className="mobileview-wishlist-price">
-                ₹{item.price}
+              <div className="price-box">
+                <span className="price">Rs.{item.price}</span>
+
                 {item.originalPrice && (
-                  <span className="mobileview-wishlist-old">₹{item.originalPrice}</span>
+                  <span className="old-price">
+                    Rs.{item.originalPrice}
+                  </span>
                 )}
+
                 {item.originalPrice && (
-                  <span className="mobileview-wishlist-discount">
-                    {getDiscount(item.price, item.originalPrice)}%
+                  <span className="discount">
+                    ({getDiscount(item.price, item.originalPrice)}% OFF)
                   </span>
                 )}
               </div>
             </div>
 
-            {/* ACTIONS */}
-            <div className="mobileview-wishlist-actions">
-              <button
-                className="mobileview-wishlist-move-btn"
-                onClick={() => {
-                  setSelectedItem(item);
-                  setOpenSizeModal(true);
-                }}
-              >
-                Move to Bag
-              </button>
-
-              <div className="remove-icon" onClick={() => handleRemove(item.productId)}>
-                <FaTimes />
-              </div>
-            </div>
+            {/* BUTTON */}
+            <button
+              className="move-btn"
+              onClick={() => {
+                setSelectedItem(item);
+                setOpenSizeModal(true);
+              }}
+            >
+              MOVE TO BAG
+            </button>
 
           </div>
         ))}
@@ -118,20 +100,31 @@ const WishlistView = ({ onBack }) => {
       {/* SIZE MODAL */}
       {openSizeModal && (
         <div className="size-modal-overlay">
-          <div className="mobile-size-modal">
+          <div className="size-modal">
 
-            <div className="size-modal-header">
-              <FaTimes onClick={() => setOpenSizeModal(false)} />
+            <div style={{ textAlign: "right" }}>
+              <FaTimes
+                style={{ cursor: "pointer" }}
+                onClick={() => setOpenSizeModal(false)}
+              />
             </div>
 
             <h3>Select Size</h3>
-            <p>{selectedItem?.brand} • {selectedItem?.title}</p>
 
-            <div className="mobile-modal-size-options">
+            <p>
+              {selectedItem?.brand} • {selectedItem?.title}
+            </p>
+
+            {/* SIZE OPTIONS */}
+            <div className="size-list">
               {selectedItem?.sizes?.map((s) => (
                 <button
                   key={s._id}
-                  className={`mobile-modal-size-btn ${selectedSize?.size === s.size ? "mobile-modal-active" : ""}`}
+                  className={
+                    selectedSize?.size === s.size
+                      ? "active-size"
+                      : ""
+                  }
                   onClick={() => setSelectedSize(s)}
                 >
                   {s.size}
@@ -139,58 +132,57 @@ const WishlistView = ({ onBack }) => {
               ))}
             </div>
 
-            <hr />
-            <br />
+            {/* PRICE */}
+            <div>
+              <h4>
+                Rs.{selectedSize?.price || selectedItem?.price}
+              </h4>
 
-            <div className="size-modal-footer">
-              <div>
-                <h4>₹{selectedSize?.price || selectedItem?.price}</h4>
-                {selectedItem?.originalPrice && (
-                  <p>
-                    {getDiscount(
-                      selectedSize?.price || selectedItem?.price,
-                      selectedItem?.originalPrice
-                    )}% Off
-                  </p>
-                )}
-              </div>
+              {selectedItem?.originalPrice && (
+                <p>
+                  {getDiscount(
+                    selectedSize?.price || selectedItem?.price,
+                    selectedItem?.originalPrice
+                  )}
+                  % OFF
+                </p>
+              )}
+            </div>
 
-              <button
-                className="add-to-bag-btn"
-                onClick={() => {
-                  if (!selectedSize) {
-                    alert("Select size first");
-                    return;
-                  }
+            {/* ADD TO BAG */}
+            <button
+              className="done-btn"
+              onClick={() => {
+                if (!selectedSize) {
+                  alert("Select size first");
+                  return;
+                }
 
-                  dispatch(addCart({
+                dispatch(
+                  addCart({
                     productId: selectedItem.productId,
                     size: selectedSize.size,
                     price: selectedSize.price,
                     quantity: 1,
-                  }));
+                  })
+                );
 
-                  dispatch(removeWishlist({ productId: selectedItem._id }));
-                  setOpenSizeModal(false);
-                  setSelectedSize(null);
+                dispatch(
+                  removeWishlist({
+                    productId: selectedItem.productId,
+                  })
+                );
 
-                  // ← Move to Bag ke baad CartDrawer auto open
-                  setShowCart(true);
-                }}
-              >
-                Add to Bag
-              </button>
-            </div>
+                setOpenSizeModal(false);
+                setSelectedSize(null);
+              }}
+            >
+              ADD TO BAG
+            </button>
 
           </div>
         </div>
       )}
-
-      {/* CART DRAWER - wishlist ke upar khulega */}
-      {showCart && (
-        <CartDrawer onClose={() => setShowCart(false)} />
-      )}
-
     </div>
   );
 };

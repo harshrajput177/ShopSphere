@@ -67,7 +67,8 @@ exports.getCart = async (req, res) => {
   const userId = req.user?.id;
   const guestId = req.cookies.guestId;
 
-
+  console.log("userId:", userId);        // ← ye dekho
+  console.log("guestId:", guestId);
   let cart;
 
   if (userId) {

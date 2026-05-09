@@ -17,7 +17,7 @@ import Women from "./Women";
 import Kids from "./Kids";
 import LoginModal from "../B-TO-C-Login/LoginUser";
 import SearchMobile from "../Landing/SearchMobileView/SearchMobile";
-import WishlistView from "../MobileView/WishlistMobile";
+import WishlistView from "../Wishlist/Wishlist";
 import MobileCategoryView from "../MobileView/NavMobileCategory";
 
 import { getMe, logoutUser } from "../Store/Slices/authSlice";
