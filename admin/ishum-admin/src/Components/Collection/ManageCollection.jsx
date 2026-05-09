@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../../CSS/Collection/ManageCollection.css"
 import EditModal from "./updateCollModel";
+import API from "../api/api";
 
 const ManageCollection = () => {
   const [collections, setCollections] = useState([]);
@@ -11,7 +12,7 @@ const ManageCollection = () => {
   // Fetch Collections
   const fetchCollections = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/api/collection");
+    const res = await API.get("/api/collection");
       setCollections(res.data.collections);
     } catch (err) {
       console.log(err);

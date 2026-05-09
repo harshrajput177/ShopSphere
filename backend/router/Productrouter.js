@@ -35,6 +35,21 @@ router.put("/:id", upload.any(), updateProduct);
 
 router.delete("/:id", deleteProduct);
 
+router.get("/all-occasions", async (req, res) => {
+  try {
+    const products = await Product.find({}, "occasion"); // sirf occasion field
+
+    const occasions = [...new Set(
+      products.flatMap(p => p.occasion).filter(Boolean)
+    )];
+
+    res.json({ occasions });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // existing routes ke baad, lekin /:id se PEHLE add karo
 router.get("/by-slug/:slug", async (req, res) => {
   try {

@@ -1,10 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { fetchHomeProducts } from "../Store/Slices/ProductSlice";
 import { addWishlist, removeWishlist } from "../Store/Slices/wishlistSlice";
-
 import "../../Style-CSS/Landing-css/LandingCom4.css";
-
 
 function HeartIcon() {
   return (
@@ -30,12 +29,70 @@ function ChevronRight() {
   );
 }
 
+function ProductCard({ p, isWishlisted, onWishlist }) {
+  const navigate = useNavigate();
+
+  const [optimisticWished, setOptimisticWished] = useState(isWishlisted);
+
+  useEffect(() => {
+    setOptimisticWished(isWishlisted);
+  }, [isWishlisted]);
+
+  const handleWishlistClick = (e) => {
+    e.stopPropagation();
+    setOptimisticWished((prev) => !prev); 
+    onWishlist(p, e);
+  };
+
+  const originalPrice = p?.variants?.[0]?.sizes?.[0]?.price || 0;
+  const finalPrice = originalPrice - (p?.discount || 0);
+
+  return (
+    <div
+      className="product-card"
+      onClick={() => navigate(`/product/${p._id}`)}
+    >
+      <div className="card-image-wrap">
+        {/* ✅ lazy loading */}
+        <img
+          src={p?.variants?.[0]?.mainImage || p?.variants?.[0]?.images?.[0]}
+          alt={p.title}
+          loading="lazy"
+          decoding="async"
+          width="400"
+          height="500"
+        />
+
+        <div className="card-actions">
+          <button
+            className={`action-icon wishlist ${optimisticWished ? "active" : ""}`}
+            onClick={handleWishlistClick}
+          >
+            <HeartIcon />
+          </button>
+        </div>
+      </div>
+
+      <div className="card-info">
+        <div className="card-brand">{p.specifications?.Brand}</div>
+        <div className="card-name">{p.title}</div>
+        <div className="card-pricing">
+          <span className="price-current">₹ {finalPrice}</span>
+          <span className="price-original">₹ {originalPrice}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function BestSeller() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const scrollRef = useRef(null);
 
   const { homeItems, loading } = useSelector((state) => state.products);
   const wishlistItems = useSelector((state) => state.wishlist.items);
+  const { user } = useSelector((state) => state.auth);
 
   const bestSeller = homeItems.bestSeller || [];
 
@@ -43,59 +100,45 @@ export default function BestSeller() {
     dispatch(fetchHomeProducts());
   }, [dispatch]);
 
-  // 🔥 HELPER
-  const getId = (item) =>
-    item?.productId?._id || item?.productId;
+  const getId = (item) => item?.productId?._id || item?.productId;
 
-  const isWishlisted = (id) =>
-    wishlistItems?.some((item) => getId(item) === id);
+  const isWishlisted = useCallback(
+    (id) => wishlistItems?.some((item) => getId(item) === id),
+    [wishlistItems]
+  );
 
+  // ✅ useCallback — har render pe naya function nahi banega
+  const handleWishlist = useCallback(
+    (p, e) => {
+      e.stopPropagation();
 
-  // ❤️ WISHLIST
-  const handleWishlist = (p, e) => {
-    e.stopPropagation();
+      if (!user) {
+        navigate("?auth=login");
+        return;
+      }
 
-    if (isWishlisted(p._id)) {
-      dispatch(removeWishlist({ productId: p._id }));
-    } else {
-      dispatch(
-        addWishlist({
-          productId: p._id,
-          title: p.title,
-          price:
-            (p?.variants?.[0]?.sizes?.[0]?.price || 0) -
-            (p?.discount || 0),
-          originalPrice:
-            p?.variants?.[0]?.sizes?.[0]?.price || 0,
-          image:
-            p?.variants?.[0]?.mainImage ||
-            p?.variants?.[0]?.images?.[0],
-          sizes: p?.variants?.[0]?.sizes || [],
-        })
-      );
-    }
-  };
+      if (isWishlisted(p._id)) {
+        dispatch(removeWishlist({ productId: p._id }));
+      } else {
+        dispatch(
+          addWishlist({
+            productId: p._id,
+            title: p.title,
+            price: (p?.variants?.[0]?.sizes?.[0]?.price || 0) - (p?.discount || 0),
+            originalPrice: p?.variants?.[0]?.sizes?.[0]?.price || 0,
+            image: p?.variants?.[0]?.mainImage || p?.variants?.[0]?.images?.[0],
+            sizes: p?.variants?.[0]?.sizes || [],
+          })
+        );
+      }
+    },
+    [dispatch, isWishlisted, user, navigate]
+  );
 
+  const handleNext = () => scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
+  const handlePrev = () => scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
 
-
-  // 🔥 SCROLL
-  const handleNext = () => {
-    scrollRef.current.scrollBy({
-      left: 300,
-      behavior: "smooth",
-    });
-  };
-
-  const handlePrev = () => {
-    scrollRef.current.scrollBy({
-      left: -300,
-      behavior: "smooth",
-    });
-  };
-
-  if (loading) {
-    return <h2 style={{ textAlign: "center" }}>Loading...</h2>;
-  }
+  if (loading) return <h2 style={{ textAlign: "center" }}>Loading...</h2>;
 
   return (
     <section className="trending-section">
@@ -107,66 +150,23 @@ export default function BestSeller() {
       </div>
 
       <div className="carousel-wrapper">
-        {/* LEFT */}
         <button className="nav-btn-com4 left" onClick={handlePrev}>
           <ChevronLeft />
         </button>
 
-        {/* CARDS */}
         <div ref={scrollRef} className="cards-track-outer">
           <div className="cards-track">
             {bestSeller.map((p) => (
-              <div className="product-card" key={p._id}>
-                <div className="card-image-wrap">
-                  <img
-                    src={
-                      p?.variants?.[0]?.mainImage ||
-                      p?.variants?.[0]?.images?.[0]
-                    }
-                    alt={p.title}
-                  />
-
-                  {/* 🔥 ACTION BUTTONS */}
-                  <div className="card-actions">
-                
-
-                    {/* WISHLIST */}
-                    <button
-                      className={`action-icon wishlist ${
-                        isWishlisted(p._id) ? "active" : ""
-                      }`}
-                      onClick={(e) => handleWishlist(p, e)}
-                    >
-                      <HeartIcon />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="card-info">
-                  <div className="card-brand">
-                    {p.specifications?.Brand}
-                  </div>
-
-                  <div className="card-name">{p.title}</div>
-
-                  <div className="card-pricing">
-                    <span className="price-current">
-                      ₹{" "}
-                      {(p?.variants?.[0]?.sizes?.[0]?.price || 0) -
-                        (p?.discount || 0)}
-                    </span>
-
-                    <span className="price-original">
-                      ₹ {p?.variants?.[0]?.sizes?.[0]?.price || 0}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <ProductCard
+                key={p._id}
+                p={p}
+                isWishlisted={isWishlisted(p._id)}
+                onWishlist={handleWishlist}
+              />
             ))}
           </div>
         </div>
 
-        {/* RIGHT */}
         <button className="nav-btn-com4 right" onClick={handleNext}>
           <ChevronRight />
         </button>

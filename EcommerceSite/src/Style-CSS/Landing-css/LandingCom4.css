@@ -284,7 +284,7 @@ font-family: 'PoppinsRegular';
 
 /* ── Card Info ── */
 .card-info {
-  padding: 14px 15px 16px;
+  padding: 10px 10px 6px;
   border-top: 1px solid var(--border);
 }
 
@@ -304,7 +304,7 @@ font-family: 'PoppinsRegular';
   font-weight: 400;
   color: var(--text-secondary);
   line-height: 1.4;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -326,7 +326,7 @@ font-family: 'PoppinsRegular';
 
 .price-original {
 font-family: 'PoppinsRegular';
-  font-size: 0.78rem;
+  font-size: 0.83rem;
   font-weight: 400;
   color: var(--text-muted);
   text-decoration: line-through;

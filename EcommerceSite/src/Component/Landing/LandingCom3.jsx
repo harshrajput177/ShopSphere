@@ -19,6 +19,7 @@ const FILTERS = [
 ];
 
 function ProductCard({ product }) {
+  
   const dispatch = useDispatch();
  const wishlistItems = useSelector((state) => state.wishlist.items);
 const [selectedSize, setSelectedSize] = useState(null);
@@ -38,6 +39,11 @@ const { user } = useSelector((state) => state.auth);
     (item.productId?._id || item.productId) === product._id
 );
 
+  const [optimisticWished, setOptimisticWished] = useState(isWishlisted);
+  
+useEffect(() => {
+  setOptimisticWished(isWishlisted);
+}, [isWishlisted]);
 
   const originalPrice =
     allPrices.length > 0 ? Math.min(...allPrices) : 0;
@@ -59,14 +65,12 @@ const { user } = useSelector((state) => state.auth);
       onClick={() => navigate(`/product/${product._id}`)}
     >
       <div className="card-image-wrap-COM3">
-        <img
-          src={
-            product?.variants?.[0]?.mainImage ||
-            product?.variants?.[0]?.images?.[0] ||
-            "https://via.placeholder.com/200"
-          }
-          alt={product.title}
-        />
+       <img
+  src={product?.variants?.[0]?.mainImage}
+  alt={product.title}
+  loading="lazy"         // sirf viewport mein aane par load hoga
+  decoding="async"       // main thread block nahi karega
+/>
 
         <div className="discount-badge">
           {discountPercent}% OFF
@@ -74,14 +78,11 @@ const { user } = useSelector((state) => state.auth);
 
            <button
   className={`wishlist-btn ${isWishlisted ? "active" : ""}`}
- onClick={(e) => {
+onClick={(e) => {
   e.stopPropagation();
+  if (!user) { navigate("?auth=login"); return; }
 
-  if (!user) {
-    // 🔥 login modal open trigger
-    navigate("?auth=login");
-    return;
-  }
+  setOptimisticWished((prev) => !prev); // ← instant UI update
 
   if (isWishlisted) {
     dispatch(removeWishlist({ productId: product._id }));

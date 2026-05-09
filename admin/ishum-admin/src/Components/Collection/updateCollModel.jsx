@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import API from "../api/api";
 
 const EditModal = ({ data, onClose, refresh }) => {
   const [formData, setFormData] = useState({
@@ -30,10 +31,11 @@ form.append("isActive", formData.isActive ? "true" : "false");
         form.append("image", image);
       }
 
-   await axios.put(
-  `http://localhost:4000/api/collection/update/${data._id}`,
-  form
-);
+await API.put(`/api/collection/update/${data._id}`, form, {
+  headers: {
+    "Content-Type": "multipart/form-data",
+  },
+});
 
       alert("Updated Successfully ✅");
       onClose();

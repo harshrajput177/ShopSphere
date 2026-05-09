@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import API from "../api/api";
 
 const AddCollection = () => {
 
@@ -40,8 +41,7 @@ const AddCollection = () => {
       data.append("isActive", formData.isActive);
       data.append("image", image);
 
-      const res = await axios.post(
-        "http://localhost:4000/api/collection/create",
+      const res = await API.post("/api/collection/create", 
         data,
         {
           headers: {

@@ -25,6 +25,7 @@ const cookieParser = require("cookie-parser");
 app.use(cors({
   origin: [
     "http://localhost:5173",
+     "http://localhost:5174",
     "https://shopsphere-frontend-9zee.onrender.com"
   ],
   credentials: true,
@@ -49,6 +50,9 @@ mongoose.connect(MONGO_URI)
     .then(() => console.log("MongoDB Connected"))
     .catch(err => console.log(err));
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
 
 // app.use(guestRoutes);
 app.use("/api/auth", authRoutes);

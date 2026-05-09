@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useMemo } from "react";
 import "../../Style-CSS/Landing-css/LandingCom2.css";
 import { useNavigate } from "react-router-dom";
-import API from "../api/api";
+import { useSelector } from "react-redux";
 
+/* ── Card ───────────────────────────────────── */
 function CategoryCard({ item }) {
   const navigate = useNavigate();
 
@@ -22,7 +22,21 @@ function CategoryCard({ item }) {
       style={{ cursor: "pointer" }}
     >
       <div className="card-img-wrap-com2">
-        <img src={item.image} alt={item.name} loading="lazy" />
+        <img
+          src={
+            item.image?.startsWith("http")
+              ? item.image
+              : `${import.meta.env.VITE_API_BASE_URL}/${item.image}`
+          }
+          alt={item.name}
+          loading="lazy"
+          decoding="async"
+          width="400"
+          height="500"
+          onError={(e) => {
+            e.target.src = "/images/default.jpg";
+          }}
+        />
       </div>
 
       <span className="card-label">{item.name}</span>
@@ -30,33 +44,20 @@ function CategoryCard({ item }) {
   );
 }
 
+/* ── Main Component ─────────────────────────── */
 export default function CategoryGrid() {
-  const [categories, setCategories] = useState([]);
+  const { data } = useSelector((state) => state.productType);
+
+  // 🔥 shuffle + limit (memoized for performance)
+  const categories = useMemo(() => {
+    if (!data || data.length === 0) return [];
+
+    const limited = data.slice(0, 26);
+    return [...limited].sort(() => Math.random() - 0.5);
+  }, [data]);
 
   const firstRow = categories.slice(0, 14);
-  const secondRow = categories.slice(16);
-
-  useEffect(() => {
-    const fetchProductTypes = async () => {
-      try {
-        const res = await API.get("/api/product-type");
-
-        const productTypes = res.data.productTypes || res.data;
-
-        // optional: limit if needed
-        const limited = productTypes.slice(0, 26);
-
-        // shuffle (optional)
-        const shuffled = limited.sort(() => Math.random() - 0.5);
-
-        setCategories(shuffled);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchProductTypes();
-  }, []);
+  const secondRow = categories.slice(14);
 
   return (
     <section className="category-section">
@@ -67,6 +68,7 @@ export default function CategoryGrid() {
       </div>
 
       <div className="row-wrapper">
+
         {/* FIRST ROW */}
         <div className="categories-row-com2">
           {firstRow.map((item) => (
@@ -80,6 +82,7 @@ export default function CategoryGrid() {
             <CategoryCard key={item._id} item={item} />
           ))}
         </div>
+
       </div>
     </section>
   );

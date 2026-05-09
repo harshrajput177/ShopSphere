@@ -118,7 +118,11 @@ exports.getMe = async (req, res) => {
 
 exports.logout = async (req, res) => {
   try {
-    res.clearCookie("token");
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,      // ← same as set karte waqt
+      sameSite: "None",  // ← same as set karte waqt
+    });
 
     res.status(200).json({
       success: true,
@@ -126,7 +130,6 @@ exports.logout = async (req, res) => {
     });
   } catch (error) {
     console.log("logout Error:", error);
-
     res.status(500).json({
       success: false,
       message: "Server error",

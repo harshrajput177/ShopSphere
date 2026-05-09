@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../../Style-CSS/Landing-css/GenderSection.css";
 import API from "../api/api";
 
@@ -19,7 +19,15 @@ function SubCategoryCard({ item, index }) {
       style={{ animationDelay: `${0.04 + index * 0.05}s` }}
     >
       <div className="gsub-img-wrap">
-        <img src={item.image} alt={item.name} loading="lazy" />
+        {/* ✅ already lazy tha, decoding="async" add kiya */}
+        <img
+          src={item.image}
+          alt={item.name}
+          loading="lazy"
+          decoding="async"
+          width="300"
+          height="350"
+        />
         <div className="gsub-img-overlay" />
       </div>
       <span className="gsub-label">{item.name}</span>
@@ -28,27 +36,10 @@ function SubCategoryCard({ item, index }) {
 }
 
 /* ── Gender Tab ───────────────────────────────────── */
-function GenderSection({ title, tag, genderId }) {
-  const [subCategories, setSubCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!genderId) return;
-    setLoading(true);
-   API.get(`/api/subcategory/gender/${genderId}`)
-  .then((res) => {
-    setSubCategories(res.data.subCategories || []);
-    setLoading(false);
-  })
-  .catch((err) => {
-    console.error("SubCategory fetch error:", err);
-    setLoading(false);
-  });
-  }, [genderId]);
-
+function GenderSection({ title, tag, subCategories, loading }) {
+  // ✅ Data upar se props mein aata hai — apni API call nahi karega
   return (
     <div className="gsub-section">
-      {/* Section Header */}
       <div className="gsub-section-header">
         <div className="gsub-section-title-wrap">
           <span className="gsub-tag">{tag}</span>
@@ -59,7 +50,6 @@ function GenderSection({ title, tag, genderId }) {
         </button>
       </div>
 
-      {/* Grid */}
       {loading ? (
         <div className="gsub-skeleton-row">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -79,28 +69,50 @@ function GenderSection({ title, tag, genderId }) {
 
 /* ── Main Page ────────────────────────────────────── */
 export default function GenderSubCategoryPage({ menGenderId, womenGenderId }) {
-  // If you pass genderIds via props — else fetch genders first
-  const [genders, setGenders] = useState({ men: menGenderId, women: womenGenderId });
+  const [genders, setGenders] = useState({
+    men: menGenderId || null,
+    women: womenGenderId || null,
+  });
 
+  const [menSubs, setMenSubs] = useState([]);
+  const [womenSubs, setWomenSubs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Step 1 — gender IDs nahi hain toh fetch karo
   useEffect(() => {
-    // Only fetch if not passed as props
     if (menGenderId && womenGenderId) return;
-  API.get("/api/gender")
-  .then((res) => {
-    const data = res.data;
-    const list = data.genders || data;
 
-    const men = list.find((g) => g.name?.toLowerCase() === "men");
-    const women = list.find((g) => g.name?.toLowerCase() === "women");
-
-    setGenders({ men: men?._id, women: women?._id });
-  })
-  .catch((err) => console.error("Gender fetch error:", err));
+    API.get("/api/gender")
+      .then((res) => {
+        const list = res.data.genders || res.data;
+        const men = list.find((g) => g.name?.toLowerCase() === "men");
+        const women = list.find((g) => g.name?.toLowerCase() === "women");
+        setGenders({ men: men?._id, women: women?._id });
+      })
+      .catch((err) => console.error("Gender fetch error:", err));
   }, [menGenderId, womenGenderId]);
+
+  // Step 2 — dono subcategories ek saath fetch karo (parallel)
+  useEffect(() => {
+    if (!genders.men || !genders.women) return;
+
+    setLoading(true);
+
+    // ✅ Promise.all — dono calls parallel, ek ka wait nahi doosre ko
+    Promise.all([
+      API.get(`/api/subcategory/gender/${genders.men}`),
+      API.get(`/api/subcategory/gender/${genders.women}`),
+    ])
+      .then(([menRes, womenRes]) => {
+        setMenSubs(menRes.data.subCategories || []);
+        setWomenSubs(womenRes.data.subCategories || []);
+      })
+      .catch((err) => console.error("SubCategory fetch error:", err))
+      .finally(() => setLoading(false));
+  }, [genders.men, genders.women]);
 
   return (
     <div className="gsub-page">
-      {/* Page Header */}
       <div className="gsub-page-header">
         <p className="gsub-page-eyebrow">Explore Collections</p>
         <h1 className="gsub-page-title">
@@ -111,23 +123,22 @@ export default function GenderSubCategoryPage({ menGenderId, womenGenderId }) {
         </p>
       </div>
 
-      {/* Divider */}
       <div className="gsub-divider" />
 
-      {/* Men Section */}
       <GenderSection
         title="Men's Collection"
         tag="HIM"
-        genderId={genders.men}
+        subCategories={menSubs}
+        loading={loading}
       />
 
       <div className="gsub-section-gap" />
 
-      {/* Women Section */}
       <GenderSection
         title="Women's Collection"
         tag="HER"
-        genderId={genders.women}
+        subCategories={womenSubs}
+        loading={loading}
       />
     </div>
   );

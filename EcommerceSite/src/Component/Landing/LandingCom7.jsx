@@ -1,61 +1,126 @@
-import React from "react";
-import "../../Style-CSS/Landing-css/LandingCom7.css";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
+import "../../Style-CSS/Landing-css/LandingCom7.css";
+import API from "../api/api";
 
-const data = [
-  {
-    title: "All Dresses",
-    img: "https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03"
-  },
-  {
-    title: "Festive Wear",
-    img: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990"
-  },
-  {
-    title: "Ankle Leggings",
-    img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f"
-  },
-  {
-    title: "Churidar Leggings",
-    img: "https://images.unsplash.com/photo-1520975922203-bdb9c2b3a6d4"
-  },
-  {
-    title: "Resort Wear",
-    img: "https://images.unsplash.com/photo-1496747611176-843222e1e57c"
-  }
-];
+/* ── Skeleton ──────────────────────────────────── */
+function CollectionSkeleton() {
+  return (
+    <div className="collection-slider">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <div key={i} className="collection-card skeleton-card" />
+      ))}
+    </div>
+  );
+}
 
 const CategoryCollection = () => {
+  const navigate = useNavigate();
+
+  const [occasionData, setOccasionData] = useState([]);
+  const blockedOccasions = ["wedding", "travel", "office"];
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+
+  
+  const getSingleProductPerOccasion = (products) => {
+  const map = {};
+
+  const blockedOccasions = ["wedding", "travel", "office"];
+
+  products.forEach((product) => {
+    const mainImage = product?.variants?.[0]?.mainImage;
+
+    product.occasion?.forEach((occ) => {
+      if (!occ) return;
+
+      if (blockedOccasions.includes(occ.toLowerCase())) return;
+
+      // ✅ sirf tab set karo jab main image ho
+      if (!map[occ] && mainImage) {
+        map[occ] = {
+          product,
+          mainImage,
+        };
+      }
+    });
+  });
+
+  return Object.entries(map).map(([occasion, data]) => ({
+    title: occasion,
+    image: data.mainImage, // 👈 correct image
+    occasion,
+  }));
+};
+  /* ── Fetch Products ───────────────── */
+  useEffect(() => {
+    API.get("/api/products")
+      .then((res) => {
+        const products = res.data?.products || res.data || [];
+
+        const occData = getSingleProductPerOccasion(products);
+        setOccasionData(occData);
+      })
+      .catch((err) => {
+        console.error("Fetch error:", err);
+        setError(true);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div className="collection-section">
 
-      {/* Header */}
       <div className="collection-header">
         <h2>
-          More Collections <em>to Explore</em>
+          Shop by <em>Occasion</em>
         </h2>
-        <a className="collection-view-all">
-          View All <span>→</span>
-        </a>
       </div>
 
-      {/* Slider */}
-      <div className="collection-slider">
-        {data.map((item, index) => (
-          <div className="collection-card" key={index}>
+      {/* Loading */}
+      {loading && <CollectionSkeleton />}
 
-            <div className="card-img">
-              <img src={item.img} alt={item.title} loading="lazy" />
+      {/* Error */}
+      {!loading && error && (
+        <p style={{ textAlign: "center", color: "gray" }}>
+          Loading....
+        </p>
+      )}
+
+      {/* Data */}
+      {!loading && !error && (
+        <div className="collection-slider">
+          {occasionData.map((item, index) => (
+            <div
+              className="collection-card"
+              key={item.title || index}
+              onClick={() =>
+                navigate(`/products?occasion=${item.occasion}`)
+              }
+            >
+              <div className="card-img">
+                <img
+                  src={item.image || "/images/default.jpg"}
+                  alt={item.title}
+                  loading={index < 2 ? "eager" : "lazy"}
+                  decoding="async"
+                  width="300"
+                  height="380"
+                />
+              </div>
+
+              <div className="card-bottom">
+                <span className="category-title">
+                  {item.title}
+                </span>
+                <FaArrowRight className="card-arrow" />
+              </div>
             </div>
-
-            <div className="card-bottom">
-              <span className="category-title">{item.title}</span>
-              <FaArrowRight className="card-arrow" />
-            </div>
-
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
     </div>
   );

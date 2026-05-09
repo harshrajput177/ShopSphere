@@ -18,6 +18,7 @@ import Kids from "./Kids";
 import LoginModal from "../B-TO-C-Login/LoginUser";
 import SearchMobile from "../Landing/SearchMobileView/SearchMobile";
 import WishlistView from "../Wishlist/Wishlist";
+import WishlistMobileView from "../MobileView/WishlistMobile";
 import MobileCategoryView from "../MobileView/NavMobileCategory";
 
 import { getMe, logoutUser } from "../Store/Slices/authSlice";
@@ -47,6 +48,8 @@ const Navbar = () => {
   const timeoutRef = useRef(null);
 
   const totalQty = cartItems.reduce((acc, item) => acc + item.qty, 0);
+
+  
 
   useEffect(() => {
     dispatch(getMe());
@@ -85,13 +88,15 @@ const Navbar = () => {
     navigate("/");
   };
 
-  const handleWishlistClick = () => {
-    if (window.innerWidth <= 850) {
-      setShowMobileWishlist(true);
-    } else {
-      navigate("/wishlist");
-    }
-  };
+// Navbar.js mein — yeh replace karo handleWishlistClick ko
+const handleWishlistClick = () => {
+  const isMobile = window.matchMedia("(max-width: 850px)").matches;
+  if (isMobile) {
+    setShowMobileWishlist(true);
+  } else {
+    navigate("/wishlist");
+  }
+};
 
   // ← open mobile category drill-down (gender._id pass karo)
   const handleMobileCategoryClick = (gender) => {
@@ -135,6 +140,7 @@ const Navbar = () => {
   };
 
   return (
+    <>
     <div className="real-navbar-f">
       <div className="real-nav-container">
 
@@ -258,16 +264,14 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* CART DRAWER */}
+  
       {showCart && <CartDrawer onClose={() => setShowCart(false)} />}
 
       {/* MOBILE SEARCH */}
       {openSearch && <SearchMobile closeSearch={() => setOpenSearch(false)} />}
 
-      {/* MOBILE WISHLIST */}
-      {showMobileWishlist && (
-        <WishlistView onBack={() => setShowMobileWishlist(false)} />
-      )}
+    
+
 
       {/* ← NEW: MOBILE CATEGORY DRILL-DOWN */}
       {activeMobileCategory && (
@@ -278,6 +282,10 @@ const Navbar = () => {
         />
       )}
     </div>
+       {showMobileWishlist && (
+  <WishlistMobileView onBack={() => setShowMobileWishlist(false)} />
+)}
+</>
   );
 };
 

@@ -40,6 +40,9 @@ const [selectedMainImageIndex, setSelectedMainImageIndex] = useState(null);
   const [sizeChart, setSizeChart] = useState([]);
   const [sizeFields, setSizeFields] = useState([]);
 
+  const [showPasteArea, setShowPasteArea] = useState(false);
+const [pasteInput, setPasteInput] = useState("");
+
   const [loading, setLoading] = useState(false);
 
   const tagOptions = [
@@ -89,6 +92,41 @@ const [selectedMainImageIndex, setSelectedMainImageIndex] = useState(null);
     );
     setActiveAttributes(res.data);
   };
+const parsePastedTable = () => {
+  const lines = pasteInput
+    .trim()
+    .split("\n")
+    .map(l => l.trim())
+    .filter(l => l.startsWith("|"));
+
+  if (lines.length < 2) {
+    alert("Could not parse table ⚠️");
+    return;
+  }
+
+  const parseRow = line =>
+    line.split("|").map(c => c.trim()).filter((_, i, a) => i > 0 && i < a.length - 1);
+
+  // filter out separator row (---|--- style)
+  const dataLines = lines.filter(l => !/^[\|\-\s]+$/.test(l));
+
+  // skip header row, parse only data rows
+  const newRows = dataLines.slice(1).map(line => {
+    const cols = parseRow(line);
+    const values = {};
+
+    // 🔥 KEY FIX: map by position to sizeFields (not by pasted header name)
+    sizeFields.forEach((field, i) => {
+      values[field] = cols[i + 1] || "";  // col[0] = size, col[1+] = measurements
+    });
+
+    return { size: cols[0], values };
+  });
+
+  setSizeChart(newRows);
+  setPasteInput("");
+  setShowPasteArea(false);
+};
 
 
 const fetchSizeChart = async (
@@ -253,11 +291,22 @@ const handleProductType = (id) => {
       tags.forEach(t => formData.append("tags", t));
       occasion.forEach(o => formData.append("occasion", o));
 
+        if (!category || !subcategory || !productType) {
+    alert("Select category, subcategory & product type ⚠️"); return;
+  }
+  if (!title.trim()) {
+    alert("Enter product title ⚠️"); return;
+  }
+
     const allPrices = variants.flatMap(v =>
   v.sizes
     .map(s => Number(s.price))
     .filter(p => p > 0)
 );
+
+  if (allPrices.length === 0) {
+    alert("Add price for at least one size ⚠️"); return;
+  }
 
       const minPrice = Math.min(...allPrices);
 
@@ -625,9 +674,31 @@ variants.forEach((variant, i) => {
   <div className="card">
     <h3>Size Chart</h3>
 
-    <button onClick={addSizeRow}>
-      + Add Size
+  <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
+    <button onClick={addSizeRow}>+ Add Size</button>
+    <button onClick={() => setShowPasteArea(p => !p)}>
+      📋 Paste Table
     </button>
+  </div>
+
+  {showPasteArea && (
+    <div style={{ marginBottom: "16px" }}>
+      <textarea
+        rows={6}
+        style={{ width: "100%", fontFamily: "monospace", fontSize: "12px", padding: "10px" }}
+        placeholder={`Paste markdown table:\n| Size | Bust | Waist | Hip |\n| ---- | ---- | ----- | --- |\n| XS   | 32   | 24    | 34  |`}
+        value={pasteInput}
+        onChange={e => setPasteInput(e.target.value)}
+      />
+      <p style={{ fontSize: "12px", color: "#888" }}>
+        First row = headers. Separator row (---) is auto-skipped.
+      </p>
+      <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
+        <button onClick={parsePastedTable}>Fill from Table</button>
+        <button onClick={() => setShowPasteArea(false)}>Cancel</button>
+      </div>
+    </div>
+  )}
 
     {/* OUTER SCROLL CONTAINER */}
     <div
