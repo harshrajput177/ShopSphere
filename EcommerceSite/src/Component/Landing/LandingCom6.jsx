@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { fetchHomeProducts } from "../Store/Slices/ProductSlice";
 import { addWishlist, removeWishlist } from "../Store/Slices/wishlistSlice";
 import "../../Style-CSS/Landing-css/LandingCom4.css";
 
@@ -29,7 +29,6 @@ function ChevronRight() {
   );
 }
 
-// ✅ Alag ProductCard — optimistic wishlist ke liye
 function ProductCard({ p, isWishlisted, onWishlist }) {
   const navigate = useNavigate();
   const [optimisticWished, setOptimisticWished] = useState(isWishlisted);
@@ -40,7 +39,7 @@ function ProductCard({ p, isWishlisted, onWishlist }) {
 
   const handleWishlistClick = (e) => {
     e.stopPropagation();
-    setOptimisticWished((prev) => !prev); // ✅ instant UI
+    setOptimisticWished((prev) => !prev); // ✅ instant UI update
     onWishlist(p, e);
   };
 
@@ -53,7 +52,6 @@ function ProductCard({ p, isWishlisted, onWishlist }) {
       onClick={() => navigate(`/product/${p._id}`)}
     >
       <div className="card-image-wrap">
-        {/* ✅ lazy loading */}
         <img
           src={p?.variants?.[0]?.mainImage || p?.variants?.[0]?.images?.[0]}
           alt={p.title}
@@ -90,32 +88,17 @@ export default function NewArrival() {
   const navigate = useNavigate();
   const scrollRef = useRef(null);
 
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-   const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
-
-  // ✅ Redux wishlist & auth
+  // ✅ BestSeller jaisa — Redux se data lo, axios hata diya
+  const { homeItems, loading } = useSelector((state) => state.products);
   const wishlistItems = useSelector((state) => state.wishlist.items);
   const { user } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    const fetchNewArrivals = async () => {
-      try {
-       
-        const res = await axios.get(
-          `${BASE_URL}/api/products/filter?isNewArrival=true`
-        );
-        setProducts(res.data);
-      } catch (err) {
-        console.error("New arrivals fetch failed:", err.message);
-      } finally {
-        setLoading(false); // ✅ error aaye tab bhi loading hatao
-      }
-    };
+  // ✅ homeItems.newArrival use karo (BestSeller mein homeItems.bestSeller tha)
+  const newArrival = homeItems.newArrival || [];
 
-    fetchNewArrivals();
-  }, []);
+  useEffect(() => {
+    dispatch(fetchHomeProducts());
+  }, [dispatch]);
 
   const getId = (item) => item?.productId?._id || item?.productId;
 
@@ -140,9 +123,13 @@ export default function NewArrival() {
           addWishlist({
             productId: p._id,
             title: p.title,
-            price: Math.max(0, (p?.variants?.[0]?.sizes?.[0]?.price || 0) - (p?.discount || 0)),
+            price: Math.max(
+              0,
+              (p?.variants?.[0]?.sizes?.[0]?.price || 0) - (p?.discount || 0)
+            ),
             originalPrice: p?.variants?.[0]?.sizes?.[0]?.price || 0,
-            image: p?.variants?.[0]?.mainImage || p?.variants?.[0]?.images?.[0],
+            image:
+              p?.variants?.[0]?.mainImage || p?.variants?.[0]?.images?.[0],
             sizes: p?.variants?.[0]?.sizes || [],
           })
         );
@@ -151,16 +138,20 @@ export default function NewArrival() {
     [dispatch, isWishlisted, user, navigate]
   );
 
-  const handleNext = () => scrollRef.current?.scrollBy({ left: 300, behavior: "smooth" });
-  const handlePrev = () => scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" });
+  const handleNext = () =>
+    scrollRef.current?.scrollBy({ left: 300, behavior: "smooth" });
+  const handlePrev = () =>
+    scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" });
 
   if (loading) return <h2 style={{ textAlign: "center" }}>Loading...</h2>;
 
   return (
     <section className="trending-section">
       <div className="trending-heading">
-        <h2>New Arrivals</h2>
-        <p>Based On Your Recent Activity</p>
+        <span>
+          <h2>New Arrivals</h2>
+          <p>Based On Your Recent Activity</p>
+        </span>
       </div>
 
       <div className="carousel-wrapper">
@@ -170,7 +161,7 @@ export default function NewArrival() {
 
         <div ref={scrollRef} className="cards-track-outer">
           <div className="cards-track">
-            {products.map((p) => (
+            {newArrival.map((p) => (
               <ProductCard
                 key={p._id}
                 p={p}
