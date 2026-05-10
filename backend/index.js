@@ -59,12 +59,11 @@ mongoose.connect(MONGO_URI)
   });
 };
 
-setInterval(keepAlive, 10 * 60 * 1000);
+setInterval(keepAlive, 2 * 60 * 1000);
 
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
-
 // app.use(guestRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/gender", genderRoutes);
