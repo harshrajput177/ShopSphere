@@ -6,7 +6,6 @@ import {
   mergeCartApi,
 } from "../../api/Cartapi";
 
-// 🔥 FETCH CART
 export const fetchCart = createAsyncThunk(
   "cart/fetch",
   async (_, { rejectWithValue }) => {
@@ -14,12 +13,21 @@ export const fetchCart = createAsyncThunk(
       const res = await getCartApi();
       return res.data?.items || [];
     } catch (err) {
+      // 502 = backend so raha hai, retry karo
+      if (err.response?.status === 502 || err.code === "ERR_NETWORK") {
+        await new Promise(resolve => setTimeout(resolve, 4000)); // 4 sec wait
+        try {
+          const retry = await getCartApi();
+          return retry.data?.items || [];
+        } catch (retryErr) {
+          return rejectWithValue("Server start ho raha hai...");
+        }
+      }
       return rejectWithValue(err.response?.data || "Fetch error");
     }
   }
 );
-
-// 🔥 ADD
+// ADD
 export const addCart = createAsyncThunk(
   "cart/add",
   async (data, { rejectWithValue }) => {
@@ -32,7 +40,7 @@ export const addCart = createAsyncThunk(
   }
 );
 
-// 🔥 REMOVE
+//  REMOVE
 export const removeCart = createAsyncThunk(
   "cart/remove",
   async (data, { rejectWithValue }) => {
@@ -45,7 +53,7 @@ export const removeCart = createAsyncThunk(
   }
 );
 
-// 🔥 MERGE
+//  MERGE
 export const mergeCart = createAsyncThunk(
   "cart/merge",
   async (_, { rejectWithValue }) => {
