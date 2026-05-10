@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import API from "../api/api";
 import CustomerReviews from "./CustomerReview";
 import "../../Style-CSS/ProductPage/ProductTab.css";
 import { useParams } from "react-router-dom";
@@ -21,9 +22,7 @@ const ProductTabs = () => {
   useEffect(() => {
     const fetchSingleProduct = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:4000/api/products/${id}`
-        );
+   const res = await API.get(`/api/products/${id}`);
 
         console.log("Product Details 👉", res.data);
 

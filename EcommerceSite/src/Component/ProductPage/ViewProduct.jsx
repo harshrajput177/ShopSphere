@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import API from "../api/api";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { addCart } from "../Store/Slices/cartSlice";
@@ -26,15 +27,16 @@ const ProductPage = () => {
   const [zoomStyle, setZoomStyle] = useState({});
 const wishlistItems = useSelector((state) => state.wishlist.items);
 
+
   const navigate = useNavigate();
 
 
-  
+
   // 🔥 FETCH PRODUCT
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get(`http://localhost:4000/api/products/${id}`);
+       const res = await API.get(`/api/products/${id}`);
         const data = res.data;
 
         setProduct(data);

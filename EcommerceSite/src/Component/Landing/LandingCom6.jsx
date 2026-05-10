@@ -93,6 +93,8 @@ export default function NewArrival() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+   const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+
   // ✅ Redux wishlist & auth
   const wishlistItems = useSelector((state) => state.wishlist.items);
   const { user } = useSelector((state) => state.auth);
@@ -101,7 +103,6 @@ export default function NewArrival() {
     const fetchNewArrivals = async () => {
       try {
        
-        const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
         const res = await axios.get(
           `${BASE_URL}/api/products/filter?isNewArrival=true`
         );
