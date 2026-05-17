@@ -68,8 +68,8 @@ useEffect(() => {
        <img
   src={product?.variants?.[0]?.mainImage}
   alt={product.title}
-  loading="lazy"         // sirf viewport mein aane par load hoga
-  decoding="async"       // main thread block nahi karega
+  loading="lazy"        
+  decoding="async"      
 />
 
         <div className="discount-badge">
@@ -82,7 +82,7 @@ onClick={(e) => {
   e.stopPropagation();
   if (!user) { navigate("?auth=login"); return; }
 
-  setOptimisticWished((prev) => !prev); // ← instant UI update
+  setOptimisticWished((prev) => !prev); 
 
   if (isWishlisted) {
     dispatch(removeWishlist({ productId: product._id }));
@@ -171,8 +171,6 @@ const filteredProducts = trendingProducts.filter((product) => {
   const fit =
     (product.specifications?.Fit || "").toLowerCase();
 
-  //     console.log("productType:", productType);
-  // console.log("fit:", fit);
 
   const searchableText = `
     ${title}
@@ -181,7 +179,7 @@ const filteredProducts = trendingProducts.filter((product) => {
     ${fit}
   `.toLowerCase();
 
-switch (activeFilter) {
+  switch (activeFilter) {
 
   case "Men Oversized T-Shirts":
     return (
@@ -209,9 +207,25 @@ switch (activeFilter) {
       productType.includes("cargo")
     );
 
+  case "Shirts":
+    return productType.includes("shirt") && !productType.includes("t-shirt");
+
+  case "Men Jeans":
+    return gender === "men" && productType.includes("jean");
+
+  case "Women Shorts":
+    return gender === "women" && productType.includes("short");
+
+  case "Men Shorts":
+    return gender === "men" && productType.includes("short");
+
+  case "Women Tops":
+    return gender === "women" && productType.includes("top");
+
   default:
     return true;
 }
+
 });
 
   if (loading) {

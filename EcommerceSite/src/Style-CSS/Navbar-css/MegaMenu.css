@@ -1,51 +1,169 @@
 .mega-menu-f {
-  position: absolute;
-  top: 58px;   /* navbar ke neeche proper */
-  left: -60px;
-  width: 1100px;
-  min-height: auto;
-  background: #fff;
-  display: flex;
-  justify-content: center;
-  padding: 30px 0;
-  z-index: 99999 !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  border-top: 1px solid #eee;
-}
-
-.mega-container {
+  position: fixed;
+  top: 80px;           /* navbar height */
+  left: 0;
+  right: 0;
   width: 100%;
-  max-width: 1100px;
+  background: #fff;
+  border-top: 2px solid #eee;
+  box-shadow: 0 8px 24px rgba(165, 165, 165, 0.1);
+  z-index: 999;
+  animation: megaFadeIn 0.15s ease;
+}
+
+@keyframes megaFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Two-column flex layout — NO max-width here, full bleed ── */
+.mega-layout {
   display: flex;
-  gap: 20px;
-  z-index: 99999 !important;
+  flex-direction: row;
+  min-height: 300px;
+  max-height: 460px;
+}
+.mega-left {
+  width: 220px;
+  min-width: 200px;
+  max-width: 220px;
+  background: #f5f5f6;
+  padding: 8px 0;
+  overflow-y: auto;
+  flex-shrink: 0;
 }
 
-.mega-column {
-  flex: 1;
-  padding: 8px 15px;
-  border-right: 1px solid #eee;
-}
-
-.mega-column:last-child {
-  border-right: none;
-}
-
-.mega-column h4 {
-  color: #ff3f6c;
+.mega-tab {
+  padding: 13px 20px 13px 24px;
   font-size: 14px;
-  margin-bottom: 12px;
-  font-weight: 600;
-}
-
-.mega-column p {
-  font-size: 13px;
-  margin: 8px 0;
+  font-weight: 500;
+  color: #424553;
   cursor: pointer;
-  color: #333;
-  transition: 0.2s;
+  border-left: 3px solid transparent;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.1px;
 }
 
-.mega-column p:hover {
+.mega-tab:hover {
+  background: #fff;
   color: #ff3f6c;
+  border-left-color: #ff3f6c;
+}
+
+.mega-tab--active {
+  background: #fff;
+  color: #ff3f6c;
+  font-weight: 700;
+  border-left-color: #ff3f6c;
+}
+
+/* Tab skeletons */
+.mega-tab-skeleton {
+  height: 13px;
+  width: 60%;
+  margin: 14px 24px;
+  background: linear-gradient(90deg, #eee 25%, #e4e4e4 50%, #eee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s infinite;
+  border-radius: 4px;
+}
+
+/* ════════════════════════════════
+   RIGHT — Product Types
+   ════════════════════════════════ */
+.mega-right {
+  flex: 1;
+  padding: 24px 40px 24px 36px;
+  overflow-y: auto;
+  background: #fff;
+  border-left: 1px solid #f0f0f0;
+}
+
+/* Grid: auto columns, Myntra style spacing */
+.mega-groups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 28px 48px;
+  align-items: start;
+}
+
+.mega-group-col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Group heading — pink, uppercase, bold (Myntra exact) */
+.mega-group-heading {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ff3f6c;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 12px 0;
+  cursor: pointer;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: opacity 0.15s;
+}
+
+.mega-group-heading:hover { opacity: 0.75; }
+
+/* Product type items */
+.mega-pt-item {
+  font-size: 13.5px;
+  color: #424553;
+  margin: 6px 0;
+  cursor: pointer;
+  line-height: 1.4;
+  transition: color 0.12s;
+  font-weight: 400;
+}
+
+.mega-pt-item:hover { color: #ff3f6c; }
+
+/* Empty */
+.mega-empty {
+  font-size: 13px;
+  color: #bbb;
+  margin-top: 80px;
+  text-align: center;
+}
+
+/* ── Skeletons right side ── */
+.mega-right-skeleton { display: flex; gap: 40px; }
+.mega-right-skeleton-col { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+
+.skeleton-heading {
+  height: 12px; width: 50%;
+  background: linear-gradient(90deg, #eee 25%, #e5e5e5 50%, #eee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s infinite;
+  border-radius: 3px; margin-bottom: 6px;
+}
+
+.skeleton-item {
+  height: 10px; width: 80%;
+  background: linear-gradient(90deg, #f5f5f5 25%, #ebebeb 50%, #f5f5f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s infinite;
+  border-radius: 3px;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Scrollbars ── */
+.mega-left::-webkit-scrollbar,
+.mega-right::-webkit-scrollbar { width: 3px; }
+.mega-left::-webkit-scrollbar-thumb,
+.mega-right::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+
+/* ── Mobile: hide mega menu ── */
+@media (max-width: 1024px) {
+  .mega-menu-f { display: none !important; }
 }

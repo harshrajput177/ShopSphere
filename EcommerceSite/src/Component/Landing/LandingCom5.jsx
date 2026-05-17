@@ -63,7 +63,7 @@ export default function CoordSets() {
             <div
               className="co-card"
               key={item._id}
-              onClick={() => navigate(`/products/type/${item._id}`)}
+              onClick={() => navigate(`/products/${item.slug}`)}
             >
               <div className="co-img-box">
                 <img

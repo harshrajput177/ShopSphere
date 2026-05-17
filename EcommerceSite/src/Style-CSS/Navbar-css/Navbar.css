@@ -110,22 +110,41 @@
   position: relative;
   padding-bottom: 8px;
   cursor: pointer;
-  z-index: 1001;
+  z-index: 9999;
 }
-
+ 
+/* Pink underline */
 .real-nav-item::after {
   content: "";
   position: absolute;
   left: 0;
-  bottom: -25px;
+  bottom: -27px;         
   width: 0%;
   height: 3px;
   background: #ff3f6c;
-  transition: width 0.3s ease;
+  transition: width 0.25s ease;
+    z-index: 9999;
 }
-
+ 
 .real-nav-item:hover::after { width: 100%; }
 .real-nav-item.active::after { width: 100%; }
+ 
+
+.real-nav-item::before {
+  content: "";
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 100vw;
+  height: 24px;        /* navbar bottom se mega-menu top tak */
+  z-index: 9997;
+  display: none;
+  background: transparent;
+}
+ 
+.real-nav-item:hover::before {
+  display: block;
+}
 
 /* PROFILE */
 .profile-wrapper {
@@ -362,6 +381,10 @@
 @media (max-width: 1024px) {
   .navb-search-box { width: 26rem; }
   .mobile-menu-icon { display: block; }
+
+    .mega-menu-f {
+    display: none !important;
+  }
 
   /* Desktop ul menu hide karo */
   .navb-menu { display: none !important; }

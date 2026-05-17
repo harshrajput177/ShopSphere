@@ -22,32 +22,12 @@ const reviews = [
     likes: 34,
     dislikes: 0,
   },
-  {
-    id: 3,
-    title: "My Son inLaw likes these shirts",
-    color: "Black",
-    size: "2XL",
-    date: "12 July 2023",
-    text: "Perfect shirt for summer, light weight...",
-    likes: 21,
-    dislikes: 0,
-  },
-  {
-    id: 4,
-    title: "Best comfortable polo shirt",
-    color: "Black",
-    size: "2XL",
-    date: "08 Jun 2023",
-    text: "Best comfortable and practical polo shirts...",
-    likes: 18,
-    dislikes: 1,
-  },
+
 ];
 
 const CustomerReviews = () => {
   return (
     <div className="Customer-reviews-container">
-      <h2>Customer Reviews</h2>
 
       {/* Top Summary */}
       <div className="Customer-reviews-summary">

@@ -23,7 +23,7 @@ const createProduct = asyncHandler(async (req, res) => {
     occasion,
   } = req.body;
 
-  // ✅ BOOLEAN HELPER
+  // BOOLEAN HELPER
   const toBool = (val) => val === "true" || val === true;
 
 
@@ -53,7 +53,7 @@ try {
     ? Array.isArray(occasion) ? occasion : [occasion]
     : [];
 
-  // ✅ TAG LOGIC
+  // TAG LOGIC
   let finalTags = [...parsedTags];
 
   if (toBool(isBestSeller)) finalTags.push("Best Seller");
@@ -69,7 +69,7 @@ try {
 
   finalTags = [...new Set(finalTags)];
 
-  // 🔥 SLUG
+  //  SLUG
   let slug = slugify(title || "", {
     lower: true,
     strict: true
@@ -80,9 +80,7 @@ try {
     slug = slug + "-" + Date.now();
   }
 
-  // =====================================================
-  // 🔥 IMAGE MAP (VERY IMPORTANT FIX)
-  // =====================================================
+  //  IMAGE MAP (VERY IMPORTANT FIX)
   const imageMap = {};
 
   req.files?.forEach(file => {
@@ -99,9 +97,7 @@ try {
     }
   });
 
-  // =====================================================
-  // 🔥 VARIANTS PARSE
-  // =====================================================
+  //  VARIANTS PARSE
   let bodyVariants = [];
 
   try {
@@ -111,9 +107,8 @@ try {
     bodyVariants = [];
   }
 
-  // =====================================================
-  // 🔥 FINAL VARIANTS (MAIN FIX)
-  // =====================================================
+  //  FINAL VARIANTS (MAIN FIX)
+
   const finalVariants = bodyVariants.map((v, i) => {
     const uploadedImages = imageMap[i] || [];
 
@@ -127,7 +122,7 @@ try {
       color: String(v.color || "").replace(/"/g, ""), // 🔥 FIX
       images: uploadedImages,
 
-      // 🔥 MAIN IMAGE (FINAL FIX)
+      // MAIN IMAGE (FINAL FIX)
       mainImage:
         uploadedImages[mainIndex] ||
         uploadedImages[0] ||
@@ -144,9 +139,8 @@ try {
 
     // console.log("FINAL VARIANTS", finalVariants);
 
-  // =====================================================
-  // ❌ VALIDATION
-  // =====================================================
+  // VALIDATION
+
   if (!title || !price || !category || !subCategory || !productType) {
     return res.status(400).json({
       message: "Required fields missing ❌"
@@ -189,7 +183,7 @@ try {
 });
 
 
-// ✅ GET ALL PRODUCTS
+//  GET ALL PRODUCTS
 const getAllProducts = asyncHandler(async (req, res) => {
   const products = await Product.find()
 
@@ -296,7 +290,7 @@ const getHomeProducts = asyncHandler(async (req, res) => {
     genZ
   });
 });
-// ✅ FILTER PRODUCTS
+//  FILTER PRODUCTS
 const getFilteredProducts = asyncHandler(async (req, res) => {
   const {
     category,
@@ -333,7 +327,7 @@ const getFilteredProducts = asyncHandler(async (req, res) => {
 });
 
 
-// ✅ GET SINGLE PRODUCT
+// GET SINGLE PRODUCT
 const getSingleProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id)
     .populate("category")
@@ -369,6 +363,70 @@ const getSingleProduct = asyncHandler(async (req, res) => {
   res.json(product);
 });
 
+const getProductsByOccasion = asyncHandler(async (req, res) => {
+  const products = await Product.find({ 
+    occasion: req.params.occasion 
+  })
+  .populate("productType", "name")
+  .populate({
+    path: "subCategory",
+    populate: { path: "gender", select: "name" }
+  });
+
+  if (!products.length) {
+    return res.status(404).json({ message: "No products found" });
+  }
+  //  SubCategory — Ethnic, Western etc.
+  const subCategories = [...new Set(
+    products.map(p => p.subCategory?.name).filter(Boolean)
+  )];
+
+  //  Gender — Men, Women etc.
+  const genders = [...new Set(
+    products.map(p => p.subCategory?.gender?.name).filter(Boolean)
+  )];
+  
+  const colors = [...new Set(
+    products.flatMap(p => p.variants.map(v => v.color).filter(Boolean))
+  )];
+
+  const sizes = [...new Set(
+    products.flatMap(p =>
+      p.variants.flatMap(v => v.sizes.map(s => String(s.size)))
+    ).filter(Boolean)
+  )];
+
+  const productTypes = [...new Map(
+    products
+      .filter(p => p.productType)
+      .map(p => [p.productType._id.toString(), p.productType.name])
+  ).entries()].map(([id, name]) => ({ id, name }));
+
+
+  const prices = products.flatMap(p =>
+    p.variants.flatMap(v => v.sizes.map(s => s.price))
+  ).filter(Boolean);
+
+  const filterMeta = {
+    colors,
+    sizes,
+    productTypes,
+    subCategories,  
+    genders,        
+    occasions: [],
+    priceRange: {
+      min: prices.length ? Math.min(...prices) : 0,
+      max: prices.length ? Math.max(...prices) : 10000,
+    },
+    flags: [
+      { key: "isTrending", label: "Trending" },
+      { key: "isBestSeller", label: "Bestseller" },
+      { key: "isNewArrival", label: "New Arrival" },
+    ]
+  };
+
+  res.json({ products, filterMeta });
+});
 
 const updateProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
@@ -380,12 +438,9 @@ const updateProduct = asyncHandler(async (req, res) => {
 
   let { variants, ...rest } = req.body;
 
-  // ✅ BASIC FIELDS UPDATE
+  //  BASIC FIELDS UPDATE
   Object.assign(product, rest);
 
-  // =====================================================
-  // 🔥 IMAGE MAP FOR NEW UPLOADED FILES
-  // =====================================================
   const imageMap = {};
 
   req.files?.forEach((file) => {
@@ -402,9 +457,6 @@ const updateProduct = asyncHandler(async (req, res) => {
     }
   });
 
-  // =====================================================
-  // 🔥 SAFE VARIANTS PARSE
-  // =====================================================
   if (variants) {
     if (typeof variants === "string") {
       try {
@@ -419,9 +471,7 @@ const updateProduct = asyncHandler(async (req, res) => {
       variants = [];
     }
 
-    // =====================================================
-    // 🔥 FINAL VARIANTS UPDATE
-    // =====================================================
+    //FINAL VARIANTS UPDATE
     product.variants = variants.map((v, i) => {
       const uploadedImages = imageMap[i] || [];
 
@@ -450,7 +500,7 @@ let finalMainImage =
         color: v.color || "",
         images: finalImages,
 
-        // ✅ MAIN IMAGE FIX
+        // MAIN IMAGE FIX
         mainImage: finalMainImage,
 
         sizes: (v.sizes || []).map((s) => ({
@@ -528,7 +578,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
   });
 });
 
-// 🔥 EXPORT ALL
+// EXPORT ALL
 module.exports = {
   createProduct,
   getAllProducts,
@@ -537,5 +587,6 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getHomeProducts,
-  getProductsByProductType
+  getProductsByProductType,
+  getProductsByOccasion
 };

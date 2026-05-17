@@ -1,111 +1,187 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import API from "../api/api";
 import FilterSidebar from "./FilterSlider";
 import "../../Style-CSS/ProductListing/ProductListing.css";
  
 const ProductListing = () => {
-  const { slug } = useParams();
- 
+ const { slug, occasion } = useParams();
+ const location = useLocation();
   const [allProducts, setAllProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [attributes, setAttributes] = useState([]);
   const [filterMeta, setFilterMeta] = useState(null);
   const [activeFilters, setActiveFilters] = useState({});
   const [sortType, setSortType] = useState("");
-  const [showFilter, setShowFilter] = useState(false); // 🔥 mobile filter toggle
+  const [showFilter, setShowFilter] = useState(false); 
  
+
   useEffect(() => {
-    if (!slug) return;
- 
-    const fetchAll = async () => {
+  if (!slug && !occasion) return;
+
+  const fetchAll = async () => {
+    try {
+      if (occasion) {
+        //  Occasion flowI
+        const res = await API.get(`/api/products/by-occasion/${occasion}`);
+        setAllProducts(res.data.products);
+        setFilteredProducts(res.data.products);
+        setFilterMeta(res.data.filterMeta);
+        setAttributes([]); // occasion mein productType attributes nahi
+        return;
+      }
+
+      // ProductType flow
       try {
         const prodRes = await API.get(`/api/products/by-slug/${slug}`);
-        const { productType, products, filterMeta } = prodRes.data;
- 
-        const attrRes = await API.get(
-      `/api/attribute/product/${productType._id}`
-    );
- 
-        setAllProducts(products);
-        setFilteredProducts(products);
+        const { productType, products: prods, filterMeta } = prodRes.data;
+        const attrRes = await API.get(`/api/attribute/product/${productType._id}`);
+        setAllProducts(prods);
+        setFilteredProducts(prods);
         setFilterMeta(filterMeta);
         setAttributes(attrRes.data);
-      } catch (err) {
-        console.error(err);
+      } catch {
+        // Collection flow
+        const colRes = await API.get(`/api/collection/${slug}`);
+        setAllProducts(colRes.data.products);
+        setFilteredProducts(colRes.data.products);
+        setFilterMeta(colRes.data.filterMeta);
+        setAttributes([]);
       }
-    };
- 
-    fetchAll();
-  }, [slug]);
- 
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchAll();
+}, [slug, occasion]); // dono dependency mein
+
+
   useEffect(() => {
-    let result = [...allProducts];
+  const params = new URLSearchParams(location.search);
+  const maxPriceParam = params.get("maxPrice");
+  
+  if (maxPriceParam) {
+    setActiveFilters(prev => ({
+      ...prev,
+      maxPrice: Number(maxPriceParam)
+    }));
+  }
+}, [location.search]);
  
-    if (activeFilters.maxPrice) {
-      result = result.filter(p =>
-        p.variants.some(v => v.sizes.some(s => s.price <= activeFilters.maxPrice))
-      );
+
+useEffect(() => {
+  let result = [...allProducts];
+
+  // Price filter
+  if (activeFilters.maxPrice) {
+    result = result.filter(p =>
+      p.variants.some(v => v.sizes.some(s => s.price <= activeFilters.maxPrice))
+    );
+  }
+
+  if (activeFilters.subCategories?.length) {
+  result = result.filter(p =>
+    activeFilters.subCategories.includes(p.subCategory?.name)
+  );
+}
+
+// Gender filter
+if (activeFilters.Gender?.length) {
+  result = result.filter(p =>
+    activeFilters.Gender.includes(p.subCategory?.gender?.name)
+  );
+}
+
+  // Color filter
+  if (activeFilters.Color?.length) {
+    result = result.filter(p =>
+      p.variants.some(v => activeFilters.Color.includes(v.color))
+    );
+  }
+
+  // Occasion filter
+  if (activeFilters.Occasion?.length) {
+    result = result.filter(p =>
+      p.occasion.some(o => activeFilters.Occasion.includes(o))
+    );
+  }
+
+  // Size filter
+  const sizeAttr = attributes.find(a => a.isSize);
+  if (sizeAttr && activeFilters[sizeAttr.name]?.length) {
+    result = result.filter(p =>
+      p.variants.some(v =>
+        v.sizes.some(s => activeFilters[sizeAttr.name].includes(String(s.size)))
+      )
+    );
+  }
+
+  //  Size filter for collection (no attributes)
+  if (!sizeAttr && activeFilters.Size?.length) {
+    result = result.filter(p =>
+      p.variants.some(v =>
+        v.sizes.some(s => activeFilters.Size.includes(String(s.size)))
+      )
+    );
+  }
+
+  // ProductType filter (collection page)
+  if (activeFilters.ProductType?.length) {
+    result = result.filter(p =>
+      activeFilters.ProductType.includes(p.productType?._id?.toString() || p.productType?.toString())
+    );
+  }
+
+  // Flags filter
+  if (activeFilters.isTrending) result = result.filter(p => p.isTrending);
+  if (activeFilters.isBestSeller) result = result.filter(p => p.isBestSeller);
+  if (activeFilters.isNewArrival) result = result.filter(p => p.isNewArrival);
+
+  
+
+  // Attributes filter
+  attributes.filter(a => !a.isSize).forEach(attr => {
+    if (activeFilters[attr.name]?.length) {
+      result = result.filter(p => {
+        let specValue;
+        if (typeof p.specifications?.get === "function") {
+          specValue = p.specifications.get(attr.name);
+        } else {
+          specValue = p.specifications?.[attr.name];
+        }
+        const cleanValue = String(specValue || "").replace(/^"+|"+$/g, "").trim();
+        return activeFilters[attr.name].includes(cleanValue);
+      });
     }
+  });
+
+
+  if (sortType === "low") {
+    result.sort((a, b) => (a.variants[0]?.sizes[0]?.price || 0) - (b.variants[0]?.sizes[0]?.price || 0));
+  } else if (sortType === "high") {
+    result.sort((a, b) => (b.variants[0]?.sizes[0]?.price || 0) - (a.variants[0]?.sizes[0]?.price || 0));
+  } else if (sortType === "rating") {
+    result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  } else if (sortType === "latest") {
+    result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  }
+
+  setFilteredProducts(result);
+}, [activeFilters, sortType, allProducts, attributes]);
  
-    if (activeFilters.Color?.length) {
-      result = result.filter(p =>
-        p.variants.some(v => activeFilters.Color.includes(v.color))
-      );
-    }
- 
-    if (activeFilters.Occasion?.length) {
-      result = result.filter(p =>
-        p.occasion.some(o => activeFilters.Occasion.includes(o))
-      );
-    }
- 
-    const sizeAttr = attributes.find(a => a.isSize);
-    if (sizeAttr && activeFilters[sizeAttr.name]?.length) {
-      result = result.filter(p =>
-        p.variants.some(v =>
-          v.sizes.some(s => activeFilters[sizeAttr.name].includes(String(s.size)))
-        )
-      );
-    }
- 
-    attributes.filter(a => !a.isSize).forEach(attr => {
-      if (activeFilters[attr.name]?.length) {
-        result = result.filter(p => {
-          let specValue;
-          if (typeof p.specifications?.get === "function") {
-            specValue = p.specifications.get(attr.name);
-          } else {
-            specValue = p.specifications?.[attr.name];
-          }
-          const cleanValue = String(specValue || "").replace(/^"+|"+$/g, "").trim();
-          return activeFilters[attr.name].includes(cleanValue);
-        });
-      }
-    });
- 
-    if (sortType === "low") {
-      result.sort((a, b) => (a.variants[0]?.sizes[0]?.price || 0) - (b.variants[0]?.sizes[0]?.price || 0));
-    } else if (sortType === "high") {
-      result.sort((a, b) => (b.variants[0]?.sizes[0]?.price || 0) - (a.variants[0]?.sizes[0]?.price || 0));
-    } else if (sortType === "rating") {
-      result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    } else if (sortType === "latest") {
-      result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    }
- 
-    setFilteredProducts(result);
-  }, [activeFilters, sortType, allProducts, attributes]);
- 
-  return (
+
+
+return (
     <div className="pl-container">
  
-      {/* ===== DESKTOP LEFT SIDEBAR ===== */}
+      {/*  DESKTOP LEFT SIDEBAR  */}
       <div className="pl-left desktop-only">
      <div className="pl-breadcrumb">
-  Home / Products / {slug?.replace(/-/g, " ")}
-</div>
+     Home / Products / {slug?.replace(/-/g, " ")}
+     </div>
         {filterMeta && (
           <FilterSidebar
             attributes={attributes}
@@ -115,7 +191,7 @@ const ProductListing = () => {
         )}
       </div>
  
-      {/* ===== RIGHT PRODUCT AREA ===== */}
+      {/* RIGHT PRODUCT AREA  */}
       <div className="pl-products">
  
         {/* Mobile breadcrumb */}
@@ -183,7 +259,7 @@ const ProductListing = () => {
         </button>
       </div>
  
-      {/* ===== MOBILE FILTER DRAWER ===== */}
+      {/*  MOBILE FILTER DRAWER */}
       {showFilter && (
         <div className="mobile-filter-overlay" onClick={() => setShowFilter(false)}>
           <div

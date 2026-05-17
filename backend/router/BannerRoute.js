@@ -9,7 +9,7 @@ const {
 
 const upload = require("../Config/CloudConfig"); // multer config
 
-// ✅ ROUTES
+
 router.post("/create", upload.single("image"), createBanner);
 router.get("/", getBanners);
 router.put("/:id", upload.single("image"), updateBanner);

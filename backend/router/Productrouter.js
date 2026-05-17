@@ -1,4 +1,4 @@
-// 🔥 Product Route FIX
+
 
 const express = require("express");
 const router = express.Router();
@@ -14,7 +14,8 @@ const {
   updateProduct,
   deleteProduct,
   getHomeProducts,
-  getProductsByProductType
+  getProductsByProductType,
+  getProductsByOccasion
 } = require("../Controller/ProductController");
 
 // CREATE
@@ -25,10 +26,6 @@ router.get("/home", getHomeProducts);
 router.get("/filter", getFilteredProducts);
 router.get("/type/:productType", getProductsByProductType);
 router.get("/:id", getSingleProduct);
-
-// 🔥 IMPORTANT FIX
-// OLD:
-// router.put("/:id", updateProduct);
 
 // NEW:
 router.put("/:id", upload.any(), updateProduct);
@@ -53,14 +50,13 @@ router.get("/all-occasions", async (req, res) => {
 // existing routes ke baad, lekin /:id se PEHLE add karo
 router.get("/by-slug/:slug", async (req, res) => {
   try {
-    // 1. Slug se ProductType dhundo
+
     const productType = await ProductType.findOne({ slug: req.params.slug });
 
     if (!productType) {
       return res.status(404).json({ error: "ProductType not found" });
     }
 
-    // 2. Products fetch karo
     const products = await Product.find({ productType: productType._id });
 
     // 3. Dynamic filters
@@ -80,11 +76,11 @@ router.get("/by-slug/:slug", async (req, res) => {
       productType,
       products,
       filterMeta: {
-        colors,
-        occasions,
-        priceRange: {
-          min: prices.length ? Math.min(...prices) : 0,
-          max: prices.length ? Math.max(...prices) : 10000
+      colors,
+      occasions,
+      priceRange: {
+      min: prices.length ? Math.min(...prices) : 0,
+      max: prices.length ? Math.max(...prices) : 10000
         }
       }
     });
@@ -93,5 +89,7 @@ router.get("/by-slug/:slug", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+router.get("/by-occasion/:occasion", getProductsByOccasion);
 
 module.exports = router;

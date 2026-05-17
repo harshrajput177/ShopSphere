@@ -111,18 +111,19 @@
   background: linear-gradient(to right, #e8e5e0, transparent);
 }
 
-/* ===== GRID ===== */
 .MobileView-category-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 100px); /* fixed width */
+  justify-content: center; /* center the cards */
   gap: 10px;
 }
 
 /* ===== CARD ===== */
 .MobileView-category-card {
+   width: 100px;
   background: #ffffff;
   border-radius: 16px;
-  padding: 9px 8px 9px;
+  padding: 8px 8px 8px;
   text-align: center;
   border: 1px solid #f0ede8;
   cursor: pointer;
@@ -139,8 +140,9 @@
 
 /* ===== IMAGE ===== */
 .MobileView-category-card img {
-  width: 100%;
+  width: 80px;
   height: 78px;
+  overflow: hidden;
   object-fit: contain;
   background: #f5f3ef;
   border-radius: 11px;

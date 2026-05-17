@@ -53,7 +53,7 @@ function ProductCard({ p, isWishlisted, onWishlist }) {
       onClick={() => navigate(`/product/${p._id}`)}
     >
       <div className="card-image-wrap">
-        {/* ✅ lazy loading */}
+   
         <img
           src={p?.variants?.[0]?.mainImage || p?.variants?.[0]?.images?.[0]}
           alt={p.title}
@@ -107,7 +107,6 @@ export default function BestSeller() {
     [wishlistItems]
   );
 
-  // ✅ useCallback — har render pe naya function nahi banega
   const handleWishlist = useCallback(
     (p, e) => {
       e.stopPropagation();

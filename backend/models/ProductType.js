@@ -27,8 +27,11 @@ const productTypeSchema = new mongoose.Schema(
 
 productTypeSchema.pre("save", function (next) {
   if (this.isModified("name") || !this.slug) {
-    this.slug = slugify(this.name);
+    this.slug = slugify(
+      `${this.name}-${Date.now()}`
+    );
   }
+
   next();
 });
 

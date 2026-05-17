@@ -330,6 +330,9 @@
 }
 
 @media (max-width: 480px) {
+  .gsub-page{
+    padding: 0;
+  }
   .gsub-page-header { padding: 24px 14px 18px; }
   .gsub-page-title { font-size: 1.7rem; }
   .gsub-section { padding: 18px 14px 6px; }

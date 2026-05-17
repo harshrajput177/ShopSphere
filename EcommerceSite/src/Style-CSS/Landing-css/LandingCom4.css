@@ -5,7 +5,7 @@
   --trendbg: #fafcff;
   --card-bg: #fafcff;
   --text-primary: #1a1a1a;
-  --text-secondary: #555;
+  --text-secondary: #1a1a1a;
   --text-muted: #888;
   --discount: #c0392b;
   --badge-bg: #f0b429;
@@ -155,7 +155,7 @@ font-family: 'PoppinsRegular';
   min-width: unset;
   background: var(--card-bg);
   border-radius: var(--radius);
-  padding: 5px;
+  padding: 3px;
   overflow: hidden;
   position: relative;
   transition: var(--transition);

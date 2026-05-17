@@ -60,7 +60,10 @@ const [pasteInput, setPasteInput] = useState("");
     "Festive",
     "Travel",
     "Sports",
-    "Office"
+    "Office",
+    "Resort",
+    "Swim",
+    "Sleep Wear/Night Wear"
   ];
 
   // 🔥 FETCH INITIAL DATA

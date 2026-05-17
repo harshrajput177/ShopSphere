@@ -11,21 +11,20 @@ const {
   updateProductType
 } = require("../Controller/ProductType");
 
-// ✅ CREATE (image + data)
+
 router.post("/create", upload.single("image"), createProductType);
 
-// GET ALL
+
 router.get("/", getAllProductTypes);
 
-// GET BY SUBCATEGORY
+
 router.get("/subcategory/:subCategoryId", getProductTypesBySubCategory);
 
-// ✅ UPDATE
+
 router.put("/update/:id", upload.single("image"), updateProductType);
 
 router.delete("/:id", deleteProductType);
 
-// migrate-slugs route update karo
 router.get("/migrate-slugs", async (req, res) => {
   try {
     const productTypes = await ProductType.find({
@@ -34,7 +33,7 @@ router.get("/migrate-slugs", async (req, res) => {
       path: "subCategory",
       select: "name",
       populate: {
-        path: "gender",      // 🔥 gender bhi populate karo
+        path: "gender",    
         select: "name"
       }
     });
@@ -66,7 +65,6 @@ router.get("/migrate-slugs", async (req, res) => {
   }
 });
 
-// Ek baar run karo — index drop karna ke liye
 router.get("/clear-slugs", async (req, res) => {
   try {
     await ProductType.updateMany({}, { $unset: { slug: "" } });

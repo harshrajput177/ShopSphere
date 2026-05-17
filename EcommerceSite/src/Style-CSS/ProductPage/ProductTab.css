@@ -1,184 +1,322 @@
-.product-tabs-container {
-  max-width: 1400px;
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:opsz,wght@9..40,300;400;500;600&display=swap');
+
+/* ─── TOKENS ─────────────────────────────────────────────── */
+:root {
+  --pis-font-display: 'Cormorant Garamond', serif;
+  --pis-font-body:    'DM Sans', sans-serif;
+  --pis-ink:          #0d0d14;
+  --pis-ink-muted:    #52526b;
+  --pis-ink-light:    #9898b0;
+  --pis-surface:      #f8f9ff;
+  --pis-white:        #ffffff;
+  --pis-border:       #e4e5f0;
+  --pis-tag-bg:       #f0f1fb;
+  --pis-accent:       #6c63ff;
+  --pis-green:        #1d8a5e;
+  --pis-radius:       12px;
+  --pis-shadow:       0 2px 16px rgba(13,13,20,0.05);
+}
+
+/* ─── WRAPPER ────────────────────────────────────────────── */
+.pis-wrapper {
+  width: 100%;
+  background: var(--pis-surface);
+  border-top: 1px solid var(--pis-border);
+  font-family: var(--pis-font-body);
+}
+
+.pis-inner {
+  max-width: 1380px;
   margin: 0 auto;
-  padding: 30px 20px;
-   background-color: rgb(248, 249, 255);
-  border-radius: 12px;
+  padding: 48px 32px 80px;
 }
 
-/* jab visible ho */
-.product-tabs-container.show {
-  transform: translateY(0);
-  opacity: 1;
+/* ─── SECTION HEADING ────────────────────────────────────── */
+.pis-section {
+  margin-bottom: 0;
 }
 
-/* Tabs Header */
-.ProductTab-tabs-header {
+.pis-section-heading {
+  font-family: var(--pis-font-display);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--pis-ink);
+  margin-bottom: 20px;
+  letter-spacing: 0.01em;
+}
+
+/* ─── DIVIDER ────────────────────────────────────────────── */
+.pis-divider {
+  height: 1px;
+  background: var(--pis-border);
+  margin: 48px 0;
+}
+
+/* ─── ACCORDION GROUP ────────────────────────────────────── */
+.pis-accordion-group {
+  border: 1px solid var(--pis-border);
+  border-radius: var(--pis-radius);
+  overflow: hidden;
+  background: var(--pis-white);
+  box-shadow: var(--pis-shadow);
+}
+
+/* ─── ACCORDION ITEM ─────────────────────────────────────── */
+.pis-accordion-item {
+  border-bottom: 1px solid var(--pis-border);
+}
+
+.pis-accordion-item:last-child {
+  border-bottom: none;
+}
+
+/* ─── TRIGGER (header row) ───────────────────────────────── */
+.pis-accordion-trigger {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-
-.ProductTab-tab-btn {
-  padding: 10px 18px;
-  border: 1px solid #ddd;
-  background-color: rgb(248, 249, 255);
-  border-radius: 8px;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s ease;
+  text-align: left;
+  transition: background 0.18s ease;
+  font-family: var(--pis-font-body);
+  gap: 12px;
 }
 
-.ProductTab-tab-btn:hover {
-  background: #111;
-  color: #fff;
+.pis-accordion-trigger:hover {
+  background: var(--pis-tag-bg);
 }
 
-.ProductTab-tab-btn.active {
-  background: #111;
-  color: #fff;
-  font-weight: 500;
+.pis-accordion-item.open .pis-accordion-trigger {
+  background: var(--pis-tag-bg);
 }
 
-/* Content */
-.ProductTab-tab-content {
-   background-color: rgb(248, 249, 255);
-  padding: 20px 0;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(194, 194, 194, 0.05);
+.pis-accordion-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-/* Title */
-.ProductTab-title {
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 15px;
+.pis-accordion-icon {
+  font-size: 18px;
+  color: var(--pis-ink-muted);
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
 }
 
-/* Description */
-.ProductTab-desc {
+.pis-accordion-title {
   font-size: 15px;
-  color: #555;
-  line-height: 1.6;
-  margin-bottom: 20px;
+  font-weight: 600;
+  color: var(--pis-ink);
+  margin-bottom: 2px;
+  letter-spacing: 0.01em;
 }
 
-/* Details Grid */
-.ProductTab-details-grid {
+.pis-accordion-subtitle {
+  font-size: 12px;
+  color: var(--pis-ink-light);
+  font-weight: 400;
+}
+
+/* ─── ACCORDION BODY ─────────────────────────────────────── */
+.pis-accordion-body {
+  overflow: hidden;
+  transition: max-height 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pis-accordion-content {
+  padding: 0 24px 24px 68px; /* indent aligns with title */
+}
+
+/* ─── SPEC GRID ──────────────────────────────────────────── */
+.pis-spec-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pis-spec-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 16px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--pis-border);
+  align-items: baseline;
+}
+
+.pis-spec-row:last-child {
+  border-bottom: none;
+}
+
+.pis-spec-key {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pis-ink-muted);
+}
+
+.pis-spec-val {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--pis-ink);
+  line-height: 1.5;
+}
+
+/* ─── DESCRIPTION BLOCK ──────────────────────────────────── */
+.pis-desc-block {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pis-desc-block > p {
+  font-size: 14px;
+  color: var(--pis-ink-muted);
+  line-height: 1.8;
+}
+
+/* ─── POLICY LIST ────────────────────────────────────────── */
+.pis-policy-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.ProductTab-row {
+.pis-policy-item {
   display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 8px;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.pis-policy-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--pis-ink-muted);
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+
+.pis-policy-item p {
   font-size: 14px;
+  color: var(--pis-ink-muted);
+  line-height: 1.6;
 }
 
-.ProductTab-row span:first-child {
-  color: #777;
-  font-weight: 500;
+.pis-empty {
+  font-size: 14px;
+  color: var(--pis-ink-light);
 }
 
-.ProductTab-row span:last-child {
-  font-size: 14.4px;
-  letter-spacing: 1px;
-  line-height: 1.8;
-  color: #5f5f5f;
-  font-weight: 300;
-}
-
-/* Animation */
-.ProductTab-fade-in {
-  animation: fadeIn 0.4s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+/* ─── TABLET ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .pis-inner {
+    padding: 40px 24px 60px;
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .pis-accordion-content {
+    padding: 0 20px 20px 56px;
+  }
+
+  .pis-spec-row {
+    grid-template-columns: 160px 1fr;
   }
 }
 
-/* Responsive */
+/* ─── MOBILE ─────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .ProductTab-row {
-    flex-direction: column;
-    gap: 4px;
+  .pis-wrapper {
+    border-top: 8px solid var(--pis-border);
   }
 
-  .ProductTab-tabs-header {
-    gap: 8px;
+  .pis-inner {
+    padding: 28px 16px 100px; /* 100px bottom = above sticky CTA */
   }
 
-  .ProductTab-tab-btn {
-    font-size: 12px;
-    padding: 8px 12px;
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-
-  .product-tabs-container {
-    padding: 25px 20px;
-  }
-
-  .ProductTab-tab-btn {
-    font-size: 13px;
-    padding: 9px 14px;
-  }
-
-  .ProductTab-tab-content {
-    padding: 20px;
-  }
-
-  .ProductTab-title {
+  .pis-section-heading {
     font-size: 20px;
+    margin-bottom: 14px;
   }
-}
 
-@media (max-width: 768px) {
-
-  .product-tabs-container {
-    padding: 15px 12px;
+  .pis-divider {
+    margin: 32px 0;
+    /* thicker visual divider on mobile */
+    height: 6px;
+    background: var(--pis-border);
+    margin-left: -16px;
+    margin-right: -16px;
     border-radius: 0;
   }
 
-  .ProductTab-tab-content {
-    padding: 15px 5px;
+  /* Accordion trigger */
+  .pis-accordion-trigger {
+    padding: 16px 16px;
+    gap: 8px;
   }
 
-  .ProductTab-title {
-    font-size: 18px;
+  .pis-accordion-left {
+    gap: 12px;
   }
 
-  .ProductTab-desc {
+  .pis-accordion-icon {
+    font-size: 16px;
+    width: 24px;
+  }
+
+  .pis-accordion-title {
     font-size: 14px;
   }
 
-  .ProductTab-row {
-    flex-direction: column;
-    gap: 4px;
+  .pis-accordion-subtitle {
+    font-size: 11px;
+  }
+
+  /* Content — no deep indent on mobile */
+  .pis-accordion-content {
+    padding: 0 16px 20px 16px;
+  }
+
+  /* Spec rows — stacked on mobile */
+  .pis-spec-row {
+    grid-template-columns: 1fr;
+    gap: 3px;
     padding: 10px 0;
   }
 
-  .ProductTab-row span:first-child {
-    font-size: 12px;
-    color: #999;
+  .pis-spec-key {
+    font-size: 10px;
+    letter-spacing: 0.07em;
+    color: var(--pis-ink-light);
   }
 
-  .ProductTab-row span:last-child {
-    font-size: 14px;
+  .pis-spec-val {
+    font-size: 13px;
     font-weight: 500;
+    color: var(--pis-ink);
+  }
+
+  .pis-desc-block > p {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .pis-policy-item p {
+    font-size: 13px;
+  }
+}
+
+/* ─── SMALL PHONES ───────────────────────────────────────── */
+@media (max-width: 400px) {
+  .pis-accordion-trigger {
+    padding: 14px 12px;
+  }
+
+  .pis-section-heading {
+    font-size: 18px;
   }
 }

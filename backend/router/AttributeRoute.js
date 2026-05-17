@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const Attribute = require("../models/AttributeModel");
 
-// ✅ CREATE
 router.post("/create", async (req, res) => {
   try {
     const attr = new Attribute(req.body);
@@ -13,7 +12,7 @@ router.post("/create", async (req, res) => {
   }
 });
 
-// ✅ GET BY PRODUCT TYPE
+
 router.get("/product/:productTypeId", async (req, res) => {
   try {
     const attrs = await Attribute.find({
@@ -27,7 +26,7 @@ router.get("/product/:productTypeId", async (req, res) => {
 });
 
 
-// ✅ UPDATE ATTRIBUTE
+
 router.put("/update/:id", async (req, res) => {
   try {
     const updated = await Attribute.findByIdAndUpdate(
@@ -47,7 +46,7 @@ router.put("/update/:id", async (req, res) => {
 });
 
 
-// ✅ DELETE ATTRIBUTE
+
 router.delete("/delete/:id", async (req, res) => {
   try {
     const deleted = await Attribute.findByIdAndDelete(req.params.id);

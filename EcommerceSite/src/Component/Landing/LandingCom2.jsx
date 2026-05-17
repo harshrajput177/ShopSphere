@@ -48,7 +48,6 @@ function CategoryCard({ item }) {
 export default function CategoryGrid() {
   const { data } = useSelector((state) => state.productType);
 
-  // 🔥 shuffle + limit (memoized for performance)
   const categories = useMemo(() => {
     if (!data || data.length === 0) return [];
 

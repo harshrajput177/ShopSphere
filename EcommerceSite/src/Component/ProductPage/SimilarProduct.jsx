@@ -13,17 +13,17 @@ const SimilarProducts = () => {
     (state) => state.products
   );
 
-  // 🔥 current product
+  //  current product
   const currentProduct = allItems.find(
     (item) => item._id === id
   );
 
-  // 🔥 fetch all products once
+  //  fetch all products once
   useEffect(() => {
     dispatch(fetchAllProducts());
   }, [dispatch]);
 
-  // 🔥 similar products logic
+  //  similar products logic
   const similarProducts = allItems
     .filter((item) => {
       // current product remove
@@ -119,11 +119,11 @@ const oldPrice = originalPrice;
 
                 <div className="price-row">
                   <span className="similar-product-price">
-                    Rs. {finalPrice}
+                     ₹{Number(finalPrice).toLocaleString("en-IN")}
                   </span>
 
                   <span className="similar-product-old-price">
-                    Rs. {oldPrice}
+                      ₹{Number(oldPrice).toLocaleString("en-IN")}
                   </span>
 
                <span className="similar-product-discount">

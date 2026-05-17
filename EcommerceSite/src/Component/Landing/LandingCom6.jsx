@@ -88,12 +88,12 @@ export default function NewArrival() {
   const navigate = useNavigate();
   const scrollRef = useRef(null);
 
-  // ✅ BestSeller jaisa — Redux se data lo, axios hata diya
+
   const { homeItems, loading } = useSelector((state) => state.products);
   const wishlistItems = useSelector((state) => state.wishlist.items);
   const { user } = useSelector((state) => state.auth);
 
-  // ✅ homeItems.newArrival use karo (BestSeller mein homeItems.bestSeller tha)
+
   const newArrival = homeItems.newArrival || [];
 
   useEffect(() => {

@@ -79,7 +79,10 @@ productType: {
     "Festive",
     "Travel",
     "Sports",
-    "Office"
+    "Office",
+    "Resort",
+    "Swim",
+    "Sleep Wear/Night Wear",
   ],
   default: []
 },

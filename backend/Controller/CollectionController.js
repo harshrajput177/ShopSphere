@@ -1,3 +1,4 @@
+const Product = require("../models/Product");
 const Collection = require("../models/Collection");
 
 // ✅ CREATE COLLECTION
@@ -119,7 +120,77 @@ const updateCollection = async (req, res) => {
 };
 
 
-// ✅ DELETE COLLECTION
+// Controller mein:
+const getCollectionBySlug = async (req, res) => {
+  try {
+    const collection = await Collection.findOne({ slug: req.params.slug });
+    if (!collection) return res.status(404).json({ message: "Collection not found" });
+
+    const products = await Product.find({ collections: collection._id })
+      .populate("productType", "name")
+      .populate({
+        path: "subCategory",
+        populate: { path: "gender", select: "name" }
+      });
+
+    const colors = [...new Set(
+      products.flatMap(p => p.variants.map(v => v.color).filter(Boolean))
+    )];
+
+    const occasions = [...new Set(
+      products.flatMap(p => p.occasion || [])
+    )];
+
+    const sizes = [...new Set(
+      products.flatMap(p =>
+        p.variants.flatMap(v => v.sizes.map(s => String(s.size)))
+      ).filter(Boolean)
+    )];
+
+    const productTypes = [...new Map(
+      products
+        .filter(p => p.productType)
+        .map(p => [p.productType._id.toString(), p.productType.name])
+    ).entries()].map(([id, name]) => ({ id, name }));
+
+    const subCategories = [...new Set(
+      products.map(p => p.subCategory?.name).filter(Boolean)
+    )];
+
+    const genders = [...new Set(
+      products.map(p => p.subCategory?.gender?.name).filter(Boolean)
+    )];
+
+    const prices = products.flatMap(p =>
+      p.variants.flatMap(v => v.sizes.map(s => s.price))
+    ).filter(Boolean);
+
+    const filterMeta = {
+      colors,
+      occasions,
+      sizes,
+      productTypes,
+      subCategories,  
+      genders,        
+      priceRange: {
+        min: prices.length ? Math.min(...prices) : 0,
+        max: prices.length ? Math.max(...prices) : 10000,
+      },
+      flags: [
+        { key: "isTrending", label: "Trending" },
+        { key: "isBestSeller", label: "Bestseller" },
+        { key: "isNewArrival", label: "New Arrival" },
+      ]
+    };
+
+    res.json({ collection, products, filterMeta });
+  } catch (err) {
+    console.error("ERROR:", err.message);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+//  DELETE COLLECTION
 const deleteCollection = async (req, res) => {
   try {
     const collection = await Collection.findByIdAndDelete(req.params.id);
@@ -142,5 +213,6 @@ module.exports = {
   getCollections,
   getCollectionById,
   deleteCollection,
-  updateCollection
+  updateCollection,
+  getCollectionBySlug
 };
