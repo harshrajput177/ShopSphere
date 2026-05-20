@@ -4,25 +4,17 @@ import "../../Style-CSS/Cart/FilledCart.css";
 import { X, Trash2 } from "lucide-react";
 import { FaCheckCircle, FaShieldAlt, FaUndo } from "react-icons/fa";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CartDrawer = ({ onClose }) => {
 const dispatch = useDispatch();
+const navigate = useNavigate(); 
 const cartItems = useSelector((state) => state.cart.items);
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated); // adjust path
+const { user } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    if (isAuthenticated) {          
-      dispatch(fetchCart()).then((res) => {
-        console.log("FETCH CART RESULT:", res.payload);
-      });
-    }
-  }, [dispatch, isAuthenticated]);
 
-// CartDrawer.js mein temporarily add karo
 useEffect(() => {
-  dispatch(fetchCart()).then((res) => {
-    console.log("FETCH CART RESULT:", res.payload);
-  });
+  dispatch(fetchCart());  
 }, [dispatch]);
 
   const bagTotal = cartItems.reduce(
@@ -143,7 +135,7 @@ useEffect(() => {
             <span>You Pay :</span>
             <h3>₹{finalTotal}</h3>
 
-            <p className="discount">
+            <p className="cart-discount">
               {Math.round((totalDiscount / bagTotal) * 100) || 0}% off
               <span className="discount-old-price">
                 ₹{bagTotal}
@@ -219,13 +211,24 @@ useEffect(() => {
             You saved ₹999 on this purchase
           </div>
 
-          {/* Bottom */}
-         <div className="Filled-cart-footer">
+<div className="Filled-cart-footer">
   <div>
     <h3>₹{finalTotal}</h3>
     <p>View Details</p>
   </div>
-  <button>Proceed to Buy</button>
+  <button
+    onClick={() => {
+  if (!user) {          // ← isAuthenticated ki jagah user check karo
+    navigate("?auth=login");
+    onClose();
+    return;
+  }
+  onClose();
+  navigate("/checkout");
+}}
+  >
+    Proceed to Buy ({cartItems.length})
+  </button>
 </div>
              </>
   )}

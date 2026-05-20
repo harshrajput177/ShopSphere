@@ -1,26 +1,16 @@
 const mongoose = require('mongoose');
-
-const reviewSchema = new mongoose.Schema({
-  rating: { type: Number, required: true },
-  title: { type: String, required: true },
-  content: { type: String, required: true },
-  image: { type: String }, // image URL or base64 string
-  name: { type: String, required: true },
-  location: { type: String, required: true },
-  date: { type: String, required: true },
-  likes: { type: Number, default: 0 },
-  dislikes: { type: Number, default: 0 },
-  productId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
-    required: true,
+const ratingSchema = new mongoose.Schema(
+  {
+    product:  { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+    user:     { type: mongoose.Schema.Types.ObjectId, ref: "User",    required: true },
+    rating:   { type: Number, required: true, min: 1, max: 5 },
+    review:   { type: String, trim: true, maxlength: 500 },
+    title:    { type: String, trim: true, maxlength: 100 },
+    images:   [{ type: String }],      // Cloudinary image URLs
+    video:    { type: String, default: null },  // Cloudinary video URL
   },
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  }
-}, { timestamps: true });
-
-module.exports = mongoose.model('Review', reviewSchema);
+  { timestamps: true }
+);
+ratingSchema.index({ product: 1, user: 1 }, { unique: true });
+module.exports =  mongoose.model("Rating", ratingSchema);
 

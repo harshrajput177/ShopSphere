@@ -1,23 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const verifyToken = require("../MiddleWare/MiddleWare");
-const {
-  createOrder,
-  getUserLatestOrder,
-  getDeliveredOrdersCount,
-  getAllOrders,
-  updateOrderStatus,
-   getMyOrders,
-  cancelOrder 
-} = require('../Controller/OrderController');
-router.get('/user/:userId/latest', getUserLatestOrder);  
-router.post('/', createOrder);
-router.get("/my-orders", verifyToken, getMyOrders);
-router.get('/delivered-count', getDeliveredOrdersCount);
-router.get('/all', getAllOrders);
-router.put('/update-status/:orderId', updateOrderStatus);
-router.put('/cancel/:orderId', cancelOrder);
+const { protect } = require("../MiddleWare/authmiddleware");
 
+const OrderController = require('../controllers/OrderController');
+
+router.get('/user/:userId/latest', OrderController.getUserLatestOrder);  
+router.post('/',  protect, OrderController.createOrder);
+router.get("/my-orders", protect, OrderController.getMyOrders);
+router.get('/delivered-count', OrderController.getDeliveredOrdersCount);
+router.get("/:id", protect, OrderController.getOrderById);
+router.get('/all', OrderController.getAllOrders);
+router.put('/update-status/:orderId', OrderController.updateOrderStatus);
+router.put("/:id/cancel", protect, OrderController.cancelOrder);
 
 module.exports = router;
-

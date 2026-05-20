@@ -16,7 +16,7 @@ const {
   getHomeProducts,
   getProductsByProductType,
   getProductsByOccasion
-} = require("../Controller/ProductController");
+} = require("../controllers/ProductController");
 
 // CREATE
 router.post("/", upload.any(), createProduct);

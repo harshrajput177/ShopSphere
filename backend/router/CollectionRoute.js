@@ -8,7 +8,7 @@ const {
   deleteCollection,
   updateCollection,
   getCollectionBySlug
-} = require("../Controller/CollectionController");
+} = require("../controllers/CollectionController");
 
 const upload = require("../Config/CloudConfig");
 

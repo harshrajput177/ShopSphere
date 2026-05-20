@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+const BASE_URL ="http://localhost:4000";
 const API = `${BASE_URL}/api/auth`;
 
-// ✅ Shared axios instance with credentials always enabled
+// Shared axios instance with credentials always enabled
 const authAxios = axios.create({
   baseURL: API,
   withCredentials: true, 

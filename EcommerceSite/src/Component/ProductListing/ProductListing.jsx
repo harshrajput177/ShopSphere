@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";  
+import { useSelector, useDispatch } from "react-redux"; 
+import { addWishlist, removeWishlist, fetchWishlist } from "../Store/Slices/wishlistSlice"; 
+import { FaRegHeart, FaHeart } from "react-icons/fa";
 import axios from "axios";
 import API from "../api/api";
 import FilterSidebar from "./FilterSlider";
@@ -8,6 +11,10 @@ import "../../Style-CSS/ProductListing/ProductListing.css";
 const ProductListing = () => {
  const { slug, occasion } = useParams();
  const location = useLocation();
+
+   const navigate = useNavigate();
+const dispatch = useDispatch();
+
   const [allProducts, setAllProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [attributes, setAttributes] = useState([]);
@@ -15,6 +22,34 @@ const ProductListing = () => {
   const [activeFilters, setActiveFilters] = useState({});
   const [sortType, setSortType] = useState("");
   const [showFilter, setShowFilter] = useState(false); 
+
+
+const { user } = useSelector((state) => state.auth);
+const wishlistItems = useSelector((state) => state.wishlist.items);
+
+useEffect(() => {
+  if (user) dispatch(fetchWishlist());
+}, [dispatch, user]);
+
+const getId = (item) => item?.productId?._id || item?.productId || null;
+
+const isWishlisted = (productId) =>
+  wishlistItems?.some((item) => getId(item) === productId);
+
+const handleWishlist = (e, item) => {
+  e.stopPropagation(); // card click se alag rakho
+  if (!user) { navigate("?auth=login"); return; }
+  if (isWishlisted(item._id)) {
+    dispatch(removeWishlist({ productId: item._id }));
+  } else {
+    dispatch(addWishlist({
+      productId: item._id,
+      title: item.title,
+      price: item.variants[0]?.sizes[0]?.price || 0,
+      image: item.variants[0]?.mainImage || item.variants[0]?.images?.[0],
+    }));
+  }
+};
  
 
   useEffect(() => {
@@ -217,28 +252,37 @@ return (
         <div className="pl-grid">
           {filteredProducts.length > 0 ? (
             filteredProducts.map(item => (
-              <div className="pl-card" key={item._id}>
-                <div className="pl-img-wrap">
-                  <img
-                    src={item.variants[0]?.mainImage || item.variants[0]?.images[0] || "/placeholder.png"}
-                    alt={item.title}
-                  />
-                  <span className="pl-badge">Best Price</span>
-                  <div className="pl-actions">
-                    <button>🛒</button>
-                    <button>♡</button>
-                  </div>
-                </div>
-                <div className="pl-rating">⭐ {item.rating || 4.5}</div>
-                <div className="pl-info">
-                  <p className="pl-title">{item.title}</p>
-                  <div className="pl-price">
-                    <span className="current">₹{item.variants[0]?.sizes[0]?.price || 0}</span>
-                    <span className="old">₹{(item.variants[0]?.sizes[0]?.price || 0) + 500}</span>
-                    <span className="off">{item.discount ? `${item.discount}% OFF` : "20% OFF"}</span>
-                  </div>
-                </div>
-              </div>
+          <div
+  className="pl-card"
+  key={item._id}
+  onClick={() => navigate(`/product/${item._id}`)} 
+>
+  <div className="pl-img-wrap">
+    <img
+      src={item.variants[0]?.mainImage || item.variants[0]?.images[0] || "/placeholder.png"}
+      alt={item.title}
+    />
+    <span className="pl-badge">Best Price</span>
+    <div className="pl-actions">
+
+      <button onClick={(e) => handleWishlist(e, item)}>
+        {isWishlisted(item._id)
+          ? <FaHeart color="red" size={18} />
+          : <FaRegHeart size={18} />
+        }
+      </button>
+    </div>
+  </div>
+  <div className="pl-rating">⭐ {item.rating || 4.5}</div>
+  <div className="pl-info">
+    <p className="pl-title">{item.title}</p>
+    <div className="pl-price">
+      <span className="current">₹{item.variants[0]?.sizes[0]?.price || 0}</span>
+      <span className="old">₹{(item.variants[0]?.sizes[0]?.price || 0) + 500}</span>
+      <span className="off">{item.discount ? `${item.discount}% OFF` : "20% OFF"}</span>
+    </div>
+  </div>
+</div>
             ))
           ) : (
             <h3>No Products Found</h3>

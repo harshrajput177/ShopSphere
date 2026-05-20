@@ -1,0 +1,229 @@
+/* ============================================================
+   ORDER SUCCESS PAGE
+   Font: Playfair Display + DM Sans
+   Theme: White + Black + Champagne Gold
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+/* ---------- Page Wrapper ---------- */
+.os-page {
+  font-family: 'DM Sans', sans-serif;
+  background: rgb(250, 251, 255);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 16px;
+}
+
+/* ---------- Card ---------- */
+.os-card {
+  background: rgb(250, 251, 255);
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  padding: 52px 48px 44px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(215, 215, 215, 0.08);
+}
+
+/* ---------- Success Icon ---------- */
+.os-icon-wrap {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #f0faf4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  border: 2px solid #b8e2c8;
+  color: #3d8c5c;
+}
+
+/* ---------- Gold Accent ---------- */
+.os-gold-bar {
+  height: 3px;
+  width: 40px;
+  background: #c9a84c;
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+
+/* ---------- Title & Subtitle ---------- */
+.os-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 8px;
+}
+
+.os-subtitle {
+  font-size: 14px;
+  color: #888888;
+  margin: 0 0 28px;
+  line-height: 1.6;
+}
+
+/* ---------- Order ID Box ---------- */
+.os-order-box {
+  background: #f5f5f5;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.os-order-label {
+  font-size: 12px;
+  color: #888888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.os-order-id {
+  font-size: 15px;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.os-receipt-icon {
+  color: #888888;
+}
+
+/* ---------- Progress Steps ---------- */
+.os-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  margin-bottom: 32px;
+}
+
+.os-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.os-step-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.os-step-dot.done {
+  background: #000000;
+  color: #ffffff;
+}
+
+.os-step-dot.pending {
+  background: #f5f5f5;
+  border: 1.5px solid #e0e0e0;
+  color: #bbbbbb;
+}
+
+.os-step-label {
+  font-size: 10.5px;
+  color: #888888;
+  letter-spacing: 0.3px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.os-step-label.done {
+  color: #000000;
+  font-weight: 600;
+}
+
+.os-step-line {
+  flex: 1;
+  height: 1.5px;
+  background: #e0e0e0;
+  margin-bottom: 18px;
+  min-width: 12px;
+}
+
+.os-step-line.done {
+  background: #000000;
+}
+
+/* ---------- Buttons ---------- */
+.os-btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: all 0.2s;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.os-btn-primary:hover {
+  background: #1a1a1a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+.os-btn-ghost {
+  width: 100%;
+  padding: 13px;
+  background: transparent;
+  color: #000000;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.os-btn-ghost:hover {
+  border-color: #000000;
+  background: #f5f5f5;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 520px) {
+  .os-card {
+    padding: 36px 24px 32px;
+  }
+
+  .os-title {
+    font-size: 22px;
+  }
+
+  .os-step-label {
+    font-size: 9px;
+  }
+}

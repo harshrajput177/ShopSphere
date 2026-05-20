@@ -16,6 +16,10 @@ const authRoutes = require("./router/userLoginrouter");
 const genderRoutes = require("./router/GenderRoute")
 const CartRoutes = require("./router/Cartrouter");
 const WishlistRoutes = require("./router/WishlistRoutes")
+const RatingRoutes =require("./router/ReviewRoutes")
+const OrderRoute = require("./router/OrderRoutes")
+const AddressRoute = require("./router/Addressrouter")
+const PaymentRoute = require("./router/PaymentRoute")
 const compression = require("compression");
 const path = require("path");
 const app = express();
@@ -40,10 +44,6 @@ app.use(cookieParser());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(compression()); // for gzip compression
-
-app.use("/uploads", express.static("uploads", {
-  maxAge: '7d' // cache images for 7 days
-}));
 
 
 // Database Connection
@@ -77,6 +77,10 @@ app.use("/api/product-type", productTypeRoutes);
 app.use("/api/collection", CollectionRoutes);
 app.use("/api/cart", CartRoutes);
 app.use("/api/wishlist", WishlistRoutes);
+app.use("/api/ratings", RatingRoutes);
+app.use("/api/address", AddressRoute);
+app.use("/api/payment", PaymentRoute);
+app.use("/api/orders",    OrderRoute);
 
 app.get("/", (req, res) => {
   res.send("Backend is running");

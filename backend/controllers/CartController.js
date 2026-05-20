@@ -1,10 +1,21 @@
 const Cart = require("../models/Cart");
 const Product = require("../models/Product");
+const mongoose = require("mongoose");
+
+// helper
+const getUserId = (req) => {
+  if (!req.user?.id) return null;
+  try {
+    return new mongoose.Types.ObjectId(req.user.id);
+  } catch {
+    return null;
+  }
+};
 
 exports.addToCart = async (req, res) => {
   try {
-    const userId = req.user?.id;
-    const guestId = req.cookies.guestId;
+    const userId = getUserId(req);
+    const guestId = req.guestId || req.cookies?.guestId; 
 
 
     const { productId, size } = req.body;
@@ -27,13 +38,13 @@ exports.addToCart = async (req, res) => {
     if (!sizeObj) sizeObj = variant.sizes[0];
 
     const discount = product.discount || 0;
-const finalPrice = Math.max(0, sizeObj.price - discount);
+    const finalPrice = Math.max(0, sizeObj.price - discount);
 
     const item = {
       productId,
       size: sizeObj.size,
-    price: finalPrice,           // ✅ 1150 - 400 = 750
-  originalPrice: sizeObj.price,
+      price: finalPrice,
+      originalPrice: sizeObj.price,
       image: variant.mainImage,
       title: product.title,
       qty: 1,
@@ -57,33 +68,40 @@ const finalPrice = Math.max(0, sizeObj.price - discount);
     }
 
     await cart.save();
-    res.json(cart);
+    res.json({ items: cart.items });
   } catch (err) {
+      console.log("ADD TO CART ERROR:", err);
     console.log(err);
   }
 };
 
+
 exports.getCart = async (req, res) => {
-  const userId = req.user?.id;
-  const guestId = req.cookies.guestId || req.guestId;
+  const userId = getUserId(req);
+  const guestId = req.guestId || req.cookies?.guestId; 
+
 
   let cart;
+
   if (userId) {
     cart = await Cart.findOne({ userId });
-  } else if (guestId) {
+  }
+
+  if (!cart && guestId) {
     cart = await Cart.findOne({ guestId });
   }
 
-  res.json(cart || { items: [] });
+
+  res.json({ items: cart?.items || [] });
 };
 
 exports.removeItem = async (req, res) => {
   try {
-    const userId = req.user?.id;
-    const guestId = req.cookies.guestId;
+    const userId = getUserId(req);
+   const guestId = req.guestId || req.cookies?.guestId;  
 
-    let cart = userId 
-      ? await Cart.findOne({ userId }) 
+    let cart = userId
+      ? await Cart.findOne({ userId })
       : await Cart.findOne({ guestId });
 
     if (!cart) return res.json({ items: [] });
@@ -91,21 +109,21 @@ exports.removeItem = async (req, res) => {
     const { productId, size } = req.body;
 
     const itemIndex = cart.items.findIndex(
-      (i) => i.productId.toString() === productId && i.size === size
+      (i) =>
+        i.productId.toString() === productId &&
+        i.size === size
     );
 
     if (itemIndex !== -1) {
       if (cart.items[itemIndex].qty > 1) {
-        // ✅ Qty kam karo, delete mat karo
         cart.items[itemIndex].qty -= 1;
       } else {
-        // ✅ Qty 1 hai toh remove karo
         cart.items.splice(itemIndex, 1);
       }
     }
 
     await cart.save();
-    res.json(cart);
+    res.json({ items: cart.items });
   } catch (error) {
     console.log("REMOVE ERROR:", error);
     res.status(500).json({ message: "Server Error" });
@@ -113,30 +131,33 @@ exports.removeItem = async (req, res) => {
 };
 
 exports.mergeCart = async (req, res) => {
-  const userId = req.user.id;
-  const guestId = req.cookies.guestId;
+  const userId = getUserId(req);
+  const guestId = req.guestId || req.cookies?.guestId;
 
   const guestCart = await Cart.findOne({ guestId });
   let userCart = await Cart.findOne({ userId });
 
-
   if (!guestCart || guestCart.items.length === 0) {
-    return res.json(userCart || { items: [] });
+    return res.json({ items: userCart?.items || [] });
   }
 
+  
+  if (userCart && userCart._id.toString() === guestCart._id.toString()) {
+    return res.json({ items: userCart.items });
+  }
+
+ 
   if (!userCart) {
     guestCart.userId = userId;
     guestCart.guestId = null;
     await guestCart.save();
-    return res.json(guestCart);
+    return res.json({ items: guestCart.items });
   }
 
-  // ✅ User cart ko guest cart se replace karo
+  // Dono alag hain — merge karo aur guest wala delete karo
   userCart.items = guestCart.items;
   await userCart.save();
+  await Cart.deleteOne({ _id: guestCart._id });  
 
-  // ✅ Guest cart delete karo
-  await Cart.deleteOne({ guestId });
-
-  res.json(userCart);
+  res.json({ items: userCart.items });
 };

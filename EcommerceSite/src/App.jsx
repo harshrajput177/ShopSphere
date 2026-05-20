@@ -7,6 +7,10 @@ import { fetchProductTypes } from "./Component/Store/Slices/ProductType";
 import ScrollToTop from "./Component/ScrollTop";
 
 import Navbar from "./Component/Navbar/Navbar"; 
+import Checkout from "./Component/Order/Checkout";
+import MyOrders   from "./Component/Order/MyOrder";
+import OrderDetail from "./Component/Order/OrderDetails";
+import OrderSuccess from "./Component/Order/OrderSuccess";
 
 const Footer = lazy(() => import("./Component/Footer"));
 const Home = lazy(() => import("./Pages/LandingPage"));
@@ -15,6 +19,7 @@ const MobileSearch = lazy(() => import("./Component/Landing/SearchMobileView/Sea
 const Wishlist = lazy(() => import("./Component/Wishlist/Wishlist"));
 const ViewProduct = lazy(() => import("./Pages/ViewProductPage"));
 const ProductListing = lazy(() => import("./Component/ProductListing/ProductListing"));
+
 
 function App() {
 
@@ -56,6 +61,12 @@ function App() {
         <Route path="/product/:id" element={<ViewProduct />} />
         <Route path="/products/:slug" element={<ProductListing />} />
         <Route path="/occasion/:occasion" element={<ProductListing />} /> 
+
+        <Route path="/checkout"  element={<Checkout />} />
+<Route path="/orders"    element={<MyOrders />} />
+<Route path="/order/:id" element={<OrderDetail />} />
+<Route path="/order-success/:id" element={<OrderSuccess />} />
+
       </Routes>
 
       <Footer />

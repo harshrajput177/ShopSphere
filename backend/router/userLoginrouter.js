@@ -6,7 +6,7 @@ const {
   googleLogin,
   getMe,
   logout,
-} = require("../Controller/userLoginController");
+} = require("../controllers/userLoginController");
 
 const { protect } = require("../MiddleWare/authmiddleware");
 

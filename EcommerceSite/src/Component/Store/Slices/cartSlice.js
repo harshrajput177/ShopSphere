@@ -6,7 +6,7 @@ import {
   mergeCartApi,
 } from "../../api/Cartapi";
 
-// 🔥 FETCH CART
+
 export const fetchCart = createAsyncThunk(
   "cart/fetch",
   async (_, { rejectWithValue }) => {
@@ -19,7 +19,7 @@ export const fetchCart = createAsyncThunk(
   }
 );
 
-// 🔥 ADD
+
 export const addCart = createAsyncThunk(
   "cart/add",
   async (data, { rejectWithValue }) => {
@@ -32,7 +32,7 @@ export const addCart = createAsyncThunk(
   }
 );
 
-// 🔥 REMOVE
+
 export const removeCart = createAsyncThunk(
   "cart/remove",
   async (data, { rejectWithValue }) => {
@@ -45,7 +45,7 @@ export const removeCart = createAsyncThunk(
   }
 );
 
-// 🔥 MERGE
+
 export const mergeCart = createAsyncThunk(
   "cart/merge",
   async (_, { rejectWithValue }) => {
@@ -81,7 +81,9 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload || [];
+        if (action.payload) {
+  state.items = action.payload;
+}
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.loading = false;
@@ -94,7 +96,9 @@ const cartSlice = createSlice({
       })
       .addCase(addCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload || [];
+       if (action.payload) {
+  state.items = action.payload;
+}
       })
       .addCase(addCart.rejected, (state, action) => {
         state.loading = false;
@@ -107,7 +111,9 @@ const cartSlice = createSlice({
       })
       .addCase(removeCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload || [];
+      if (action.payload) {
+  state.items = action.payload;
+}
       })
       .addCase(removeCart.rejected, (state, action) => {
         state.loading = false;
@@ -120,7 +126,9 @@ const cartSlice = createSlice({
       })
       .addCase(mergeCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload || [];
+      if (action.payload) {
+  state.items = action.payload;
+}
       })
       .addCase(mergeCart.rejected, (state, action) => {
         state.loading = false;

@@ -4,21 +4,16 @@ const User = require("../models/UserSchema");
 
 const generateTokenAndSetCookie = (user, res) => {
   const token = jwt.sign(
-    {
-      id: user._id,
-    },
+    { id: user._id },
     process.env.JWT_SECRET,
-    {
-      expiresIn: "7d",
-    }
+    { expiresIn: "7d" }
   );
 
-res.cookie("token", token, {
-  httpOnly: true,
-    secure: true,       // ✅ Always true on Render (HTTPS)
-    sameSite: "None",  
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-});
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+  });
 };
 
 exports.mobileAuth = async (req, res) => {
@@ -51,11 +46,7 @@ exports.mobileAuth = async (req, res) => {
     });
   } catch (error) {
     console.log("mobileAuth Error:", error);
-
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -90,11 +81,7 @@ exports.googleLogin = async (req, res) => {
     });
   } catch (error) {
     console.log("googleLogin Error:", error);
-
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -108,11 +95,7 @@ exports.getMe = async (req, res) => {
     });
   } catch (error) {
     console.log("getMe Error:", error);
-
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -120,8 +103,8 @@ exports.logout = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: true,      // ← same as set karte waqt
-      sameSite: "None",  // ← same as set karte waqt
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
     });
 
     res.status(200).json({
@@ -130,10 +113,7 @@ exports.logout = async (req, res) => {
     });
   } catch (error) {
     console.log("logout Error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 

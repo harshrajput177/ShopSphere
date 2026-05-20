@@ -7,7 +7,7 @@ const {
   getGenderByCategory,
   updateGender,
   deleteGender
-} = require("../Controller/GenderController");
+} = require("../controllers/GenderController");
 
 const upload = require("../Config/CloudConfig");
 

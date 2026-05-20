@@ -9,7 +9,7 @@ const {
   getProductTypesBySubCategory, 
   deleteProductType,
   updateProductType
-} = require("../Controller/ProductType");
+} = require("../controllers/ProductType");
 
 
 router.post("/create", upload.single("image"), createProductType);

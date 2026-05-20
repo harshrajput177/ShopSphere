@@ -6,7 +6,7 @@ const {
   getCart,
   removeItem,
   mergeCart,
-} = require("../Controller/CartController");
+} = require("../controllers/CartController");
 
 const { optionalAuth, protect } = require("../MiddleWare/authmiddleware");
 

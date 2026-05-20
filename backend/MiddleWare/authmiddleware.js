@@ -30,19 +30,19 @@ exports.optionalAuth = (req, res, next) => {
   }
 
   if (!req.user) {
-    if (!req.cookies?.guestId) {
-      const guestId = require("crypto").randomUUID();
-
+    let guestId = req.cookies?.guestId;  // ← pehle existing check karo
+    
+    if (!guestId) {
+      guestId = require("crypto").randomUUID();  // ← sirf tab naya banao
       res.cookie("guestId", guestId, {
         maxAge: 7 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: "None", 
-        secure: true,     
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
       });
-
-      req.cookies.guestId = guestId; 
     }
-    req.guestId = req.cookies.guestId;
+    
+    req.guestId = guestId;  // ← yahan set karo, cookies pe depend mat karo
   }
 
   next();

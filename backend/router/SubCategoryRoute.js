@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const upload = require("../Config/CloudConfig");
-const { createSubCategory, getSubCategories, getSubCategoryByCategory, deleteSubCategory, updateSubCategory, getSubCategoryByGender } = require("../Controller/SubCategory");
+const { createSubCategory, getSubCategories, getSubCategoryByCategory, deleteSubCategory, updateSubCategory, getSubCategoryByGender } = require("../controllers/SubCategory");
 
 router.post("/", upload.single("image"), createSubCategory);
 router.get("/", getSubCategories);

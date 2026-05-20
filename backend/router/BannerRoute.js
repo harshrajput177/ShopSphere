@@ -5,7 +5,7 @@ const {
   getBanners,
   updateBanner,
   deleteBanner,
-} = require("../Controller/BannerController");
+} = require("../controllers/BannerController");
 
 const upload = require("../Config/CloudConfig"); // multer config
 

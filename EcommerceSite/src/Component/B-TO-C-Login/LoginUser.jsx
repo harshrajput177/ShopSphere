@@ -5,8 +5,9 @@ import axios from "axios";
 import "../../Style-CSS/B-TO-C-Login/LoginUser.css";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebookF, FaApple } from "react-icons/fa";
-
-
+import { useDispatch } from "react-redux";           // ✅ ADD
+import { mergeCart } from "../Store/Slices/cartSlice"; // ✅ ADD
+import { getMe } from "../Store/Slices/authSlice";     // ✅ ADD
 
 import { initializeApp } from "firebase/app";
 import {
@@ -35,8 +36,7 @@ const LoginModal = ({ onClose }) => {
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
-
-const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
+  const dispatch = useDispatch();                      // ✅ MOVED — pehle component ke andar
 
   const setupRecaptcha = () => {
     if (!window.recaptchaVerifier) {
@@ -56,24 +56,13 @@ const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
       if (!mobile || mobile.length < 10) {
         return alert("Enter valid mobile number");
       }
-
       setLoading(true);
-
       setupRecaptcha();
-
       const appVerifier = window.recaptchaVerifier;
       const phoneNumber = `+91${mobile}`;
-
-      const result = await signInWithPhoneNumber(
-        auth,
-        phoneNumber,
-        appVerifier
-      );
-
+      const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
       setConfirmationResult(result);
-
       setShowOtpModal(true);
-
     } catch (error) {
       console.log(error);
       alert("OTP send failed");
@@ -82,31 +71,22 @@ const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
     }
   };
 
-
-
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
-
       const result = await signInWithPopup(auth, googleProvider);
-
       const user = result.user;
 
-  await API.post(
-  "/api/auth/google-login",
-  {
-    email: user.email,
-    name: user.displayName,
-    googleId: user.uid,
-  },
-  {
-    withCredentials: true,
-  }
-);
+      await API.post("/api/auth/google-login", {
+        email: user.email,
+        name: user.displayName,
+        googleId: user.uid,
+      }, { withCredentials: true });
 
-      alert("Google Login Successful");
+      await dispatch(getMe());      // ✅ user Redux mein set karo
+      await dispatch(mergeCart());  // ✅ guest cart merge karo
+
       onClose();
-      window.location.reload();
     } catch (error) {
       console.log(error);
       alert("Google Login Failed");
@@ -118,104 +98,72 @@ const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
   return (
     <>
       {!showOtpModal && (
-      <div className="login-overlay" onClick={onClose}>
-        <div
-          className="login-modal"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Close */}
-          <button
-            className="Login-close-btn"
-            onClick={onClose}
-          >
-            ×
-          </button>
+        <div className="login-overlay" onClick={onClose}>
+          <div className="login-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="Login-close-btn" onClick={onClose}>×</button>
 
-          {/* Header */}
-          <div className="login-header">
-            <h2>NYKAA FASHION</h2>
-          </div>
-
-          {/* Body */}
-          <div className="login-body">
-            <h3>Log in or sign up</h3>
-            <p>Get personalised suggestions, offers & more</p>
-
-            {/* Phone Input */}
-            <div className="phone-input">
-              <span>+91</span>
-
-              <input
-                type="text"
-                placeholder="Enter Mobile Number"
-                value={mobile}
-                maxLength={10}
-                onChange={(e) =>
-                  setMobile(e.target.value)
-                }
-              />
+            <div className="login-header">
+              <h2>NYKAA FASHION</h2>
             </div>
 
+            <div className="login-body">
+              <h3>Log in or sign up</h3>
+              <p>Get personalised suggestions, offers & more</p>
 
+              <div className="phone-input">
+                <span>+91</span>
+                <input
+                  type="text"
+                  placeholder="Enter Mobile Number"
+                  value={mobile}
+                  maxLength={10}
+                  onChange={(e) => setMobile(e.target.value)}
+                />
+              </div>
 
-            <button
-              className="otp-btn"
-              onClick={handleSendOtp}
-              disabled={loading}
-            >
-              {loading ? "Sending..." : "Get OTP"}
-            </button>
-
-
-            {/* Divider */}
-            <div className="or-divider">OR</div>
-
-            {/* Social Login */}
-            <div className="social-login">
-              <button
-                className="social-btn google"
-                onClick={handleGoogleLogin}
-              >
-                <FcGoogle className="icon" />
-                Google
+              <button className="otp-btn" onClick={handleSendOtp} disabled={loading}>
+                {loading ? "Sending..." : "Get OTP"}
               </button>
 
-              <button className="social-btn apple">
-                <FaApple className="icon" />
-                Apple
-              </button>
+              <div className="or-divider">OR</div>
 
-              <button className="social-btn facebook">
-                <FaFacebookF className="icon" />
-                Facebook
-              </button>
+              <div className="social-login">
+                <button className="social-btn google" onClick={handleGoogleLogin}>
+                  <FcGoogle className="icon" />
+                  Google
+                </button>
+                <button className="social-btn apple">
+                  <FaApple className="icon" />
+                  Apple
+                </button>
+                <button className="social-btn facebook">
+                  <FaFacebookF className="icon" />
+                  Facebook
+                </button>
+              </div>
+
+              <p className="terms">
+                By continuing, I agree to Terms & Conditions and Privacy Policy.
+              </p>
+
+              <div id="recaptcha-container"></div>
             </div>
-
-            <p className="terms">
-              By continuing, I agree to Terms &
-              Conditions and Privacy Policy.
-            </p>
-
-            {/* Firebase Recaptcha */}
-            <div id="recaptcha-container"></div>
           </div>
         </div>
-      </div>
-    )}
-    
-   {showOtpModal && (
-      <OtpModal
-        mobile={mobile}
-        confirmationResult={confirmationResult}
-        onClose={() => {
-          setShowOtpModal(false);
-          onClose(); // 🔥 close everything after OTP
-        }}
-      />
-    )}
+      )}
+
+      {showOtpModal && (
+        <OtpModal
+          mobile={mobile}
+          confirmationResult={confirmationResult}
+          onClose={() => {
+            setShowOtpModal(false);
+            onClose();
+          }}
+        />
+      )}
     </>
   );
 };
 
 export default LoginModal;
-

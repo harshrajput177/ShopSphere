@@ -18,6 +18,14 @@ const AccountPannel = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
+  const handleOrdersClick = () => {
+  if (!user) {
+    setOpenLogin(true);
+  } else {
+    navigate("/orders"); 
+  }
+};
+
   useEffect(() => {
     dispatch(getMe()); // cookie se user fetch
   }, [dispatch]);
@@ -36,7 +44,6 @@ if (openWishlist) {
     <>
       <div className="mobileView-login-container">
 
-        {/* 🔥 HEADER */}
         <div className="mobileView-login-header">
           <div>
             <h2>
@@ -57,7 +64,7 @@ if (openWishlist) {
           <FaUserCircle className="mobileView-profile-icon" />
         </div>
 
-        {/* 🔥 OFFER SECTION */}
+    
         <div className="mobileView-offer-section">
           <p className="mobileView-offer-title">
             Save big on your first 3 orders
@@ -101,25 +108,26 @@ if (openWishlist) {
           </div>
         </div>
 
-        {/* 🔥 ORDERS & WISHLIST */}
         <div className="mobileView-account-section">
           <h4>ORDERS AND WISHLIST</h4>
-
-          <div className="mobileView-account-item">
-            <div>
-              <p className="mobileView-title">Orders</p>
-              <span>
-                {user ? "Track your orders" : "Login to your account"}
-              </span>
-            </div>
-            {!user && <FaLock />}
-          </div>
+<div 
+  className="mobileView-account-item"
+  onClick={handleOrdersClick}
+>
+  <div>
+    <p className="mobileView-title">Orders</p>
+    <span>
+      {user ? "Track your orders" : "Login to your account"}
+    </span>
+  </div>
+  {!user && <FaLock />}
+</div>
 
 <div
   className="mobileView-account-item"
   onClick={() => {
     if (user) {
-      setOpenWishlist(true); // 🔥 state open
+      setOpenWishlist(true); 
     } else {
       setOpenLogin(true);
     }

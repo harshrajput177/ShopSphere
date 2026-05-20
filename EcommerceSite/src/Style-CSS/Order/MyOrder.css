@@ -1,0 +1,424 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --pink:        #ff3f6c;
+  --pink-light:  #fff0f4;
+  --pink-mid:    #ffe4ec;
+  --dark:        #1a1a2e;
+  --mid:         #4a4a6a;
+  --soft:        #f7f7fb;
+  --border:      #ebebf5;
+  --white:       #ffffff;
+  --green:       #00b27a;
+  --green-bg:    #e6f8f2;
+  --blue:        #3b82f6;
+  --blue-bg:     #eff6ff;
+  --amber:       #f59e0b;
+  --amber-bg:    #fff8e1;
+  --purple:      #a855f7;
+  --purple-bg:   #fdf4ff;
+  --red:         #ef4444;
+  --red-bg:      #fef2f2;
+  --shadow-sm:   0 2px 12px rgba(40, 40, 40, 0.06);
+  --shadow-md:   0 6px 32px rgba(137, 137, 137, 0.1);
+  --shadow-hover:0 12px 40px rgba(175, 175, 175, 0.043);
+  --radius:      16px;
+  --radius-sm:   10px;
+  --font-display:'Playfair Display', serif;
+  --font-body:   'DM Sans', sans-serif;
+}
+
+/* ══════════════════════════════════════════
+   HIDE DESKTOP NAVBAR on My Orders page
+   (add class "myorders-active" to your
+    <body> or layout wrapper when on this
+    route, OR use the selector below if
+    your navbar has a fixed class name)
+   ══════════════════════════════════════════ */
+
+/* Option A – if your navbar always has .navbar or .main-navbar */
+.my-orders-page ~ .navbar,
+.my-orders-page ~ .main-navbar,
+.navbar:has(~ .my-orders-page) {
+  display: none !important;
+}
+
+/* Option B – hide at desktop breakpoint when inside the page wrapper  
+   Use this if your Navbar is OUTSIDE the page wrapper but you wrap
+   everything in a route-level <div className="myorders-route"> */
+.myorders-route .navbar,
+.myorders-route .main-navbar,
+.myorders-route header {
+  display: none !important;
+}
+
+/* ── Nykaa-style Mobile Header ── */
+.myorders-mobile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  height: 56px;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+}
+
+.myorders-back-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dark);
+  border-radius: 50%;
+  transition: background 0.15s;
+  padding: 0;
+}
+
+.myorders-back-btn:hover {
+  background: var(--soft);
+}
+
+.myorders-header-title {
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--dark);
+  letter-spacing: 0.1px;
+}
+
+/* ── Page Wrapper ── */
+.my-orders-page {
+  min-height: 100vh;
+  background: var(--soft);
+  font-family: var(--font-body);
+  /* top padding = mobile header height (56px) + spacing */
+  padding: 20px 16px 60px;
+}
+
+/* On desktop: restore original top padding & hide mobile header */
+@media (min-width: 768px) {
+  .myorders-mobile-header {
+    display: none;
+  }
+
+  .my-orders-page {
+    padding: 20px 16px 60px;
+  }
+
+  /* Also show the desktop navbar back on larger screens */
+  .myorders-route .navbar,
+  .myorders-route .main-navbar,
+  .myorders-route header {
+    display: flex !important;
+  }
+}
+
+.my-orders-inner {
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+/* ── Order sub-count (replaces old page header on mobile) ── */
+.myorders-subcount {
+  font-size: 13px;
+  color: var(--mid);
+  font-weight: 500;
+  margin: 0 0 16px 2px;
+}
+
+/* ── Page Header (kept for desktop) ── */
+.my-orders-header {
+  display: none; /* hidden – replaced by mobile header + subcount */
+}
+
+@media (min-width: 768px) {
+  .my-orders-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .myorders-subcount {
+    display: none;
+  }
+}
+
+.my-orders-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.my-orders-count {
+  font-size: 14px;
+  color: var(--pink);
+  font-weight: 500;
+  background: var(--pink-light);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* ── Empty State ── */
+.orders-empty {
+  text-align: center;
+  padding: 80px 20px;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.orders-empty-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.orders-empty h3 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--dark);
+  margin: 0 0 8px;
+}
+
+.orders-empty p {
+  color: var(--mid);
+  font-size: 15px;
+  margin: 0 0 28px;
+}
+
+.btn-shop-now {
+  display: inline-block;
+  padding: 13px 32px;
+  background: var(--pink);
+  color: var(--white);
+  border: none;
+  border-radius: 50px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 20px rgba(255,63,108,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-shop-now:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(255,63,108,0.4);
+}
+
+/* ── Loading ── */
+.orders-loading {
+  text-align: center;
+  padding: 100px 20px;
+  font-size: 16px;
+  color: var(--mid);
+  font-family: var(--font-body);
+}
+
+.orders-loading-spinner {
+  display: inline-block;
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--pink-mid);
+  border-top-color: var(--pink);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Order Card ── */
+.order-card {
+  background: var(--white);
+  border: 1px solid rgb(211, 211, 211);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: #969696;
+}
+
+/* Card Header */
+.order-card-header {
+  background: var(--soft);
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.order-card-id-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mid);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 3px;
+}
+
+.order-card-id-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0;
+  font-family: var(--font-body);
+}
+
+.order-card-meta-right {
+  text-align: right;
+}
+
+.order-card-date {
+  font-size: 12px;
+  color: var(--mid);
+  margin: 0 0 3px;
+}
+
+.order-card-amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0;
+}
+
+/* Items Section */
+.order-card-items {
+  padding: 16px 20px;
+}
+
+.order-card-item-row {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 12px;
+  animation: fadeUp 0.3s ease both;
+}
+
+.order-card-item-row:last-child {
+  margin-bottom: 0;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.order-item-img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.order-item-info {
+  flex: 1;
+}
+
+.order-item-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dark);
+  margin: 0 0 4px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.order-item-meta {
+  font-size: 12px;
+  color: var(--mid);
+  margin: 0 0 4px;
+}
+
+.order-item-price {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark);
+  margin: 0;
+}
+
+.order-more-items {
+  font-size: 13px;
+  color: var(--pink);
+  font-weight: 500;
+  margin: 6px 0 0;
+  padding-left: 2px;
+}
+
+/* Card Footer */
+.order-card-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--soft);
+}
+
+.order-status-badge {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.status-Pending          { background: var(--amber-bg);  color: var(--amber); }
+.status-Confirmed        { background: var(--green-bg);  color: var(--green); }
+.status-Shipped          { background: var(--blue-bg);   color: var(--blue);  }
+.status-Delivered        { background: var(--green-bg);  color: #16a34a;      }
+.status-Cancelled        { background: var(--red-bg);    color: var(--red);   }
+.status-Return-Requested { background: var(--purple-bg); color: var(--purple);}
+
+.order-expected-delivery {
+  font-size: 12px;
+  color: var(--mid);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.order-expected-delivery::before {
+  content: "🚚";
+  font-size: 14px;
+}
+
+.order-card-arrow {
+  font-size: 16px;
+  color: var(--mid);
+  transition: transform 0.2s;
+}
+
+.order-card:hover .order-card-arrow {
+  transform: translateX(4px);
+  color: var(--pink);
+}

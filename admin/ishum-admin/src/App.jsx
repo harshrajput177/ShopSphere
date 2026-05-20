@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import OrdersDashboard from './Components/Orders/Orders';
 import Sidebar from './Components/Layout/Sidebar';
 import AddProduct from './Components/Products/AddProduct';
 
@@ -41,7 +40,7 @@ const App = () => {
           <div className="page-content">
 
             <Routes>
-              <Route path="/" element={<OrdersDashboard />} />
+          
     
               <Route path="/products/add-product" element={<AddProduct />} />
               <Route path="/category/add" element={<AddCategory />} />

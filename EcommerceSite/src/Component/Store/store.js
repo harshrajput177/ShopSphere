@@ -3,6 +3,9 @@ import productReducer from "./Slices/ProductSlice";
 import cartReducer from "./Slices/cartSlice";
 import wishlistReducer from "./Slices/wishlistSlice";
 import productTypeReducer from "./Slices/ProductType"
+import ratingReducer from "./Slices/RatingSlice"
+import orderReducer from "./Slices/OrderSlice";
+import addressReducer from "./Slices/addressSlice";
 import auth from "./Slices/authSlice";
 
 export const store = configureStore({
@@ -11,6 +14,9 @@ export const store = configureStore({
     wishlist: wishlistReducer,
     products: productReducer,
     productType: productTypeReducer,
-    auth: auth
+    auth: auth,
+    rating: ratingReducer,
+    order: orderReducer,
+    address: addressReducer,
   }
 });
