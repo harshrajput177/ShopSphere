@@ -60,7 +60,33 @@ const ProductPage = ({ product, setProduct }) => {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [zoomStyle, setZoomStyle] = useState({});
   const wishlistItems = useSelector((state) => state.wishlist.items);
+
+
+  const [pincode, setPincode] = useState("203001");
+  const [pincodeInfo, setPincodeInfo] = useState(null);
+  const [editing, setEditing] = useState(false);
+  const [pincodeLoading, setPincodeLoading] = useState(false);
+  const [pincodeError, setPincodeError] = useState("");
   const navigate = useNavigate();
+
+  const checkPincode = async () => {
+  if (pincode.length !== 6) {
+    setPincodeError("6 digit pincode daalo");
+    return;
+  }
+  setPincodeLoading(true);
+  setPincodeError("");
+  try {
+    const res = await axios.get(
+      `http://localhost:4000/api/pincode/check/${pincode}`
+    );
+    setPincodeInfo(res.data);
+    setEditing(false);
+  } catch (err) {
+    setPincodeError("Try again Something wrong!");
+  }
+  setPincodeLoading(false);
+};
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -78,29 +104,29 @@ const ProductPage = ({ product, setProduct }) => {
     fetchProduct();
   }, [id]);
 
-  
+
   useEffect(() => {
-  if (!product) return;
+    if (!product) return;
 
-  let recentProducts =
-    JSON.parse(localStorage.getItem("recentViewed")) || [];
+    let recentProducts =
+      JSON.parse(localStorage.getItem("recentViewed")) || [];
 
-  // same product duplicate remove
-  recentProducts = recentProducts.filter(
-    (item) => item._id !== product._id
-  );
+    // same product duplicate remove
+    recentProducts = recentProducts.filter(
+      (item) => item._id !== product._id
+    );
 
-  // new product top me add
-  recentProducts.unshift(product);
+    // new product top me add
+    recentProducts.unshift(product);
 
-  // sirf 10 products rakho
-  recentProducts = recentProducts.slice(0, 10);
+    // sirf 10 products rakho
+    recentProducts = recentProducts.slice(0, 10);
 
-  localStorage.setItem(
-    "recentViewed",
-    JSON.stringify(recentProducts)
-  );
-}, [product]);
+    localStorage.setItem(
+      "recentViewed",
+      JSON.stringify(recentProducts)
+    );
+  }, [product]);
 
   useEffect(() => {
     if (user) dispatch(fetchWishlist());
@@ -232,21 +258,99 @@ const ProductPage = ({ product, setProduct }) => {
           </button>
         </div>
 
-        {/* Delivery */}
-        <div className="delivery-location-box">
-          <h3>Select Delivery Location</h3>
-          <p>Enter the pincode of your area to check product availability and delivery options</p>
-          <div className="pincode-box">
-            <div><span>Enter Pincode</span><h4>203001</h4></div>
-            <button>Edit</button>
-          </div>
-          <div className="delivery-status">Delivers to Bulandshahr - 203001 ✓</div>
-          <div className="delivery-features">
-            <div><h4>COD available</h4><span>Know More</span></div>
-            <div><h4>7-day return & size exchange</h4><span>Know More</span></div>
-            <div><h4>Delivery by Tue, 28 Apr</h4><span>Know More</span></div>
-          </div>
+     {/* Delivery */}
+<div className="delivery-location-box">
+  <h3>Check Delivery Options</h3>
+  <p>Enter your pincode to check delivery availability and estimated date</p>
+
+  <div className="pincode-input-row">
+    {editing ? (
+      <>
+        <input
+          type="text"
+          maxLength={6}
+          value={pincode}
+          onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
+          placeholder="Enter 6-digit pincode"
+          className="pincode-input"
+          onKeyDown={(e) => e.key === "Enter" && checkPincode()}
+        />
+        <button className="pincode-check-btn" onClick={checkPincode}>
+          {pincodeLoading ? (
+            <span className="pincode-spinner" />
+          ) : "Check"}
+        </button>
+      </>
+    ) : (
+      <div className="pincode-display-row">
+        <div className="pincode-display-left">
+          <span className="pincode-label">Delivery Pincode</span>
+          <span className="pincode-value">{pincode}</span>
+          {pincodeInfo?.city && (
+            <span className="pincode-city">
+              {pincodeInfo.city}, {pincodeInfo.state}
+            </span>
+          )}
         </div>
+        <button className="pincode-change-btn" onClick={() => setEditing(true)}>
+          Change
+        </button>
+      </div>
+    )}
+  </div>
+
+  {pincodeError && (
+    <p className="pincode-error">{pincodeError}</p>
+  )}
+
+  {pincodeInfo && (
+    <div className="delivery-result">
+      {pincodeInfo.serviceable ? (
+        <>
+          <div className="delivery-serviceable">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Delivery available at this pincode
+          </div>
+
+          <div className="delivery-features">
+            <div className="delivery-feature-item">
+              <span className="feature-icon">🚚</span>
+              <div>
+                <h4>Estimated Delivery</h4>
+                <span>{pincodeInfo.estimated_delivery}</span>
+              </div>
+            </div>
+            <div className="delivery-feature-item">
+              <span className="feature-icon">💵</span>
+              <div>
+                <h4>{pincodeInfo.cod_available ? "COD Available" : "Prepaid Only"}</h4>
+                <span>{pincodeInfo.cod_available ? "Pay on delivery" : "Online payment"}</span>
+              </div>
+            </div>
+            <div className="delivery-feature-item">
+              <span className="feature-icon">↩</span>
+              <div>
+                <h4>7-Day Returns</h4>
+                <span>Free size exchange</span>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="delivery-not-available">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+          Delivery not available at this pincode
+        </div>
+      )}
+    </div>
+  )}
+</div>
 
         {/* Coupons */}
         <div className="coupon-box">
@@ -340,12 +444,11 @@ const ProductPage = ({ product, setProduct }) => {
           </AccItem>
 
         </div>
-    
+
         <div className="vp-info-heading" style={{ marginTop: "32px" }}>Rating &amp; Reviews</div>
         <CustomerReviews />
 
       </div>
-   
 
     </div>
   );

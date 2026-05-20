@@ -41,7 +41,7 @@ const RecentViewProducts = () => {
                 {item.title}
               </p>
 
-              <div className="price-row">
+              <div className="similar-price-row">
                 <span className="similar-product-price">
                   Rs. {item.price}
                 </span>

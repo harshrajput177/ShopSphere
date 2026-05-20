@@ -342,110 +342,6 @@
 
 .ViewProduct-cart-btn:active { transform: scale(0.98); }
 
-/* ─── DELIVERY BOX ──────────────────────────────────────── */
-.delivery-location-box,
-.coupon-box {
-  margin-bottom: 16px;
-  padding: 20px;
-  border-radius: var(--radius-md);
-  background: var(--clr-white);
-  border: 1px solid var(--clr-border);
-  box-shadow: var(--shadow-soft);
-  transition: box-shadow 0.2s;
-}
-
-.delivery-location-box:hover,
-.coupon-box:hover {
-  box-shadow: var(--shadow-card);
-}
-
-.delivery-location-box h3 {
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--clr-ink);
-  margin-bottom: 8px;
-}
-
-.delivery-location-box p {
-  font-size: 12px;
-  color: var(--clr-ink-light);
-  line-height: 1.5;
-  margin-bottom: 16px;
-}
-
-.pincode-box {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1.5px solid var(--clr-ink);
-  padding-bottom: 12px;
-  margin-bottom: 12px;
-}
-
-.pincode-box span {
-  font-size: 11px;
-  color: var(--clr-ink-light);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.pincode-box h4 {
-  font-size: 20px;
-  font-weight: 600;
-  margin-top: 4px;
-  color: var(--clr-ink);
-}
-
-.pincode-box button {
-  border: none;
-  background: none;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--clr-gold);
-  cursor: pointer;
-  font-family: var(--font-body);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.delivery-status {
-  font-size: 13px;
-  color: var(--clr-green);
-  font-weight: 500;
-  margin-bottom: 16px;
-}
-
-.delivery-features {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.delivery-features div {
-  background: var(--clr-tag-bg);
-  padding: 12px 10px;
-  border-radius: var(--radius-sm);
-  transition: background 0.2s;
-  border: 0.5px solid rgb(209, 209, 209);
-}
-
-.delivery-features div:hover { background: #fbfdff; }
-
-.delivery-features h4 {
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  color: var(--clr-ink) !important;
-  margin-bottom: 5px !important;
-  line-height: 1.3;
-}
-
-.delivery-features span {
-  font-size: 11px;
-  color: var(--clr-gold);
-  cursor: pointer;
-  font-weight: 500;
-}
 
 /* ─── COUPON BOX ────────────────────────────────────────── */
 .coupon-box h3 {
@@ -561,6 +457,277 @@
 
 .view-icon { font-size: 16px; }
 
+/* ─── DELIVERY BOX ──────────────────────────────────────── */
+.delivery-location-box {
+  margin-bottom: 16px;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  background: var(--clr-white);
+  border: 1px solid var(--clr-border);
+  box-shadow: var(--shadow-soft);
+  transition: box-shadow 0.2s;
+}
+
+.delivery-location-box:hover {
+  box-shadow: var(--shadow-card);
+}
+
+.delivery-location-box h3 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--clr-ink);
+  margin-bottom: 4px;
+}
+
+.delivery-location-box > p {
+  font-size: 12px;
+  color: var(--clr-ink-muted);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+/* ── Pincode Input Row ── */
+.pincode-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.pincode-input {
+  flex: 1;
+  height: 44px;
+  padding: 0 14px;
+  font-size: 15px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--clr-ink);
+  background: var(--clr-surface);
+  border: 1.5px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  letter-spacing: 0.1em;
+  transition: border-color 0.2s;
+}
+
+.pincode-input:focus {
+  border-color: var(--clr-ink);
+}
+
+.pincode-input::placeholder {
+  font-size: 13px;
+  color: var(--clr-ink-muted);
+  letter-spacing: 0.02em;
+  font-weight: 400;
+}
+
+.pincode-check-btn {
+  height: 44px;
+  padding: 0 20px;
+  background: var(--clr-ink);
+  color: var(--clr-white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+}
+
+.pincode-check-btn:hover {
+  background: #333;
+}
+
+/* Loading spinner */
+.pincode-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Pincode Display (after check) ── */
+.pincode-display-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  background: var(--clr-surface);
+  border: 1.5px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+
+.pincode-display-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pincode-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--clr-ink-muted);
+  font-weight: 500;
+}
+
+.pincode-value {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--clr-ink);
+  letter-spacing: 0.08em;
+}
+
+.pincode-city {
+  font-size: 11px;
+  color: var(--clr-green);
+  font-weight: 500;
+}
+
+.pincode-change-btn {
+  border: 1.5px solid var(--clr-border);
+  background: transparent;
+  color: var(--clr-ink);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.pincode-change-btn:hover {
+  background: var(--clr-ink);
+  color: var(--clr-white);
+  border-color: var(--clr-ink);
+}
+
+/* ── Error ── */
+.pincode-error {
+  font-size: 12px;
+  color: #c0392b;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ── Delivery Result ── */
+.delivery-result {
+  margin-top: 12px;
+  border-top: 1px solid var(--clr-border);
+  padding-top: 14px;
+}
+
+.delivery-serviceable {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--clr-green);
+  margin-bottom: 14px;
+}
+
+.delivery-not-available {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #c0392b;
+}
+
+/* ── Delivery Feature Cards ── */
+.delivery-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.delivery-feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: var(--clr-surface);
+  padding: 12px 10px;
+  border-radius: var(--radius-sm);
+  border: 0.5px solid var(--clr-border);
+  transition: background 0.2s;
+}
+
+.delivery-feature-item:hover {
+  background: #f0f0ff;
+}
+
+.feature-icon {
+  font-size: 16px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.delivery-feature-item h4 {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--clr-ink) !important;
+  margin-bottom: 2px !important;
+  line-height: 1.3;
+}
+
+.delivery-feature-item span {
+  font-size: 10px;
+  color: var(--clr-ink-muted);
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .delivery-location-box {
+    padding: 14px 12px;
+    margin-bottom: 12px;
+  }
+
+  .pincode-input { height: 40px; font-size: 14px; }
+  .pincode-check-btn { height: 40px; padding: 0 14px; font-size: 12px; }
+  .delivery-features { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .delivery-feature-item { padding: 10px 8px; gap: 6px; }
+  .feature-icon { font-size: 14px; }
+}
+
+@media (max-width: 400px) {
+  .delivery-features {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .delivery-feature-item {
+    border-radius: 0;
+    border: none;
+    border-bottom: 0.5px solid var(--clr-border);
+    background: transparent;
+  }
+
+  .delivery-feature-item:last-child {
+    border-bottom: none;
+  }
+}
 /* ─── TABLET (max 1024px) ───────────────────────────────── */
 @media (max-width: 1024px) {
   .ViewProduct-product-container {
@@ -896,30 +1063,6 @@
   
   .ViewProduct-title { font-size: 16px; }
   .ViewProduct-price { font-size: 20px; }
-
-  .delivery-features {
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    gap: 0;
-  }
-
-  .delivery-features div {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 4px;
-    border: none;
-    border-bottom: 0.5px solid var(--clr-border);
-  }
-
-  .delivery-features div:last-child {
-    border-bottom: none;
-  }
-
-  .delivery-features span {
-    font-size: 10.5px;
-  }
 
   .ViewProduct-color-list img {
     width: 48px;

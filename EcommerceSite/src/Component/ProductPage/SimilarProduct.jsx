@@ -117,7 +117,7 @@ const oldPrice = originalPrice;
                   {item.title}
                 </p>
 
-                <div className="price-row">
+                <div className="similar-price-row">
                   <span className="similar-product-price">
                      ₹{Number(finalPrice).toLocaleString("en-IN")}
                   </span>

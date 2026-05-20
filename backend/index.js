@@ -20,6 +20,7 @@ const RatingRoutes =require("./router/ReviewRoutes")
 const OrderRoute = require("./router/OrderRoutes")
 const AddressRoute = require("./router/Addressrouter")
 const PaymentRoute = require("./router/PaymentRoute")
+const PincodeRoute = require("./router/PincodeRouter")
 const compression = require("compression");
 const path = require("path");
 const app = express();
@@ -81,6 +82,7 @@ app.use("/api/ratings", RatingRoutes);
 app.use("/api/address", AddressRoute);
 app.use("/api/payment", PaymentRoute);
 app.use("/api/orders",    OrderRoute);
+app.use("/api/pincode", PincodeRoute);
 
 app.get("/", (req, res) => {
   res.send("Backend is running");
