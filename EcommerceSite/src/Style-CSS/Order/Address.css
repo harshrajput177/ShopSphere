@@ -17,16 +17,7 @@
 }
 
 /* ---------- Form Title ---------- */
-.address-form-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--obsidian);
-  margin: 0 0 18px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+
 
 .address-form-title-icon {
   width: 28px; height: 28px;
@@ -34,6 +25,47 @@
   border-radius: 6px;
   display: flex; align-items: center; justify-content: center;
   font-size: 14px;
+}
+
+/* ── Form Title row ── */
+.address-form-title {
+  display: flex;
+  align-items: center;
+    font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--obsidian);
+   margin: 0 0 18px;
+  gap: 8px;
+  position: relative;     /* ← add karo */
+  margin-bottom: 16px;
+}
+
+/* ── Close Button ── */
+.address-form-close-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border, #e0e0e0);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--muted, #888);
+  transition: all 0.2s;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.address-form-close-btn:hover {
+  background: #fff0f0;
+  border-color: #c0392b;
+  color: #c0392b;
 }
 
 /* ---------- Grid Layout ---------- */
@@ -278,4 +310,27 @@
   flex: 1;
   height: 1px;
   background: var(--border);
+}
+
+/* ── Prefill Banner ── */
+.prefill-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #f0f0ff;
+  border: 1px solid #c8c5ff;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: #534AB7;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+/* ── Prefilled field highlight ── */
+.form-input.prefilled,
+.form-select.prefilled,
+.form-textarea.prefilled {
+  border-color: #a5a0ff;
+  background: #f8f7ff;
 }

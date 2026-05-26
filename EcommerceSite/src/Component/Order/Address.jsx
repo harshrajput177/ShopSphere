@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch }     from "react-redux";
 import { addAddress }      from "../Store/Slices/addressSlice";
 import "../../Style-CSS/Order/Address.css";
 
 const STATES = [
-  "Delhi", "Maharashtra", "Karnataka", "Tamil Nadu", "Uttar Pradesh",
-  "West Bengal", "Gujarat", "Rajasthan", "Telangana", "Kerala",
-  "Madhya Pradesh", "Punjab", "Haryana", "Bihar", "Odisha",
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Delhi", "Goa", "Gujarat", "Haryana", "Himachal Pradesh",
+  "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra",
+  "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha",
+  "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana",
+  "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
 ];
 
 const TYPE_OPTIONS = [
@@ -15,7 +18,7 @@ const TYPE_OPTIONS = [
   { label: "Other", icon: "📍" },
 ];
 
-const AddressForm = ({ onClose, existing }) => {
+const AddressForm = ({ onClose, existing, prefillData }) => {
   const dispatch = useDispatch();
   const [saving, setSaving] = useState(false);
 
@@ -27,9 +30,47 @@ const AddressForm = ({ onClose, existing }) => {
     }
   );
 
+  // ── prefillData aane par fields auto-fill ──────────────
+  useEffect(() => {
+    if (!prefillData) return;
+    setForm((prev) => ({
+      ...prev,
+      pincode:  prefillData.pincode  || prev.pincode,
+      locality: prefillData.locality || prev.locality,
+      city:     prefillData.city     || prev.city,
+      state:    prefillData.state    || prev.state,
+      address:  prefillData.address  || prev.address,
+    }));
+  }, [prefillData]);
+
   const handleChange = (e) => {
     const val = e.target.type === "checkbox" ? e.target.checked : e.target.value;
     setForm((prev) => ({ ...prev, [e.target.name]: val }));
+  };
+
+  // ── Pincode se city/state auto-fetch ──────────────────
+  const handlePincodeBlur = async () => {
+    if (form.pincode.length !== 6) return;
+    try {
+      const res  = await fetch(
+        `https://api.postalpincode.in/pincode/${form.pincode}`
+      );
+      const data = await res.json();
+      if (data[0].Status !== "Success") return;
+
+      const po = data[0].PostOffice?.find(
+        (p) => p.DeliveryStatus === "Delivery"
+      ) || data[0].PostOffice?.[0];
+
+      if (!po) return;
+
+      setForm((prev) => ({
+        ...prev,
+        city:     po.District || po.Division || prev.city,
+        state:    po.State    || prev.state,
+        locality: prev.locality || po.Name || "",
+      }));
+    } catch (_) {}
   };
 
   const handleSubmit = async () => {
@@ -45,17 +86,40 @@ const AddressForm = ({ onClose, existing }) => {
 
   return (
     <div className="address-form-wrapper">
+
       {/* Title */}
-      <h3 className="address-form-title">
-        <span className="address-form-title-icon">📍</span>
-        Add New Address
-      </h3>
+   {/* Title */}
+<h3 className="address-form-title">
+  <span className="address-form-title-icon">📍</span>
+  {existing ? "Edit Address" : "Add New Address"}
 
-      {/* Section: Personal Details */}
+  {/* ← Ye add karo */}
+  <button className="address-form-close-btn" onClick={onClose}>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5"
+      strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
+</h3>
+
+      {/* prefill banner */}
+      {prefillData && (
+        <div className="prefill-banner">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+          </svg>
+          Location detected — please verify and fill remaining fields
+        </div>
+      )}
+
+      {/* ── Personal Details ── */}
       <div className="form-section-divider">Personal Details</div>
-
       <div className="address-form-grid">
-        {/* Name */}
+
         <div className="field-group">
           <label className="field-label">
             Full Name <span className="required-mark">*</span>
@@ -69,7 +133,6 @@ const AddressForm = ({ onClose, existing }) => {
           />
         </div>
 
-        {/* Phone */}
         <div className="field-group">
           <label className="field-label">
             Phone <span className="required-mark">*</span>
@@ -83,23 +146,27 @@ const AddressForm = ({ onClose, existing }) => {
             maxLength={10}
           />
         </div>
+
       </div>
 
-      {/* Section: Address */}
-      <div className="form-section-divider" style={{ marginTop: 20 }}>Address Details</div>
-
+      {/* ── Address Details ── */}
+      <div className="form-section-divider" style={{ marginTop: 20 }}>
+        Address Details
+      </div>
       <div className="address-form-grid">
-        {/* Pincode */}
+
+        {/* Pincode — onBlur se city/state fetch */}
         <div className="field-group">
           <label className="field-label">
             Pincode <span className="required-mark">*</span>
           </label>
           <input
-            className="form-input"
+            className={`form-input ${prefillData?.pincode ? "prefilled" : ""}`}
             name="pincode"
             placeholder="6-digit pincode"
             value={form.pincode}
             onChange={handleChange}
+            onBlur={handlePincodeBlur}
             maxLength={6}
           />
         </div>
@@ -110,7 +177,7 @@ const AddressForm = ({ onClose, existing }) => {
             Locality <span className="required-mark">*</span>
           </label>
           <input
-            className="form-input"
+            className={`form-input ${prefillData?.locality ? "prefilled" : ""}`}
             name="locality"
             placeholder="Area / Colony"
             value={form.locality}
@@ -124,7 +191,7 @@ const AddressForm = ({ onClose, existing }) => {
             City <span className="required-mark">*</span>
           </label>
           <input
-            className="form-input"
+            className={`form-input ${prefillData?.city ? "prefilled" : ""}`}
             name="city"
             placeholder="Your city"
             value={form.city}
@@ -139,7 +206,7 @@ const AddressForm = ({ onClose, existing }) => {
           </label>
           <div className="select-wrapper">
             <select
-              className="form-select"
+              className={`form-select ${prefillData?.state ? "prefilled" : ""}`}
               name="state"
               value={form.state}
               onChange={handleChange}
@@ -152,13 +219,13 @@ const AddressForm = ({ onClose, existing }) => {
           </div>
         </div>
 
-        {/* Address (full width) */}
+        {/* Address */}
         <div className="field-group full-width">
           <label className="field-label">
             Address <span className="required-mark">*</span>
           </label>
           <textarea
-            className="form-textarea"
+            className={`form-textarea ${prefillData?.address ? "prefilled" : ""}`}
             name="address"
             placeholder="House no., Building, Street name"
             value={form.address}
@@ -167,7 +234,7 @@ const AddressForm = ({ onClose, existing }) => {
           />
         </div>
 
-        {/* Landmark (full width) */}
+        {/* Landmark */}
         <div className="field-group full-width">
           <label className="field-label">Landmark</label>
           <input
@@ -178,10 +245,13 @@ const AddressForm = ({ onClose, existing }) => {
             onChange={handleChange}
           />
         </div>
+
       </div>
 
-      {/* Address Type */}
-      <div className="form-section-divider" style={{ marginTop: 20 }}>Address Type</div>
+      {/* ── Address Type ── */}
+      <div className="form-section-divider" style={{ marginTop: 20 }}>
+        Address Type
+      </div>
       <div className="type-selector">
         {TYPE_OPTIONS.map(({ label, icon }) => (
           <button
@@ -208,21 +278,16 @@ const AddressForm = ({ onClose, existing }) => {
 
       {/* Actions */}
       <div className="form-actions">
-        <button className="btn-cancel" onClick={onClose}>
-          Cancel
-        </button>
+        <button className="btn-cancel" onClick={onClose}>Cancel</button>
         <button
           className="btn-save"
           onClick={handleSubmit}
           disabled={saving}
         >
-          {saving ? (
-            <>Saving…</>
-          ) : (
-            <>Save Address →</>
-          )}
+          {saving ? "Saving…" : "Save Address →"}
         </button>
       </div>
+
     </div>
   );
 };

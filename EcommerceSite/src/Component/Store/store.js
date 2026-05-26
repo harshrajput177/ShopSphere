@@ -7,6 +7,8 @@ import ratingReducer from "./Slices/RatingSlice"
 import orderReducer from "./Slices/OrderSlice";
 import addressReducer from "./Slices/addressSlice";
 import auth from "./Slices/authSlice";
+import couponReducer from "./Slices/CouponSlice";
+
 
 export const store = configureStore({
   reducer: {
@@ -18,5 +20,6 @@ export const store = configureStore({
     rating: ratingReducer,
     order: orderReducer,
     address: addressReducer,
+     coupon: couponReducer,
   }
 });

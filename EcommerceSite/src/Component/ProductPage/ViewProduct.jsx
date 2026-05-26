@@ -9,6 +9,7 @@ import axios from "axios";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { FiShoppingBag } from "react-icons/fi";
 import CustomerReviews from "./CustomerReview";
+import CouponBox from "./CouponBox";
 
 
 // ── Chevron icon ─────────────────────────────────────────────
@@ -353,25 +354,9 @@ const ProductPage = ({ product, setProduct }) => {
 </div>
 
         {/* Coupons */}
-        <div className="coupon-box">
-          <h3>Coupons • 3 available</h3>
-          <div className="coupon-list">
-            <div className="single-coupon">
-              <h4>Extra 15% off</h4>
-              <p>Extra 15% off upto ₹200 on a minimum order</p>
-              <div className="coupon-footer"><span>NFNEW15</span><button>Copy Code</button></div>
-            </div>
-            <div className="single-coupon">
-              <h4>Extra 10% off</h4>
-              <p>Get extra 10% off on your purchase</p>
-              <div className="coupon-footer"><span>NFFLAT10</span><button>Copy Code</button></div>
-            </div>
-          </div>
-        </div>
+    <CouponBox productId={product._id} orderAmount={finalPrice} />
 
-        {/* ════════════════════════════════════════════════════
-            NYKAA-STYLE ACCORDION — Product Information
-            ════════════════════════════════════════════════════ */}
+    
         <div className="vp-info-heading">Product Information</div>
 
         <div className="vp-acc-group">

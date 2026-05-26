@@ -1,10 +1,13 @@
 import { useSelector, useDispatch } from "react-redux";
+import CouponSheet from "./CouponSheetCom2";
 import { fetchCart, removeCart, addCart } from "../Store/Slices/cartSlice";
 import "../../Style-CSS/Cart/FilledCart.css";
 import { X, Trash2 } from "lucide-react";
 import { FaCheckCircle, FaShieldAlt, FaUndo } from "react-icons/fa";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { removeCoupon } from "../Store/Slices/CouponSlice";
+import { useState } from "react";
 
 const CartDrawer = ({ onClose }) => {
 const dispatch = useDispatch();
@@ -12,6 +15,8 @@ const navigate = useNavigate();
 const cartItems = useSelector((state) => state.cart.items);
 const { user } = useSelector((state) => state.auth);
 
+const [showCouponSheet, setShowCouponSheet] = useState(false);
+const { applied: appliedCoupon, discount: couponDiscount } = useSelector(s => s.coupon);
 
 useEffect(() => {
   dispatch(fetchCart());  
@@ -29,10 +34,7 @@ useEffect(() => {
     0
   );
 
-  const finalTotal = cartItems.reduce(
-    (acc, item) => acc + item.price * item.qty,
-    0
-  );
+const finalTotal = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0) - couponDiscount;
 
 
   return (
@@ -144,17 +146,29 @@ useEffect(() => {
           </div>
 
           {/* Coupons */}
-          <div className="Filled-cart-coupon">
-            <div className="Apply-coupons">
-              <h4>Coupons</h4>
-              <p>Apply Coupons and save extra</p>
-            </div>
-            <span>›</span>
-          </div>
+       <div className="Filled-cart-coupon" onClick={() => setShowCouponSheet(true)}>
+  <div className="Apply-coupons">
+    <h4>Coupons</h4>
+    {appliedCoupon ? (
+      <p style={{ color: "#2e7d32", fontSize: "12px", marginTop: "2px" }}>
+        {appliedCoupon} applied — saving ₹{couponDiscount}
+      </p>
+    ) : (
+      <p>Apply coupons and save extra</p>
+    )}
+  </div>
+  {appliedCoupon && (
+    <span className="applied-badge">
+      Applied
+    </span>
+  )}
+  <span>›</span>
+</div>
 
           {/* Summary */}
           <div className="Filled-price-summary">
             <h4>Price Summary</h4>
+            
             <p className="tax">Prices are inclusive of all taxes</p>
 
 
@@ -171,6 +185,13 @@ useEffect(() => {
               <span>-₹{totalDiscount}</span>
             </div>
 
+            {appliedCoupon && (
+  <div className="row green">
+    <span>{appliedCoupon} coupon</span>
+    <span>-₹{couponDiscount}</span>
+  </div>
+)}
+
             <div className="row">
               <span>Sub Total</span>
               <span>₹{finalTotal}</span>
@@ -186,9 +207,9 @@ useEffect(() => {
               <span>₹{finalTotal}</span>
             </div>
 
-            <div className="saving">
-              ✔ Yay! You are saving ₹{totalDiscount}
-            </div>
+          <div className="cart-saving-bar">
+  ✔ Yay! You saved ₹{totalDiscount + couponDiscount} on this purchase
+</div>
 
 
           </div>
@@ -207,9 +228,9 @@ useEffect(() => {
           </div>
 
           {/* Saving Bar */}
-          <div className="cart-saving-bar">
-            You saved ₹999 on this purchase
-          </div>
+    <div className="cart-saving-bar">
+  ✔ Yay! You saved ₹{totalDiscount + couponDiscount} on this purchase
+</div>
 
 <div className="Filled-cart-footer">
   <div>
@@ -235,6 +256,13 @@ useEffect(() => {
         </div>
 
       </div>
+      {showCouponSheet && (
+  <CouponSheet
+    onClose={() => setShowCouponSheet(false)}
+    finalTotal={finalTotal + couponDiscount}
+    cartItems={cartItems}
+  />
+)}
     </div>
   );
 };

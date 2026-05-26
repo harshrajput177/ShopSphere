@@ -48,11 +48,39 @@ const MegaMenu = ({ genderName, genderId, onEnter, onLeave }) => {
     return map;
   }, [activeSubCat, productTypes]);
 
+  // Navigate to product type slug if available, else subCategory slug
   const handleItemClick = (pt) => {
-    const path = pt.slug
-      ? `/${genderName.toLowerCase()}/${pt.slug}`
-      : `/${genderName.toLowerCase()}?subCategory=${activeSubCat._id}&productType=${pt.id}`;
-    navigate(path);
+    if (pt.slug) {
+      navigate(`/${genderName.toLowerCase()}/${pt.slug}`);
+    } else {
+      // fallback: subCategory slug with productType id as query
+      const base = activeSubCat?.slug
+        ? `/${genderName.toLowerCase()}/${activeSubCat.slug}`
+        : `/${genderName.toLowerCase()}`;
+      navigate(`${base}?productType=${pt.id}`);
+    }
+  };
+
+  // SubCategory tab click → navigate via slug
+  const handleSubCatClick = (sub) => {
+    if (sub.slug) {
+      navigate(`/${genderName.toLowerCase()}/${sub.slug}`);
+    } else {
+      navigate(`/${genderName.toLowerCase()}?subCategory=${sub._id}`);
+    }
+  };
+
+  // Group heading click → subCategory slug + group query param
+  const handleGroupClick = (groupName) => {
+    if (activeSubCat?.slug) {
+      navigate(
+        `/${genderName.toLowerCase()}/${activeSubCat.slug}?group=${encodeURIComponent(groupName)}`
+      );
+    } else {
+      navigate(
+        `/${genderName.toLowerCase()}?subCategory=${activeSubCat._id}&group=${encodeURIComponent(groupName)}`
+      );
+    }
   };
 
   // Stable hover — cancel leave on re-enter
@@ -81,7 +109,7 @@ const MegaMenu = ({ genderName, genderId, onEnter, onLeave }) => {
                   key={sub._id}
                   className={`mega-tab ${activeSubCat?._id === sub._id ? "mega-tab--active" : ""}`}
                   onMouseEnter={() => setActiveSubCat(sub)}
-                  onClick={() => navigate(`/${genderName.toLowerCase()}?subCategory=${sub._id}`)}
+                  onClick={() => handleSubCatClick(sub)}
                 >
                   {sub.name}
                 </div>
@@ -108,9 +136,7 @@ const MegaMenu = ({ genderName, genderId, onEnter, onLeave }) => {
                 <div key={groupName} className="mega-group-col">
                   <h4
                     className="mega-group-heading"
-                    onClick={() =>
-                      navigate(`/${genderName.toLowerCase()}?subCategory=${activeSubCat._id}&group=${encodeURIComponent(groupName)}`)
-                    }
+                    onClick={() => handleGroupClick(groupName)}
                   >
                     {groupName}
                   </h4>

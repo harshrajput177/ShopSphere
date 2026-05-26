@@ -578,6 +578,232 @@ const deleteProduct = asyncHandler(async (req, res) => {
   });
 });
 
+const searchSuggest = async (req, res) => {
+  try {
+    const q = req.query.q?.trim();
+    if (!q || q.length < 2) return res.json({ suggestions: [] });
+
+    const products = await Product.aggregate([
+      {
+        $search: {
+          index: "default",
+          compound: {
+            should: [
+              {
+                autocomplete: {
+                  query: q,
+                  path: "title",
+                  fuzzy: { maxEdits: 1, prefixLength: 1 },
+                  score: { boost: { value: 2 } }   // autocomplete scores higher
+                }
+              },
+              {
+                text: {
+                  query: q,
+                  path: "title",
+                  fuzzy: { maxEdits: 1 }
+                }
+              }
+            ],
+            minimumShouldMatch: 1
+          }
+        }
+      },
+      { $limit: 8 },
+      { $project: { title: 1, _id: 0 } }
+    ]);
+
+    const suggestions = [...new Set(products.map(p => p.title))].slice(0, 6);
+    res.json({ suggestions });
+  } catch (err) {
+    console.error("Suggest error:", err);
+    res.json({ suggestions: [] });  // graceful fallback
+  }
+};
+
+const normalizeWord = (word) => {
+  const w = word.toLowerCase().replace(/[''`]/g, "");
+  const stemMap = {
+    // Gender
+    "woman": "Women", "womens": "Women", "women": "Women",
+    "man": "Men", "mens": "Men", "men": "Men",
+    "girls": "Kids", "girl": "Kids", "boys": "Kids",
+    "boy": "Kids", "kids": "Kids", "kid": "Kids", "children": "Kids",
+    // Clothing
+    "pants": "pant", "pant": "pant",
+    "jeans": "jean", "jean": "jean", "denim": "jean",
+    "cargos": "cargo", "cargo": "cargo",
+    "shirts": "shirt", "shirt": "shirt",
+    "tops": "top", "top": "top",
+    "dresses": "dress", "dress": "dress",
+    "shorts": "short", "short": "short",
+    "skirts": "skirt", "skirt": "skirt",
+    "sarees": "saree", "saree": "saree", "sari": "saree",
+    "kurtis": "kurti", "kurti": "kurti",
+    "tshirts": "tshirt", "tshirt": "tshirt",
+    "t-shirt": "tshirt", "t-shirts": "tshirt",
+    "leggings": "legging", "legging": "legging",
+    "joggers": "jogger", "jogger": "jogger",
+    "hoodies": "hoodie", "hoodie": "hoodie",
+    "sweaters": "sweater", "sweater": "sweater",
+    "blazers": "blazer", "blazer": "blazer",
+    "jackets": "jacket", "jacket": "jacket",
+    "suits": "suit", "suit": "suit",
+    "gowns": "gown", "gown": "gown",
+    "kurtas": "kurta", "kurta": "kurta",
+    "shoes": "shoe", "shoe": "shoe",
+    "boots": "boot", "boot": "boot",
+    "sandals": "sandal", "sandal": "sandal",
+  };
+  return stemMap[w] || w;
+};
+
+const searchProducts = async (req, res) => {
+  try {
+    const { q, limit = 100 } = req.query;
+    if (!q?.trim()) return res.json({ products: [], total: 0 });
+
+    const genderValues = ["Men", "Women", "Kids"];
+
+    const rawWords = q.trim().split(/\s+/);
+    const normalizedWords = [...new Set(rawWords.map(normalizeWord))];
+
+    // Gender aur product words alag karo
+    const genderWords  = normalizedWords.filter(w => genderValues.includes(w));
+    const productWords = normalizedWords.filter(w => !genderValues.includes(w));
+
+    const mustClauses = [];
+
+    // Product words — title + productTypeName + subCategoryName mein search
+    productWords.forEach(word => {
+      mustClauses.push({
+        compound: {
+          should: [
+            {
+              text: {
+                query: word,
+                path: "title",
+                fuzzy: { maxEdits: 1, prefixLength: 2 },
+                score: { boost: { value: 3 } }
+              }
+            },
+            {
+              autocomplete: {
+                query: word,
+                path: "title",
+                fuzzy: { maxEdits: 1 }
+              }
+            },
+            {
+              text: {
+                query: word,
+                path: "productTypeName",
+                fuzzy: { maxEdits: 1 },
+                score: { boost: { value: 2 } }
+              }
+            },
+            {
+              text: {
+                query: word,
+                path: "subCategoryName",
+                fuzzy: { maxEdits: 1 }
+              }
+            }
+          ],
+          minimumShouldMatch: 1
+        }
+      });
+    });
+
+    // Gender — genderName field pe exact match
+    genderWords.forEach(gender => {
+      mustClauses.push({
+        text: {
+          query: gender,
+          path: "genderName"
+        }
+      });
+    });
+
+    // Agar koi clause nahi toh basic search
+    const searchQuery = mustClauses.length > 0
+      ? { compound: { must: mustClauses } }
+      : {
+          compound: {
+            should: [
+              {
+                text: {
+                  query: q,
+                  path: "title",
+                  fuzzy: { maxEdits: 1, prefixLength: 2 }
+                }
+              },
+              {
+                autocomplete: {
+                  query: q,
+                  path: "title",
+                  fuzzy: { maxEdits: 1 }
+                }
+              }
+            ],
+            minimumShouldMatch: 1
+          }
+        };
+
+    const rawProducts = await Product.aggregate([
+      { $search: { index: "default", ...searchQuery } },
+      { $addFields: { score: { $meta: "searchScore" } } },
+      { $sort: { score: -1 } },
+      { $limit: Number(limit) }
+    ]);
+
+    const ids = rawProducts.map(p => p._id);
+    const products = await Product.find({ _id: { $in: ids } })
+      .populate("productType")
+      .populate({
+        path: "subCategory",
+        populate: { path: "gender" }
+      })
+      .lean();
+
+    const scoreMap = Object.fromEntries(
+      rawProducts.map(p => [p._id.toString(), p.score])
+    );
+
+    products.sort(
+      (a, b) => (scoreMap[b._id.toString()] || 0) - (scoreMap[a._id.toString()] || 0)
+    );
+
+    const colors = [...new Set(
+      products.flatMap(p => p.variants?.map(v => v.color).filter(Boolean))
+    )];
+    const sizes = [...new Set(
+      products.flatMap(p =>
+        p.variants?.flatMap(v => v.sizes?.map(s => String(s.size))) || []
+      )
+    )];
+    const prices = products.flatMap(p =>
+      p.variants?.flatMap(v => v.sizes?.map(s => Number(s.price))) || []
+    ).filter(Boolean);
+
+    res.json({
+      products,
+      total: products.length,
+      filterMeta: {
+        colors,
+        sizes,
+        minPrice: prices.length ? Math.min(...prices) : 0,
+        maxPrice: prices.length ? Math.max(...prices) : 10000,
+      }
+    });
+
+  } catch (err) {
+    console.error("Search error:", err);
+    res.status(500).json({ message: "Search failed", error: err.message });
+  }
+};
+
+
 // EXPORT ALL
 module.exports = {
   createProduct,
@@ -588,5 +814,7 @@ module.exports = {
   deleteProduct,
   getHomeProducts,
   getProductsByProductType,
-  getProductsByOccasion
+  getProductsByOccasion,
+  searchSuggest, 
+  searchProducts
 };

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector }    from "react-redux";
 import { useNavigate }                 from "react-router-dom";
+import axios                           from "axios";
 import { fetchAddresses, setSelectedAddress } from "../Store/Slices/addressSlice";
 import { placeOrder, placeRazorpayOrder }     from "../Store/Slices/OrderSlice";
 import { clearCart }                          from "../Store/Slices/cartSlice";
+import { removeCoupon } from "../Store/Slices/CouponSlice.js";
 import AddressForm from "./Address";
 import "../../Style-CSS/Order/CheckOut.css";
 
@@ -16,10 +18,17 @@ const Checkout = () => {
   const { items: cartItems }    = useSelector((s) => s.cart);
   const { placing, error }      = useSelector((s) => s.order);
 
-  const [paymentMethod, setPaymentMethod] = useState("Razorpay");
-  const [showAddForm,   setShowAddForm]   = useState(false);
-  // Mobile: show "summary" or "address" step
-  const [mobileStep, setMobileStep] = useState("address");
+  const [paymentMethod,    setPaymentMethod]    = useState("Razorpay");
+  const [showAddForm,      setShowAddForm]      = useState(false);
+  const [mobileStep,       setMobileStep]       = useState("address");
+  const [locationData,     setLocationData]     = useState(null);
+  const [locationLoading,  setLocationLoading]  = useState(false);
+  const [locationError,    setLocationError]    = useState("");
+
+  const { applied: appliedCoupon, discount: couponDiscount } = useSelector((s) => s.coupon);
+  const itemsTotal     = cartItems.reduce((sum, i) => sum + i.price * (i.qty || i.quantity || 1), 0);
+const deliveryCharge = itemsTotal >= 499 ? 0 : 49;
+const totalAmount    = itemsTotal + deliveryCharge - couponDiscount;  // ← coupon minus karo
 
   useEffect(() => {
     if (!authChecked) return;
@@ -36,7 +45,8 @@ const Checkout = () => {
       <>
         <div className="checkout-mobile-header">
           <button className="checkout-back-btn" onClick={() => navigate(-1)}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 5l-7 7 7 7"/>
             </svg>
           </button>
@@ -45,68 +55,123 @@ const Checkout = () => {
         </div>
         <div className="empty-cart">
           <p>Your cart is empty</p>
-          <button className="empty-cart-btn" onClick={() => navigate("/")}>Explore Collection</button>
+          <button className="empty-cart-btn" onClick={() => navigate("/")}>
+            Explore Collection
+          </button>
         </div>
       </>
     );
   }
-
-  const itemsTotal     = cartItems.reduce((sum, i) => sum + i.price * (i.qty || i.quantity || 1), 0);
-  const deliveryCharge = itemsTotal >= 499 ? 0 : 49;
-  const totalAmount    = itemsTotal + deliveryCharge;
-
+  // ── Place Order ───────────────────────────────────────────
   const handlePlaceOrder = async () => {
     if (!selected) return alert("Please select a delivery address.");
-    const orderData = {
-      items: cartItems.map((i) => ({
-        product:       i.productId,
-        title:         i.title,
-        image:         i.image,
-        size:          i.size,
-        quantity:      i.qty || i.quantity || 1,
-        price:         i.price,
-        originalPrice: i.originalPrice,
-      })),
-      shippingAddress: {
-        name:     selected.name,
-        phone:    selected.phone,
-        address:  selected.address,
-        locality: selected.locality,
-        city:     selected.city,
-        state:    selected.state,
-        pincode:  selected.pincode,
-        landmark: selected.landmark || "",
-      },
-      paymentMethod,
-      itemsTotal,
-      deliveryCharge,
-      totalAmount,
-    };
+   const orderData = {
+  items: cartItems.map((i) => ({
+    product:       i.productId,
+    title:         i.title,
+    image:         i.image,
+    size:          i.size,
+    quantity:      i.qty || i.quantity || 1,
+    price:         i.price,
+    originalPrice: i.originalPrice,
+  })),
+  shippingAddress: {
+    name:     selected.name,
+    phone:    selected.phone,
+    address:  selected.address,
+    locality: selected.locality,
+    city:     selected.city,
+    state:    selected.state,
+    pincode:  selected.pincode,
+    landmark: selected.landmark || "",
+  },
+  paymentMethod,
+  itemsTotal,
+  deliveryCharge,
+  couponCode:     appliedCoupon   || null,   
+  couponDiscount: couponDiscount  || 0,      
+  totalAmount,
+};
 
-    if (paymentMethod === "COD") {
-      const result = await dispatch(placeOrder(orderData));
-      if (result.meta.requestStatus === "fulfilled") {
-        dispatch(clearCart());
-        navigate(`/order-success/${result.payload._id}`);
-      }
-    } else {
-      const result = await dispatch(placeRazorpayOrder({ orderData, totalAmount }));
-      if (result.meta.requestStatus === "fulfilled") {
-        dispatch(clearCart());
-        navigate(`/order-success/${result.payload._id}`);
-      }
+  if (paymentMethod === "COD") {
+  const result = await dispatch(placeOrder(orderData));
+  if (result.meta.requestStatus === "fulfilled") {
+    dispatch(clearCart());
+    dispatch(removeCoupon());        // ← yahan add karo
+    navigate(`/order-success/${result.payload._id}`);
+  }
+} else {
+  const result = await dispatch(placeRazorpayOrder({ orderData, totalAmount }));
+  if (result.meta.requestStatus === "fulfilled") {
+    dispatch(clearCart());
+    dispatch(removeCoupon());       
+    navigate(`/order-success/${result.payload._id}`);
+  }
+}
+  };
+
+  // ── Use My Location ───────────────────────────────────────
+  const handleUseMyLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError("Location not supported in this browser");
+      return;
     }
+
+    setLocationLoading(true);
+    setLocationError("");
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const res = await axios.get(
+            "https://nominatim.openstreetmap.org/reverse",
+            {
+              params:  { lat: latitude, lon: longitude, format: "json" },
+              headers: { "Accept-Language": "en" },
+            }
+          );
+
+          const addr = res.data.address;
+
+          setLocationData({
+            pincode:  addr.postcode                                   || "",
+            city:     addr.city || addr.town || addr.district         || "",
+            state:    addr.state                                       || "",
+            locality: addr.suburb || addr.neighbourhood || addr.village || "",
+            address:  addr.road  || addr.pedestrian                   || "",
+          });
+
+          // Form open karo
+          setShowAddForm(true);
+
+        } catch {
+          setLocationError("Could not fetch location details. Try again.");
+        }
+        setLocationLoading(false);
+      },
+      (err) => {
+        setLocationLoading(false);
+        if (err.code === 1) {
+          setLocationError("Location permission denied. Please allow access.");
+        } else {
+          setLocationError("Could not get your location. Try again.");
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
   };
 
   return (
     <>
-      {/* ── Nykaa-style Mobile Header ── */}
+      {/* ── Mobile Header ── */}
       <div className="checkout-mobile-header">
         <button className="checkout-back-btn" onClick={() => {
           if (mobileStep === "summary") setMobileStep("address");
           else navigate(-1);
         }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 12H5M12 5l-7 7 7 7"/>
           </svg>
         </button>
@@ -141,8 +206,38 @@ const Checkout = () => {
 
             <h2 className="checkout-heading">Delivery Address</h2>
 
+            {/* ── Use My Location Button ── */}
+            <button
+              className="use-location-btn"
+              onClick={handleUseMyLocation}
+              disabled={locationLoading}
+            >
+              {locationLoading ? (
+                <>
+                  <span className="location-spinner" />
+                  Detecting location...
+                </>
+              ) : (
+                <>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 1v4M12 19v4M1 12h4M19 12h4"/>
+                    <circle cx="12" cy="12" r="8" strokeDasharray="3 2" opacity="0.4"/>
+                  </svg>
+                  Use My Current Location
+                </>
+              )}
+            </button>
+
+            {locationError && (
+              <p className="location-error">{locationError}</p>
+            )}
+
             {addresses.length === 0 && !showAddForm && (
-              <div className="no-addr-banner">No saved addresses. Please add one below.</div>
+              <div className="no-addr-banner">
+                No saved addresses. Please add one below.
+              </div>
             )}
 
             {addresses.map((addr) => (
@@ -164,16 +259,27 @@ const Checkout = () => {
               </div>
             ))}
 
-            <button
-              className={`add-address-btn ${showAddForm ? "cancel" : ""}`}
-              onClick={() => setShowAddForm(!showAddForm)}
-            >
-              {showAddForm ? "✕  Cancel" : "+ Add New Address"}
-            </button>
+        
+{!showAddForm && (
+  <button
+    className="add-address-btn"
+    onClick={() => setShowAddForm(true)}
+  >
+    + Add New Address
+  </button>
+)}
 
-            {showAddForm && <AddressForm onClose={() => setShowAddForm(false)} />}
+{showAddForm && (
+  <AddressForm
+    onClose={() => {
+      setShowAddForm(false);
+      setLocationData(null);
+    }}
+    prefillData={locationData}
+  />
+)}
 
-            {/* Payment Method */}
+            {/* ── Payment Method ── */}
             <div className="payment-section">
               <h2 className="checkout-heading">Payment Method</h2>
 
@@ -204,7 +310,6 @@ const Checkout = () => {
               </div>
             </div>
 
-            {/* Mobile: "Continue" button to go to summary */}
             <button
               className={`mobile-continue-btn ${!selected ? "disabled" : "active"}`}
               onClick={() => selected && setMobileStep("summary")}
@@ -213,7 +318,9 @@ const Checkout = () => {
               Continue to Summary
             </button>
             {!selected && (
-              <p className="address-hint"><span>📍</span> Select a delivery address to continue</p>
+              <p className="address-hint">
+                <span>📍</span> Select a delivery address to continue
+              </p>
             )}
           </div>
 
@@ -223,7 +330,9 @@ const Checkout = () => {
               <h3 className="order-summary-title">Order Summary</h3>
 
               {deliveryCharge === 0 && (
-                <div className="savings-tag">🎉 You've unlocked FREE delivery on this order!</div>
+                <div className="savings-tag">
+                  🎉 You've unlocked FREE delivery on this order!
+                </div>
               )}
 
               {cartItems.map((item, i) => (
@@ -231,30 +340,74 @@ const Checkout = () => {
                   <img src={item.image} alt={item.title} className="cart-item-img" />
                   <div className="cart-item-details">
                     <p className="cart-item-title">{item.title}</p>
-                    <p className="cart-item-meta">Size: {item.size} · Qty: {item.qty || item.quantity}</p>
-                    <p className="cart-item-price">₹{item.price * (item.qty || item.quantity)}</p>
+                    <p className="cart-item-meta">
+                      Size: {item.size} · Qty: {item.qty || item.quantity}
+                    </p>
+                    <p className="cart-item-price">
+                      ₹{item.price * (item.qty || item.quantity)}
+                    </p>
                   </div>
                 </div>
               ))}
 
               <hr className="price-divider" />
-              <div className="price-row"><span>Items total</span><span>₹{itemsTotal}</span></div>
-              <div className="price-row">
-                <span>Delivery charges</span>
-                <span className={deliveryCharge === 0 ? "free-delivery" : "delivery-paid"}>
-                  {deliveryCharge === 0 ? "FREE" : `₹${deliveryCharge}`}
-                </span>
-              </div>
-              <hr className="price-divider" />
-              <div className="price-row total"><span>Total</span><span>₹{totalAmount}</span></div>
+            <div className="price-row">
+  <span>Items total</span>
+  <span>₹{itemsTotal}</span>
+</div>
 
-              {/* Selected address preview — mobile only */}
+<div className="price-row">
+  <span>Delivery charges</span>
+  <span className={deliveryCharge === 0 ? "free-delivery" : "delivery-paid"}>
+    {deliveryCharge === 0 ? "FREE" : `₹${deliveryCharge}`}
+  </span>
+</div>
+
+{/* ── Coupon row — yeh add karo ── */}
+{appliedCoupon && couponDiscount > 0 && (
+  <div className="price-row" style={{ color: "green" }}>
+    <span>
+      Coupon ({appliedCoupon})
+      <button
+        onClick={() => dispatch(removeCoupon())}
+        style={{
+          marginLeft: 8,
+          fontSize: 11,
+          color: "#e53935",
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          fontWeight: 600,
+          padding: 0,
+        }}
+      >
+        Remove
+      </button>
+    </span>
+    <span>− ₹{couponDiscount}</span>
+  </div>
+)}
+
+<hr className="price-divider" />
+
+<div className="price-row total">
+  <span>Total</span>
+  <span>₹{totalAmount}</span>
+</div>
+
               {selected && (
                 <div className="selected-addr-preview">
                   <p className="selected-addr-label">📍 Delivering to</p>
                   <p className="selected-addr-name">{selected.name}</p>
-                  <p className="selected-addr-line">{selected.address}, {selected.city} — {selected.pincode}</p>
-                  <button className="change-addr-btn" onClick={() => setMobileStep("address")}>Change</button>
+                  <p className="selected-addr-line">
+                    {selected.address}, {selected.city} — {selected.pincode}
+                  </p>
+                  <button
+                    className="change-addr-btn"
+                    onClick={() => setMobileStep("address")}
+                  >
+                    Change
+                  </button>
                 </div>
               )}
 
@@ -269,7 +422,9 @@ const Checkout = () => {
               </button>
 
               {!selected && (
-                <p className="address-hint"><span>📍</span> Select a delivery address to continue</p>
+                <p className="address-hint">
+                  <span>📍</span> Select a delivery address to continue
+                </p>
               )}
             </div>
           </div>

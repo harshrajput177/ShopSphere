@@ -26,17 +26,12 @@ const Navbar = () => {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
   const [showMobileWishlist, setShowMobileWishlist] = useState(false);
-
-
   const [genders, setGenders] = useState([]);
-
-
   const [activeMenu, setActiveMenu] = useState(null);
   // activeMenu = { _id, name } of the hovered gender
 
 
   const [activeMobileCategory, setActiveMobileCategory] = useState(null);
-
   const cartItems = useSelector((state) => state.cart.items);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -47,10 +42,45 @@ const Navbar = () => {
   const menuTimeoutRef = useRef(null);
 
   const totalQty = cartItems.reduce((acc, item) => acc + item.qty, 0);
+  // Ye states add karo
+const [searchQuery, setSearchQuery] = useState("");
+const [suggestions, setSuggestions]  = useState([]);
+const [showSugg, setShowSugg]        = useState(false);
+const searchRef                       = useRef(null);
+
+// Debounced suggestions fetch
+useEffect(() => {
+  if (searchQuery.length < 2) { setSuggestions([]); return; }
+  const timer = setTimeout(async () => {
+    try {
+      const res = await API.get(`/api/products/search/suggest?q=${searchQuery}`);
+      setSuggestions(res.data.suggestions || []);
+      setShowSugg(true);
+    } catch { setSuggestions([]); }
+  }, 300);
+  return () => clearTimeout(timer);
+}, [searchQuery]);
+
+// Enter press ya search icon click
+const handleSearch = (q = searchQuery) => {
+  if (!q.trim()) return;
+  setShowSugg(false);
+  navigate(`/search?q=${encodeURIComponent(q.trim())}`);
+};
+
+// Outside click se suggestions band
+useEffect(() => {
+  const handler = (e) => {
+    if (searchRef.current && !searchRef.current.contains(e.target)) {
+      setShowSugg(false);
+    }
+  };
+  document.addEventListener("mousedown", handler);
+  return () => document.removeEventListener("mousedown", handler);
+}, []);
 
   useEffect(() => {
     dispatch(getMe());
-    dispatch(fetchCart());
   }, [dispatch]);
 
   useEffect(() => {
@@ -66,7 +96,6 @@ const Navbar = () => {
       .catch((err) => console.error("Gender fetch error:", err));
   }, []);
 
-  // ─── Profile hover handlers ───────────────────────────────
   const handleMouseEnter = () => {
     clearTimeout(timeoutRef.current);
     setShowProfile(true);
@@ -113,7 +142,7 @@ const Navbar = () => {
   };
 
   // ─── Static extra nav items (non-gender) ─────────────────
-  const staticItems = ["Genz", "Wedding"];
+  const staticItems = ["Wedding"];
 
   // ─── Profile Dropdown ─────────────────────────────────────
   const ProfileDropdown = () => {
@@ -153,11 +182,11 @@ const Navbar = () => {
               {mobileMenu ? <FaXmark /> : <CiMenuBurger className="bar-icon" />}
             </div>
 
-            <img
+            {/* <img
               className="logo"
               src="https://aartisto.com/wp-content/uploads/2020/11/myntra.png"
               alt="Logo"
-            />
+            /> */}
 
 
             <ul className="navb-menu">
@@ -170,7 +199,7 @@ const Navbar = () => {
                 >
                   {gender.name}
 
-                  {/* ✅ Single MegaMenu component, passes genderId dynamically */}
+                 
                   {activeMenu?._id === gender._id && (
                     <MegaMenu
                       genderName={gender.name}
@@ -191,13 +220,36 @@ const Navbar = () => {
             </ul>
           </div>
 
-          {/* DESKTOP SEARCH */}
-          <div className="navb-search-box desktop-search">
-            <i className="navb-search-icon">
-              <CiSearch className="Laptop-Search-icon" />
-            </i>
-            <input placeholder="Search for products, brands and more" readOnly />
-          </div>
+
+   {/* DESKTOP SEARCH */}
+<div className="navb-search-box desktop-search" ref={searchRef}>
+  <i className="navb-search-icon" onClick={() => handleSearch()}>
+    <CiSearch className="Laptop-Search-icon" />
+  </i>
+  <input
+    placeholder="Search for products, brands and more"
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+    onFocus={() => searchQuery.length > 1 && setShowSugg(true)}
+  />
+
+  {/* Suggestions Dropdown */}
+  {showSugg && suggestions.length > 0 && (
+    <div className="search-suggestions">
+      {suggestions.map((s, i) => (
+        <div
+          key={i}
+          className="suggestion-item"
+          onClick={() => handleSearch(s)}
+        >
+          <CiSearch className="sugg-icon" />
+          <span>{s}</span>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
 
           {/* RIGHT */}
           <div className="navb-nav-right">

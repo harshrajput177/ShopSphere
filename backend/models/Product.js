@@ -127,7 +127,12 @@ productType: {
   sold: {
     type: Number,
     default: 0
-  }
+  },
+
+    // 🔹 SEARCH FIELDS
+  genderName:      { type: String, default: "" },
+  productTypeName: { type: String, default: "" },
+  subCategoryName: { type: String, default: "" },
 
 }, { timestamps: true });
 

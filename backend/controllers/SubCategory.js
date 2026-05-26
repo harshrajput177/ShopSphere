@@ -154,11 +154,25 @@ const updateSubCategory = async (req, res) => {
 };
 
 
+const getSubCategoryById = async (req, res) => {
+  try {
+    const sub = await SubCategory.findById(req.params.id)
+      .populate("gender", "name")
+      .populate("category", "name");
+    if (!sub) return res.status(404).json({ message: "Not found" });
+    res.json({ subCategory: sub });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
 module.exports = {
   createSubCategory,
   getSubCategories,
   getSubCategoryByCategory,
-  getSubCategoryByGender,   // ← export karo
+  getSubCategoryByGender,   
   deleteSubCategory,
-  updateSubCategory
+  updateSubCategory,
+  getSubCategoryById
 };

@@ -20,6 +20,7 @@ import CreateSizeChart from './Components/AttributeManager/SizeChart';
 import ProductList from './Components/Products/ProductList';
 import EditProduct from './Components/Products/EditProduct';
 import AddGender from './Components/Gender/Gender';
+import CouponManager from './Components/Coupon/CouponManager';
 
 const App = () => {
   return (
@@ -40,25 +41,26 @@ const App = () => {
           <div className="page-content">
 
             <Routes>
-          
-    
+
+
               <Route path="/products/add-product" element={<AddProduct />} />
               <Route path="/category/add" element={<AddCategory />} />
               <Route path="/gender/add" element={<AddGender />} />
               <Route path="/subcategory/add" element={<AddSubCategory />} />
-                <Route path="/product-type/add" element={<ProductTypeAdd />} />
-       
-                  <Route path="/collection/add" element={<AddCollection />} />
-                   <Route path="/banner/add" element={<AddBanner />} />
-                      <Route path="/product-type/manage" element={<TestFetch />} />
-                         <Route path="/collection/manage" element={<ManageCollection />} />
-                            <Route path="/attribute/add" element={<AttributeManager />} />
-                            <Route path="/subcategory/manage" element={<ManageSubCategory/>} />
+              <Route path="/product-type/add" element={<ProductTypeAdd />} />
 
-                            <Route path="/attribute/manage" element={<ManageAttributes/>} />
-                              <Route path="/SizeChart/add" element={<CreateSizeChart/>} />
-                                   <Route path="/manage-products" element={<ProductList/>} />
-                                   <Route path="/admin/edit-product/:id" element={<EditProduct/>} />
+              <Route path="/collection/add" element={<AddCollection />} />
+              <Route path="/banner/add" element={<AddBanner />} />
+              <Route path="/product-type/manage" element={<TestFetch />} />
+              <Route path="/collection/manage" element={<ManageCollection />} />
+              <Route path="/attribute/add" element={<AttributeManager />} />
+              <Route path="/subcategory/manage" element={<ManageSubCategory />} />
+
+              <Route path="/attribute/manage" element={<ManageAttributes />} />
+              <Route path="/SizeChart/add" element={<CreateSizeChart />} />
+              <Route path="/manage-products" element={<ProductList />} />
+              <Route path="/admin/edit-product/:id" element={<EditProduct />} />
+              <Route path="/coupon/manage" element={<CouponManager/>} />
             </Routes>
 
           </div>

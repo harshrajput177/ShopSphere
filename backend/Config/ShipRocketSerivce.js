@@ -1,48 +1,34 @@
-// services/shiprocketService.js
 const axios = require('axios');
 
-// Step 1: Token lo
-const getShiprocketToken = async () => {
-  try {
-    const res = await axios.post(
-      'https://apiv2.shiprocket.in/v1/external/auth/login',
-      {
-        email:    process.env.SHIPROCKET_EMAIL,
-        password: process.env.SHIPROCKET_PASSWORD
-      }
-    );
-    console.log("✅ Token mila:", res.data.token);
-    return res.data.token;
-  } catch (err) {
-    console.log("❌ Token error:", err.response?.data);  // ye dekho
-    throw err;
-  }
-};
-
-// Step 2: Pincode check karo
 const checkPincodeFromShiprocket = async (pincode) => {
-  const token = await getShiprocketToken();
-
   const res = await axios.get(
-    `https://apiv2.shiprocket.in/v1/external/courier/serviceability/`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      params: {
-        pickup_postcode:   "203001",  // tumhara warehouse pincode
-        delivery_postcode: pincode,
-        cod:               1,
-        weight:            0.5
-      }
-    }
+    `https://api.postalpincode.in/pincode/${pincode}`
   );
 
-  const data = res.data.data;
+  const result = res.data[0];
+
+  // Pincode valid nahi
+  if (result.Status !== "Success" || !result.PostOffice?.length) {
+    return {
+      serviceable:   false,
+      cod_available: false,
+      delivery_days: 0,
+      city:          "",
+      state:         ""
+    };
+  }
+
+  // Delivery wala post office dhundo
+  const deliveryOffice = result.PostOffice.find(
+    (po) => po.DeliveryStatus === "Delivery"
+  ) || result.PostOffice[0];
+
   return {
-    serviceable:   data.serviceable_couriers?.length > 0,
-    cod_available: data.cod === 1,
-    delivery_days: data.serviceable_couriers?.[0]?.estimated_delivery_days || 5,
-    city:          data.delivery_details?.city || "",
-    state:         data.delivery_details?.state || ""
+    serviceable:   true,           // pincode valid hai = serviceable
+    cod_available: true,           // default true
+    delivery_days: 5,              // fixed 5 days (Shiprocket nahi hai to estimate)
+    city:          deliveryOffice.District || deliveryOffice.Division || "",
+    state:         deliveryOffice.State || ""
   };
 };
 

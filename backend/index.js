@@ -21,6 +21,7 @@ const OrderRoute = require("./router/OrderRoutes")
 const AddressRoute = require("./router/Addressrouter")
 const PaymentRoute = require("./router/PaymentRoute")
 const PincodeRoute = require("./router/PincodeRouter")
+const CouponRoute = require("./router/couponRoutes")
 const compression = require("compression");
 const path = require("path");
 const app = express();
@@ -83,6 +84,7 @@ app.use("/api/address", AddressRoute);
 app.use("/api/payment", PaymentRoute);
 app.use("/api/orders",    OrderRoute);
 app.use("/api/pincode", PincodeRoute);
+app.use("/api/coupons", CouponRoute);
 
 app.get("/", (req, res) => {
   res.send("Backend is running");

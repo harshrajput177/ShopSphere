@@ -17,6 +17,7 @@ const Sidebar = () => {
   const [openManage, setOpenManage] = useState(false);
   const [openCollection, setOpenCollection] = useState(false);
   const [openBanner, setOpenBanner] = useState(false);
+  const [openCoupon, setOpenCoupon] = useState(false);
 
   return (
     <div className="admin-sidebar">
@@ -32,7 +33,7 @@ const Sidebar = () => {
           </Link>
         </li>
 
-        {/* 🔥 ADD DROPDOWN */}
+        {/*  ADD DROPDOWN */}
         <li className="admin-sidebar-dropdown">
           <div
             className="admin-sidebar-item"
@@ -54,7 +55,25 @@ const Sidebar = () => {
           )}
         </li>
 
-        {/* 🔥 MANAGE DROPDOWN */}
+        {/* COUPON DROPDOWN */}
+<li className="admin-sidebar-dropdown">
+  <div
+    className="admin-sidebar-item"
+    onClick={() => setOpenCoupon(!openCoupon)}
+  >
+    <FaTags /> Coupons
+    <FaChevronDown className={`chevron ${openCoupon ? "rotate" : ""}`} />
+  </div>
+
+  {openCoupon && (
+    <ul className="admin-dropdown-list">
+      <li><Link to="/coupon/add">Add Coupon</Link></li>
+      <li><Link to="/coupon/manage">Manage Coupons</Link></li>
+    </ul>
+  )}
+</li>
+
+        {/*  MANAGE DROPDOWN */}
         <li className="admin-sidebar-dropdown">
           <div
             className="admin-sidebar-item"
@@ -74,7 +93,7 @@ const Sidebar = () => {
           )}
         </li>
 
-        {/* 🔥 COLLECTION DROPDOWN */}
+        {/*  COLLECTION DROPDOWN */}
         <li className="admin-sidebar-dropdown">
           <div
             className="admin-sidebar-item"
@@ -109,7 +128,7 @@ const Sidebar = () => {
             </ul>
           )}
         </li>
-        {/* 🔥 BANNER DROPDOWN */}
+        {/*  BANNER DROPDOWN */}
         <li className="admin-sidebar-dropdown">
           <div
             className="admin-sidebar-item"

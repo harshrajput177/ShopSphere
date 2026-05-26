@@ -64,19 +64,25 @@ const Clearance = () => {
   }, [productTypes]);
 
   // Occasion cards
-  useEffect(() => {
-    if (!allProducts.length) return;
-    const cards = OCCASION_CONFIG.map(oc => {
-      const matchedProduct = allProducts.find(p => p.occasion?.includes(oc.occasion));
-      return {
-        ...oc,
-        image: matchedProduct?.variants?.[0]?.mainImage ||
-               matchedProduct?.variants?.[0]?.images?.[0] ||
-               "/placeholder.png",
-      };
-    });
-    setOccasionCards(cards);
-  }, [allProducts]);
+// Occasion cards
+useEffect(() => {
+  if (!allProducts.length) return;
+  const cards = OCCASION_CONFIG.map(oc => {
+    // Saare matching products dhundho
+    const matchedProducts = allProducts.filter(p => p.occasion?.includes(oc.occasion));
+
+    // 2nd image chahiye toh index 1, 3rd ke liye index 2
+    const selectedProduct = matchedProducts[6] || matchedProducts[3] || matchedProducts[0];
+
+    return {
+      ...oc,
+      image: selectedProduct?.variants?.[0]?.mainImage ||
+             selectedProduct?.variants?.[0]?.images?.[0] ||
+             "/placeholder.png",
+    };
+  });
+  setOccasionCards(cards);
+}, [allProducts]);
 
   const handleGroupClick = (slug, maxPrice) => {
     navigate(`/products/${slug}?maxPrice=${maxPrice}`);

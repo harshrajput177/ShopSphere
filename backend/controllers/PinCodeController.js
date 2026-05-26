@@ -74,13 +74,14 @@ const checkPincodeController = async (req, res) => {
       estimated_delivery: getDeliveryDate(freshData.delivery_days),
     });
 
-  } catch (err) {
-    console.error("Pincode Controller Error:", err.message);
-    return res.status(500).json({
-      success: false,
-      message: "Server error, dobara try karo",
-    });
-  }
+} catch (err) {
+  console.error("Pincode Controller Error:", err.message);
+  console.error("Full error:", err.response?.data); // ← ye add karo
+  return res.status(500).json({
+    success: false,
+    message: err.response?.data?.message || "Server error",
+  });
+}
 };
 
 module.exports = { checkPincodeController };

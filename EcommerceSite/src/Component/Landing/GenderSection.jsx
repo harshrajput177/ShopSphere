@@ -7,10 +7,10 @@ import API from "../api/api";
 function SubCategoryCard({ item, index }) {
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    if (!item.slug) return;
-    navigate(`/products/${item.slug}`);
-  };
+const handleClick = () => {
+  if (!item._id) return;
+  navigate(`/subcategory/${item._id}`);  // ← yeh change karo
+};
 
   return (
     <div

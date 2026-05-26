@@ -711,23 +711,6 @@
   .feature-icon { font-size: 14px; }
 }
 
-@media (max-width: 400px) {
-  .delivery-features {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-
-  .delivery-feature-item {
-    border-radius: 0;
-    border: none;
-    border-bottom: 0.5px solid var(--clr-border);
-    background: transparent;
-  }
-
-  .delivery-feature-item:last-child {
-    border-bottom: none;
-  }
-}
 /* ─── TABLET (max 1024px) ───────────────────────────────── */
 @media (max-width: 1024px) {
   .ViewProduct-product-container {
@@ -979,19 +962,6 @@
     margin-bottom: 8px;
   }
 
-  /* delivery features — 3 columns */
-  .delivery-features {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-  }
-
-  .delivery-features div {
-    padding: 10px 8px;
-  }
-
-  .delivery-features h4 { font-size: 11px !important; }
-  .delivery-features span { font-size: 10px; }
-
   /* Coupon cards */
   .single-coupon { min-width: 190px; }
   .single-coupon h4 { font-size: 14px; }
@@ -1201,3 +1171,24 @@
 .vp-policy-row p { font-size: 13px; color: var(--clr-ink-muted); line-height: 1.6; }
 
 .vp-empty { font-size: 13px; color: var(--clr-ink-light); }
+
+@media (max-width: 400px) {
+  .delivery-features {
+    grid-template-columns: 1fr;  /* stack vertically */
+    gap: 0;
+  }
+
+  .delivery-feature-item {
+    flex-direction: row;         /* icon + text side by side */
+    align-items: center;
+    border-radius: 0;
+    border: none;
+    border-bottom: 0.5px solid var(--clr-border);
+    background: transparent;
+    padding: 10px 4px;
+  }
+
+  .delivery-feature-item:last-child {
+    border-bottom: none;
+  }
+}

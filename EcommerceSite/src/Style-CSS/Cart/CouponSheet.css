@@ -1,0 +1,343 @@
+/* ── Overlay ── */
+.cs-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000000;          /* FilledCart 999999 se upar */
+  display: flex;
+  justify-content: flex-end; /* desktop: right side */
+  align-items: stretch;
+}
+
+/* ── Panel ── */
+.cs-panel {
+  background: #fff;
+  width: 480px;
+  max-width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  animation: cs-slideIn 0.28s ease;
+  font-family: "Poppins", sans-serif;
+}
+
+@keyframes cs-slideIn {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+/* ── Header ── */
+.cs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
+}
+
+.cs-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.cs-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #555;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Input row ── */
+.cs-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  background: #fafafa;
+  border-bottom: 1px solid #eee;
+}
+
+.cs-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  outline: none;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.cs-input:focus {
+  border-color: #333;
+}
+
+.cs-input::placeholder {
+  letter-spacing: 0;
+  text-transform: none;
+  color: #bbb;
+}
+
+.cs-apply-btn {
+  padding: 12px 22px;
+  background: #1a1a2e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+.cs-apply-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Error ── */
+.cs-error {
+  font-size: 12px;
+  color: #e53935;
+  padding: 8px 20px 0;
+}
+
+/* ── Success banner ── */
+.cs-success {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 20px;
+  padding: 12px 14px;
+  background: #e8f5e9;
+  border-radius: 10px;
+  border-left: 3px solid #2e7d32;
+  animation: cs-pop 0.3s ease;
+}
+
+@keyframes cs-pop {
+  from { transform: scale(0.96); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.cs-success-icon { font-size: 20px; color: #2e7d32; font-weight: 700; }
+.cs-success-title { font-size: 13px; font-weight: 600; color: #1b5e20; margin: 0; }
+.cs-success-sub   { font-size: 12px; color: #388e3c; margin: 2px 0 0; }
+
+/* ── Section label ── */
+.cs-section-label {
+  padding: 20px 20px 4px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.cs-section-sub {
+  padding: 0 20px 12px;
+  font-size: 13px;
+  color: #888;
+}
+
+/* ── Cards list ── */
+.cs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0 20px;
+}
+
+/* ── Single card ── */
+.cs-card {
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.cs-card--applied {
+  border-color: #2e7d32;
+}
+
+/* Save badge */
+.cs-save-badge {
+  position: absolute;
+  top: 12px;
+  right: 0;
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 12px 4px 10px;
+  border-radius: 20px 0 0 20px;
+  letter-spacing: 0.3px;
+}
+
+/* Card body */
+.cs-card-body {
+  display: flex;
+  gap: 14px;
+  padding: 16px 16px 12px;
+  align-items: flex-start;
+}
+
+/* Brand logo */
+.cs-brand-logo {
+  width: 56px;
+  height: 56px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #f9f9f9;
+}
+
+.cs-brand-text {
+  font-size: 8px;
+  font-weight: 800;
+  color: #c2185b;
+  text-align: center;
+  line-height: 1.3;
+  letter-spacing: 0.5px;
+}
+
+/* Card info */
+.cs-card-info { flex: 1; padding-right: 60px; }
+
+.cs-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 4px;
+}
+
+.cs-card-desc {
+  font-size: 12px;
+  color: #555;
+  line-height: 1.5;
+  margin: 0 0 4px;
+}
+
+.cs-see-more {
+  color: #1a1a2e;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.cs-card-min {
+  font-size: 11px;
+  color: #999;
+  margin: 2px 0;
+}
+
+.cs-card-expiry {
+  font-size: 11px;
+  color: #bbb;
+  margin: 4px 0 0;
+}
+
+/* Dashed divider with notches — ticket style */
+.cs-dashed-divider {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 20px;
+}
+
+.cs-notch {
+  width: 16px;
+  height: 16px;
+  background: #f2f2f2;
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: absolute;
+}
+
+.cs-notch--left  { left: -8px;  border: 1px solid #e8e8e8; }
+.cs-notch--right { right: -8px; border: 1px solid #e8e8e8; }
+
+.cs-dashed-line {
+  flex: 1;
+  border-top: 1.5px dashed #e8e8e8;
+  margin: 0 12px;
+}
+
+/* Card footer */
+.cs-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px 14px;
+}
+
+.cs-card-code {
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+  letter-spacing: 1px;
+}
+
+.cs-tap-btn {
+  font-size: 14px;
+  font-weight: 700;
+  color: #d4237a;        /* Nykaa pink */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s;
+}
+
+.cs-tap-btn--applied {
+  color: #2e7d32;
+}
+
+.cs-tap-btn:hover { opacity: 0.75; }
+
+/* Empty */
+.cs-empty {
+  text-align: center;
+  color: #bbb;
+  font-size: 13px;
+  padding: 30px 0;
+}
+
+/* ══ MOBILE — bottom sheet ══ */
+@media (max-width: 768px) {
+  .cs-overlay {
+    justify-content: center;
+    align-items: flex-end;
+  }
+
+  .cs-panel {
+    width: 100%;
+    height: 90vh;
+    border-radius: 20px 20px 0 0;
+    animation: cs-slideUp 0.28s ease;
+  }
+
+  @keyframes cs-slideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+}
