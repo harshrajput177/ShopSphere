@@ -5,11 +5,11 @@ import { addWishlist, removeWishlist, fetchWishlist } from "../Store/Slices/wish
 import { useNavigate, useParams } from "react-router-dom";
 import "../../Style-CSS/ProductPage/ViewProduct.css";
 import { FiMessageCircle, FiShare2 } from "react-icons/fi";
-import axios from "axios";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { FiShoppingBag } from "react-icons/fi";
 import CustomerReviews from "./CustomerReview";
 import CouponBox from "./CouponBox";
+import API from "../api/api";
 
 
 // ── Chevron icon ─────────────────────────────────────────────
@@ -78,9 +78,7 @@ const ProductPage = ({ product, setProduct }) => {
   setPincodeLoading(true);
   setPincodeError("");
   try {
-    const res = await axios.get(
-      `http://localhost:4000/api/pincode/check/${pincode}`
-    );
+const res = await API.get(`/api/pincode/check/${pincode}`);
     setPincodeInfo(res.data);
     setEditing(false);
   } catch (err) {
@@ -92,7 +90,7 @@ const ProductPage = ({ product, setProduct }) => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get(`http://localhost:4000/api/products/${id}`);
+        const res = await API.get(`/api/products/${id}`);
         const data = res.data;
         setProduct(data);
         const firstVariant = data?.variants?.[0];

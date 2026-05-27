@@ -1,163 +1,282 @@
 @import "../Poppins-Font.css";
 
-.genz-container{
-    background-color: #fafcff;
-  max-width:1500px;
-  margin:0 auto;
-  padding: 20px  20px;
+/* ── Tokens ───────────────────────────────────────── */
+:root {
+  --clr-bg: rgb(254, 255, 255);
+  --clr-surface: rgb(247, 250, 255);
+  --clr-ink: #1a1a1a;
+  --clr-ink-muted: #7a7a7a;
+  --clr-accent: #c8963e;        /* warm gold */
+  --clr-accent-light: rgb(247, 250, 255);
+  --clr-badge: #1a1a1a;
+  --clr-price-from: #1c1c1c;
+  --clr-price-to: #3a3a3a;
+  --clr-border: rgba(0,0,0,0.08);
+  --radius-card: 8px;
+  --shadow-rest: 0 2px 12px rgba(0,0,0,0.07);
+  --shadow-hover: 0 16px 40px rgba(0,0,0,0.14);
+  --transition: 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.genz-title{
+/* ── Container ────────────────────────────────────── */
+.genz-container {
+  background-color: var(--clr-bg);
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 36px 28px 44px;
+}
+
+/* ── Header Row ───────────────────────────────────── */
+.genz-header-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.genz-title {
   font-family: 'PoppinsSemibold';
-   font-size:1.6rem;
-  margin-bottom:20px;
+  font-size: 1.55rem;
+  letter-spacing: -0.01em;
+  color: var(--clr-ink);
+  margin: 0;
+  position: relative;
 }
 
-/* Slider */
-
-.genz-slider{
-  display:flex;
-  padding-top: 10px;
-  gap:20px;
-  overflow-x:auto;
-  scroll-behavior:smooth;
+.genz-title::after {
+  content: '';
+  display: block;
+  width: 36px;
+  height: 3px;
+  background: var(--clr-accent);
+  border-radius: 2px;
+  margin-top: 6px;
 }
 
-.genz-slider::-webkit-scrollbar{
-  display:none;
+.genz-subtitle {
+  font-family: 'PoppinsRegular';
+  font-size: 0.82rem;
+  color: var(--clr-ink-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-/* Card */
-
-.genz-card{
-  min-width:260px;
-  max-width: 280px;
-  border-radius:5px; /* more premium */
-  overflow:hidden;
-  background:#fff;
-  position:relative;
-  cursor:pointer;
-  transition:all 0.3s ease;
-  border:0.5px solid rgba(186, 186, 186, 0.61);
-  padding: 2px
-  ;
+/* ── Slider ───────────────────────────────────────── */
+.genz-slider {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 8px;
+  padding-top: 4px;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Hover Effect */
-.genz-card:hover{
-  transform:translateY(-6px);
+.genz-slider::-webkit-scrollbar { display: none; }
+
+/* ── Card ─────────────────────────────────────────── */
+.genz-card {
+  min-width: 240px;
+  max-width: 260px;
+  flex-shrink: 0;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: var(--clr-surface);
+  position: relative;
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition);
+  box-shadow: var(--shadow-rest);
+  border: 1px solid var(--clr-border);
+  padding: 3px;
 }
 
-/* Image */
+.genz-card:hover {
+  transform: translateY(-7px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* ── Image Wrapper ────────────────────────────────── */
+.genz-card-img-wrap {
+  position: relative;
+  overflow: hidden;
+}
 
 .genz-card img {
   width: 100%;
-  height: auto;
-  aspect-ratio: 3 / 3.6;  
+  aspect-ratio: 3 / 3.7;
   object-fit: cover;
-  object-position: center;
-  border-radius: 5px 5px 0 0;
+  object-position: top center;
+  display: block;
+  transition: transform var(--transition);
 }
 
-/* Brand Tag */
+.genz-card:hover img {
+  transform: scale(1.04);
+}
 
-.genz-brand-tag{
-  position:absolute;
-  top:10px;
-  left:10px;
-  background:#2be66b;
-  color:black;
-  font-size:12px;
-  padding:4px 10px;
-  border-radius:5px;
+/* ── Sale Ribbon ──────────────────────────────────── */
+.genz-ribbon {
+  position: absolute;
+  top: 14px;
+  left: -1px;
+  background: var(--clr-accent);
+  color: #fff;
   font-family: 'PoppinsSemibold';
-  z-index:2;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 10px 4px 11px;
+  border-radius: 0 4px 4px 0;
+  box-shadow: 2px 2px 8px rgba(200,150,62,0.35);
+  z-index: 3;
 }
 
-/* Info */
+.genz-ribbon::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  bottom: -4px;
+  border-width: 4px 4px 0 0;
+  border-style: solid;
+  border-color: #9a6e28 transparent transparent transparent;
+}
 
-.genz-info{
-  background:#fff;
-  padding: 5px 10px;
-  text-align:center;
+/* ── Card Bottom ──────────────────────────────────── */
+.genz-card-bottom {
+  background: var(--clr-surface);
+}
+
+.genz-info {
   font-family: 'PoppinsRegular';
-  font-size:14px;
+  font-size: 13px;
+  color: var(--clr-ink);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Bottom Price */
-
-.genz-price{
-  background:linear-gradient(180deg, #212121, rgba(28, 28, 28, 0.763));
-  color:white;
-  text-align:center;
-  padding:8px 10px;
+/* ── Price Bar ────────────────────────────────────── */
+.genz-price {
+  width: 100%;
+  margin-top: 8px;
+  background: linear-gradient(135deg, var(--clr-price-from), var(--clr-price-to));
+  color: #fff;
+  text-align: center;
+  padding: 9px 10px;
   font-family: 'PoppinsSemibold';
-  font-size:16px;
-  border-radius: 0 0 5px 5px;
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+  position: relative;
+  overflow: hidden;
 }
 
-@media (min-width: 601px) and (max-width: 1024px){
-
-  .genz-container{
-    padding:20px 15px;
-  }
-
-  .genz-slider{
-    gap:16px;
-  }
-
-  .genz-card{
-    min-width:220px;
-  }
-
-  .genz-card img{
-    height:230px;
-  }
-
-  .genz-title{
-    font-size:1.4rem;
-  }
-
+/* shimmer sweep on price */
+.genz-price::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg,
+    transparent 20%,
+    rgba(255,255,255,0.08) 50%,
+    transparent 80%);
+  background-size: 200% 100%;
+  animation: priceShimmer 3s infinite linear;
 }
 
-@media (max-width: 600px){
+@keyframes priceShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 
-  .genz-container{
-    padding:15px 10px;
-  }
+/* gold accent dot on price */
+.genz-price-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  background: var(--clr-accent);
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
 
-  .genz-title{
-    font-size: 1.1rem;
-    margin-bottom:8px;
-  }
+/* ── Card enter animation ─────────────────────────── */
+.genz-card {
+  animation: cardFadeUp 0.45s both ease-out;
+}
 
-  .genz-slider{
-    gap:12px;
-    padding-left:5px;
-  }
+.genz-card:nth-child(1) { animation-delay: 0.04s; }
+.genz-card:nth-child(2) { animation-delay: 0.09s; }
+.genz-card:nth-child(3) { animation-delay: 0.14s; }
+.genz-card:nth-child(4) { animation-delay: 0.18s; }
+.genz-card:nth-child(5) { animation-delay: 0.22s; }
+.genz-card:nth-child(6) { animation-delay: 0.26s; }
+.genz-card:nth-child(7) { animation-delay: 0.30s; }
+.genz-card:nth-child(8) { animation-delay: 0.34s; }
 
-  .genz-card{
-    min-width:190px; /* smaller but neat */
-    border-radius:5px;
-  }
+@keyframes cardFadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
-  .genz-card img{
-    height:200px;
-  }
+/* ── Skeleton ─────────────────────────────────────── */
+.genz-skeleton-card {
+  min-width: 240px;
+  max-width: 260px;
+  flex-shrink: 0;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+}
 
-  .brand-tag{
-    font-size:10px;
-    padding:3px 8px;
-  }
+.genz-skeleton-img {
+  width: 100%;
+  aspect-ratio: 3 / 3.7;
+  background: linear-gradient(90deg, #ececec 25%, #f5f5f5 50%, #ececec 75%);
+  background-size: 200% 100%;
+  animation: skelPulse 1.4s infinite;
+}
 
-  .genz-info{
-    font-size:12px;
-    padding:8px;
-  }
+.genz-skeleton-text {
+  height: 14px;
+  margin: 12px 12px 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #ececec 25%, #f5f5f5 50%, #ececec 75%);
+  background-size: 200% 100%;
+  animation: skelPulse 1.4s infinite;
+}
 
-  .genz-price{
-    font-size:14px;
-    padding:8px;
-  }
+.genz-skeleton-price {
+  height: 36px;
+  background: linear-gradient(90deg, #d8d8d8 25%, #e5e5e5 50%, #d8d8d8 75%);
+  background-size: 200% 100%;
+  animation: skelPulse 1.4s infinite;
+}
 
+@keyframes skelPulse {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Tablet ───────────────────────────────────────── */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .genz-container { padding: 28px 18px 36px; }
+  .genz-slider { gap: 14px; }
+  .genz-card, .genz-skeleton-card { min-width: 210px; }
+  .genz-title { font-size: 1.3rem; }
+}
+
+/* ── Mobile ───────────────────────────────────────── */
+@media (max-width: 600px) {
+  .genz-container { padding: 20px 12px 28px; }
+  .genz-title { font-size: 1.1rem; }
+  .genz-slider { gap: 12px; }
+  .genz-card, .genz-skeleton-card { min-width: 170px; }
+  .genz-info { font-size: 12px; }
+  .genz-price { font-size: 13px; padding: 8px; }
+  .genz-ribbon { font-size: 9px; padding: 3px 8px; }
 }

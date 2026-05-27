@@ -1,28 +1,24 @@
+import "../Style-CSS/Pages/SubCategoryProduct.css";
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../Component/api/api";
-import "../Style-CSS/Pages/SubCategoryProduct.css";
 
-/* ── Group Icon Map ──────────────────────────────── */
+import { GiTShirt, GiTrousers, GiSleevelessJacket, GiUnderwear, GiDress, GiClothes } from "react-icons/gi";
+import { PiCoatHangerFill } from "react-icons/pi";
+import { MdOutlineCategory } from "react-icons/md";
+
+/* ── Group Icons (react-icons) ───────────────────── */
 const GROUP_ICONS = {
-  Topwear: "👕",
-  Bottomwear: "👖",
-  Innerwear: "🩱",
-  "Co-ord Set": "👗",
-  OnePiece: "👘",
-  Outerwear: "🧥",
-  Other: "✨",
+  Topwear:      <GiTShirt size={20} />,
+  Bottomwear:   <GiTrousers size={20} />,
+  Innerwear:    <GiUnderwear size={20} />,
+  "Co-ord Set": <PiCoatHangerFill size={20} />,
+  OnePiece:     <GiDress size={20} />,
+  Outerwear:    <GiSleevelessJacket size={20} />,
+  Other:        <MdOutlineCategory size={20} />,
 };
 
-const GROUP_ORDER = [
-  "Topwear",
-  "Bottomwear",
-  "Outerwear",
-  "Co-ord Set",
-  "OnePiece",
-  "Innerwear",
-  "Other",
-];
+const GROUP_ORDER = ["Topwear", "Bottomwear", "Outerwear", "Co-ord Set", "OnePiece", "Innerwear", "Other"];
 
 /* ── ProductType Card ────────────────────────────── */
 function ProductTypeCard({ item, index }) {
@@ -46,13 +42,11 @@ function ProductTypeCard({ item, index }) {
           className={imgLoaded ? "loaded" : ""}
         />
         <div className="spp-card-overlay">
-          <span className="spp-explore-btn">Explore →</span>
+          <span className="spp-explore-label">View All</span>
         </div>
-        {item.isNew && <span className="spp-badge">NEW</span>}
       </div>
       <div className="spp-card-info">
         <h3 className="spp-card-name">{item.name}</h3>
-        <p className="spp-card-group">{item.group}</p>
       </div>
     </div>
   );
@@ -65,8 +59,8 @@ function GroupSection({ group, items }) {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
-      { threshold: 0.1 }
+      ([e]) => { if (e.isIntersecting) setVisible(true); },
+      { threshold: 0.08 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
@@ -74,17 +68,19 @@ function GroupSection({ group, items }) {
 
   return (
     <section
-      className={`spp-group-section ${visible ? "spp-visible" : ""}`}
       ref={sectionRef}
+      className={`spp-group-section${visible ? " spp-visible" : ""}`}
     >
       <div className="spp-group-header">
-        <div className="spp-group-title-wrap">
-          <span className="spp-group-icon">{GROUP_ICONS[group] || "✨"}</span>
+        <div className="spp-group-icon-wrap">
+          {GROUP_ICONS[group] || GROUP_ICONS["Other"]}
+        </div>
+        <div className="spp-group-text">
           <h2 className="spp-group-title">{group}</h2>
           <span className="spp-group-count">{items.length} styles</span>
         </div>
-        <div className="spp-group-line" />
       </div>
+
       <div className="spp-cards-grid">
         {items.map((item, i) => (
           <ProductTypeCard key={item._id} item={item} index={i} />
@@ -94,99 +90,65 @@ function GroupSection({ group, items }) {
   );
 }
 
-/* ── Skeleton Loader ─────────────────────────────── */
-function SkeletonGrid() {
+/* ── Skeleton ────────────────────────────────────── */
+function SkeletonLoader() {
   return (
     <div className="spp-skeleton-wrap">
-      {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="spp-skeleton-card">
-          <div className="spp-skeleton-img" />
-          <div className="spp-skeleton-line" />
-          <div className="spp-skeleton-line short" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/* ── Hero Banner ─────────────────────────────────── */
-function HeroBanner({ subCategoryName, genderName, totalCount, heroImage }) {
-  return (
-    <div className="spp-hero">
-      <div className="spp-hero-bg">
-        {heroImage && (
-          <img src={heroImage} alt="" className="spp-hero-bg-img" />
-        )}
-        <div className="spp-hero-gradient" />
-        <div className="spp-hero-noise" />
-      </div>
-      <div className="spp-hero-content">
-        <div className="spp-hero-breadcrumb">
-          <span>Home</span>
-          <span className="spp-bc-sep">/</span>
-          <span>{genderName}</span>
-          <span className="spp-bc-sep">/</span>
-          <span className="spp-bc-active">{subCategoryName}</span>
-        </div>
-        <div className="spp-hero-text">
-          <p className="spp-hero-eyebrow">Browse Collection</p>
-          <h1 className="spp-hero-title">{subCategoryName}</h1>
-          <p className="spp-hero-sub">
-            {totalCount} styles crafted for{" "}
-            <em>{genderName?.toLowerCase()}</em>
-          </p>
-        </div>
-        <div className="spp-hero-stats">
-          <div className="spp-stat">
-            <span className="spp-stat-num">{totalCount}+</span>
-            <span className="spp-stat-label">Styles</span>
+      <div className="spp-skeleton-header" />
+      <div className="spp-skeleton-grid">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="spp-skeleton-card">
+            <div className="spp-skeleton-img" />
+            <div className="spp-skeleton-line" />
           </div>
-          <div className="spp-stat-divider" />
-          <div className="spp-stat">
-            <span className="spp-stat-num">New</span>
-            <span className="spp-stat-label">Arrivals</span>
-          </div>
-          <div className="spp-stat-divider" />
-          <div className="spp-stat">
-            <span className="spp-stat-num">Free</span>
-            <span className="spp-stat-label">Delivery</span>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );
 }
 
-/* ── Sticky Nav ──────────────────────────────────── */
-function StickyGroupNav({ groups, activeGroup, onSelect }) {
+/* ── Sticky Group Pills Nav ──────────────────────── */
+function GroupPillNav({ groups, onSelect }) {
+  const [active, setActive] = useState(null);
+  const scrollRef = useRef(null);
+
+  const handleSelect = (g) => {
+    setActive(g);
+    onSelect(g);
+    const btn = scrollRef.current?.querySelector(`[data-group="${g}"]`);
+    btn?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  };
+
   return (
-    <nav className="spp-sticky-nav">
-      <div className="spp-sticky-nav-inner">
+    <div className="spp-pill-nav-wrap">
+      <div className="spp-pill-nav" ref={scrollRef}>
         {groups.map((g) => (
           <button
             key={g}
-            className={`spp-nav-pill ${activeGroup === g ? "active" : ""}`}
-            onClick={() => onSelect(g)}
+            data-group={g}
+            className={`spp-pill${active === g ? " active" : ""}`}
+            onClick={() => handleSelect(g)}
           >
-            <span>{GROUP_ICONS[g] || "✨"}</span> {g}
+            <span className="spp-pill-icon">{GROUP_ICONS[g] || GROUP_ICONS["Other"]}</span>
+            <span>{g}</span>
           </button>
         ))}
       </div>
-    </nav>
+    </div>
   );
 }
 
-/* ── Main Page ───────────────────────────────────── */
+/* ── Main ────────────────────────────────────────── */
 export default function SubCategoryProductPage() {
-  const { subCategoryId } = useParams(); // route: /subcategory/:subCategoryId
+  const { subCategoryId } = useParams();
   const navigate = useNavigate();
 
   const [productTypes, setProductTypes] = useState([]);
   const [subCategory, setSubCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeGroup, setActiveGroup] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const heroRef = useRef(null);
+  const [heroShrunk, setHeroShrunk] = useState(false);
 
   useEffect(() => {
     if (!subCategoryId) return;
@@ -197,123 +159,124 @@ export default function SubCategoryProductPage() {
       API.get(`/api/subcategory/${subCategoryId}`).catch(() => ({ data: null })),
     ])
       .then(([ptRes, subRes]) => {
-        const types = ptRes.data.productTypes || ptRes.data || [];
-        setProductTypes(types);
+        setProductTypes(ptRes.data.productTypes || ptRes.data || []);
         setSubCategory(subRes.data?.subCategory || subRes.data);
       })
-      .catch((err) => {
-        console.error(err);
-        setError("Failed to load. Please try again.");
-      })
+      .catch(() => setError("Something went wrong, please try again."))
       .finally(() => setLoading(false));
   }, [subCategoryId]);
 
-  // Group by "group" field
-  const grouped = productTypes
-    .filter((pt) =>
-      pt.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .reduce((acc, pt) => {
-      const g = pt.group || "Other";
-      if (!acc[g]) acc[g] = [];
-      acc[g].push(pt);
-      return acc;
-    }, {});
+  useEffect(() => {
+    const onScroll = () => setHeroShrunk(window.scrollY > 60);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const grouped = productTypes.reduce((acc, pt) => {
+    const g = pt.group || "Other";
+    if (!acc[g]) acc[g] = [];
+    acc[g].push(pt);
+    return acc;
+  }, {});
 
   const availableGroups = GROUP_ORDER.filter((g) => grouped[g]);
 
   const scrollToGroup = (group) => {
-    setActiveGroup(group);
-    document.getElementById(`group-${group}`)?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    const el = document.getElementById(`grp-${group}`);
+    if (el) {
+      const offset = 96;
+      const top = el.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: "smooth" });
+    }
   };
 
   return (
     <div className="spp-root">
-      {/* Hero */}
-      <HeroBanner
-        subCategoryName={subCategory?.name || "Collection"}
-        genderName={subCategory?.gender?.name || ""}
-        totalCount={productTypes.length}
-        heroImage={subCategory?.image}
-      />
 
-      {/* Sticky Group Nav */}
-      {!loading && availableGroups.length > 0 && (
-        <StickyGroupNav
-          groups={availableGroups}
-          activeGroup={activeGroup}
-          onSelect={scrollToGroup}
-        />
-      )}
-
-      {/* Search Bar */}
-      {!loading && (
-        <div className="spp-search-wrap">
-          <div className="spp-search-box">
-            <span className="spp-search-icon">🔍</span>
-            <input
-              type="text"
-              placeholder={`Search in ${subCategory?.name || "collection"}...`}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="spp-search-input"
-            />
-            {searchQuery && (
-              <button
-                className="spp-search-clear"
-                onClick={() => setSearchQuery("")}
-              >
-                ✕
-              </button>
-            )}
+      {/* ── Hero ── */}
+      <div className={`spp-hero${heroShrunk ? " shrunk" : ""}`} ref={heroRef}>
+        {subCategory?.image && (
+          <img
+            src={subCategory.image}
+            alt={subCategory?.name}
+            className="spp-hero-img"
+          />
+        )}
+        <div className="spp-hero-overlay" />
+        <div className="spp-hero-content">
+          <div className="spp-breadcrumb">
+            <span onClick={() => navigate("/")}>Home</span>
+            <span className="spp-bc-dot">·</span>
+            <span>{subCategory?.gender?.name || ""}</span>
+            <span className="spp-bc-dot">·</span>
+            <span className="spp-bc-current">{subCategory?.name || "Collection"}</span>
+          </div>
+          <div className="spp-hero-bottom">
+            <p className="spp-hero-eyebrow">Browse Collection</p>
+            <h1 className="spp-hero-title">{subCategory?.name || "Collection"}</h1>
+            <p className="spp-hero-caption">
+              {productTypes.length} styles crafted for{" "}
+              <em>{subCategory?.gender?.name?.toLowerCase() || "you"}</em>
+            </p>
+            <div className="spp-hero-stats">
+              <div className="spp-stat">
+                <b>{productTypes.length}+</b>
+                <span>Styles</span>
+              </div>
+              <div className="spp-stat-sep" />
+              <div className="spp-stat">
+                <b>New</b>
+                <span>Arrivals</span>
+              </div>
+              <div className="spp-stat-sep" />
+              <div className="spp-stat">
+                <b>Free</b>
+                <span>Delivery</span>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* ── Sticky Group Pills ── */}
+      {!loading && availableGroups.length > 0 && (
+        <GroupPillNav groups={availableGroups} onSelect={scrollToGroup} />
       )}
 
-      {/* Content */}
-      <div className="spp-content">
+      {/* ── Content ── */}
+      <div className="spp-body">
         {loading ? (
-          <SkeletonGrid />
+          <SkeletonLoader />
         ) : error ? (
-          <div className="spp-error">
-            <span>😕</span>
+          <div className="spp-state-box">
+            <span className="spp-state-emoji">😕</span>
             <p>{error}</p>
             <button onClick={() => window.location.reload()}>Retry</button>
           </div>
         ) : productTypes.length === 0 ? (
-          <div className="spp-empty">
-            <span>🛍️</span>
-            <h3>No styles here yet</h3>
-            <p>Check back soon for new arrivals</p>
+          <div className="spp-state-box">
+            <span className="spp-state-emoji">🛍️</span>
+            <h3>Nothing here yet</h3>
+            <p>New styles coming soon</p>
           </div>
         ) : (
-          <>
-            {availableGroups.map((group) => (
-              <div key={group} id={`group-${group}`}>
-                <GroupSection group={group} items={grouped[group]} />
-              </div>
-            ))}
-
-            {searchQuery && Object.keys(grouped).length === 0 && (
-              <div className="spp-no-results">
-                <span>🔎</span>
-                <p>No results for "<strong>{searchQuery}</strong>"</p>
-              </div>
-            )}
-          </>
+          availableGroups.map((group) => (
+            <div key={group} id={`grp-${group}`}>
+              <GroupSection group={group} items={grouped[group]} />
+            </div>
+          ))
         )}
       </div>
 
-      {/* Footer strip */}
-      <div className="spp-footer-strip">
-        <button className="spp-back-btn" onClick={() => navigate(-1)}>
-          ← Back to Collections
-        </button>
-        <p>Free delivery on orders above ₹499 · Easy 30-day returns</p>
-      </div>
+      {/* ── Footer ── */}
+      {!loading && (
+        <div className="spp-footer">
+          <button className="spp-back-btn" onClick={() => navigate(-1)}>
+            ← Back
+          </button>
+          <span>Free delivery above ₹499 · 30-day returns</span>
+        </div>
+      )}
     </div>
   );
 }

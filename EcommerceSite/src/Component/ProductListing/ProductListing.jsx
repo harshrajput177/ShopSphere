@@ -14,7 +14,6 @@ const ProductListing = () => {
   const navigate            = useNavigate();
   const dispatch            = useDispatch();
 
-  // ── Search support ──────────────────────────────────────
   const [searchParams]  = useSearchParams();
   const searchQuery     = searchParams.get("q") || "";
   const isSearchPage    = location.pathname === "/search";
@@ -22,7 +21,6 @@ const ProductListing = () => {
   const subCategoryId   = searchParams.get("subCategory") || "";
   const productTypeId   = searchParams.get("productType") || "";
   const groupParam      = searchParams.get("group") || "";
-  // ────────────────────────────────────────────────────────
 
   const [allProducts, setAllProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);

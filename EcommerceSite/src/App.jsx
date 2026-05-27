@@ -19,6 +19,7 @@ const Wishlist = lazy(() => import("./Component/Wishlist/Wishlist"));
 const ViewProduct = lazy(() => import("./Pages/ViewProductPage"));
 const ProductListing = lazy(() => import("./Component/ProductListing/ProductListing"));
 import SubCategoryProductPage from "./Pages/SubCategoryProductPage";
+import NotFound from "./Pages/NotFound";
 
 
 
@@ -77,6 +78,7 @@ function App() {
         <Route path="/order/:id"       element={<OrderDetail />} />
         <Route path="/order-success/:id" element={<OrderSuccess />} />
         <Route path="/subcategory/:subCategoryId" element={<SubCategoryProductPage />} />
+          <Route path="*" element={<NotFound />} />
       </Routes>
 
       <Footer />
