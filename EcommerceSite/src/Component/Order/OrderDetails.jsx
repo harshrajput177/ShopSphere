@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector }   from "react-redux";
 import { useParams, useNavigate }     from "react-router-dom";
-import { fetchOrderById, cancelOrder } from "../Store/Slices/orderSlice";
+import { fetchOrderById, cancelOrder } from "../Store/Slices/OrderSlice";
 import "../../Style-CSS/Order/OrderDeatils.css";
 
 const STEPS = ["Confirmed", "Packed", "Shipped", "Delivered"];
