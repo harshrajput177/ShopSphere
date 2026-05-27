@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import { fetchProductCouponsApi, applyCouponApi } from "../../api/Couponapi";
 
 export const fetchProductCoupons = createAsyncThunk(
   "coupon/fetchForProduct",
   async (productId) => {
-    const res = await axios.get(`http://localhost:4000/api/coupons/product/${productId}`);
+    const res = await fetchProductCouponsApi(productId);
     return res.data;
   }
 );
@@ -13,7 +13,7 @@ export const applyCoupon = createAsyncThunk(
   "coupon/apply",
   async ({ code, orderAmount, productId }, { rejectWithValue }) => {
     try {
-      const res = await axios.post("http://localhost:4000/api/coupons/apply", { code, orderAmount, productId });
+      const res = await applyCouponApi({ code, orderAmount, productId });
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Invalid coupon");
