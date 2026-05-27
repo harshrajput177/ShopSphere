@@ -2,7 +2,7 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import BottomNavbar from "../Component/Navbarbottom";
 
-// ✅ Lazy load — sabhi components alag chunks mein split honge
+
 const Comp1  = lazy(() => import("../Component/Landing/LandingCom1"));
 const Comp2  = lazy(() => import("../Component/Landing/LandingCom2"));
 const Comp3  = lazy(() => import("../Component/Landing/LandingCom3"));
@@ -15,7 +15,7 @@ const Comp9  = lazy(() => import("../Component/Landing/LandingCom9"));
 const Comp10 = lazy(() => import("../Component/Landing/LandingCom10"));
 const Comp11 = lazy(() => import("../Component/Landing/GenderSection"));
 
-// ✅ Lightweight section skeleton — Loader import hataya
+
 function SectionSkeleton() {
   return (
     <div style={{
@@ -36,7 +36,7 @@ const fadeInUp = {
 };
 
 const Landing = () => {
-  // ✅ window check safe — SSR crash nahi karega
+
   const [isMobile, setIsMobile] = useState(
     () => typeof window !== "undefined" && window.innerWidth <= 768
   );
@@ -63,7 +63,7 @@ const Landing = () => {
 
   return (
     <div className="Landing-Components">
-      {/* ✅ shimmer CSS globally inject karo ek baar */}
+    
       <style>{`
         @keyframes shimmer {
           0%   { background-position: 200% 0; }
@@ -77,9 +77,9 @@ const Landing = () => {
           variants={fadeInUp}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}  // ✅ thoda pehle trigger ho
+          viewport={{ once: true, margin: "-60px" }}  
         >
-          {/* ✅ har component ka apna skeleton fallback */}
+    
           <Suspense fallback={<SectionSkeleton />}>
             <Component />
           </Suspense>

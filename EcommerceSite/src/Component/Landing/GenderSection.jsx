@@ -9,7 +9,7 @@ function SubCategoryCard({ item, index }) {
 
 const handleClick = () => {
   if (!item._id) return;
-  navigate(`/subcategory/${item._id}`);  // ← yeh change karo
+  navigate(`/subcategory/${item._id}`); 
 };
 
   return (
@@ -19,7 +19,6 @@ const handleClick = () => {
       style={{ animationDelay: `${0.04 + index * 0.05}s` }}
     >
       <div className="gsub-img-wrap">
-        {/* ✅ already lazy tha, decoding="async" add kiya */}
         <img
           src={item.image}
           alt={item.name}
@@ -37,7 +36,7 @@ const handleClick = () => {
 
 /* ── Gender Tab ───────────────────────────────────── */
 function GenderSection({ title, tag, subCategories, loading }) {
-  // ✅ Data upar se props mein aata hai — apni API call nahi karega
+
   return (
     <div className="gsub-section">
       <div className="gsub-section-header">
@@ -78,7 +77,6 @@ export default function GenderSubCategoryPage({ menGenderId, womenGenderId }) {
   const [womenSubs, setWomenSubs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Step 1 — gender IDs nahi hain toh fetch karo
   useEffect(() => {
     if (menGenderId && womenGenderId) return;
 
@@ -98,7 +96,6 @@ export default function GenderSubCategoryPage({ menGenderId, womenGenderId }) {
 
     setLoading(true);
 
-    // ✅ Promise.all — dono calls parallel, ek ka wait nahi doosre ko
     Promise.all([
       API.get(`/api/subcategory/gender/${genders.men}`),
       API.get(`/api/subcategory/gender/${genders.women}`),

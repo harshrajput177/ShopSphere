@@ -11,7 +11,7 @@ const RecentViewProducts = () => {
     setProducts(recent);
   }, []);
 
-    console.log(products);
+    // console.log(products);
 
   return (
     <div className="similar-container">

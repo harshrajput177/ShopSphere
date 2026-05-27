@@ -49,7 +49,7 @@ const AccountPage = () => {
 
         {/* LOGO */}
         <h2 className="header-logo">
-          NYKAA <span>FASHION</span>
+         Kelwor <span>FASHION</span>
         </h2>
 
         {/* ICONS */}

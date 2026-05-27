@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../Style-CSS/MobileView/CategoryMobileView.css";
 import { X } from "lucide-react";
-import axios from "axios";
+import API from "../api/api"; 
 
 const CategorySection = ({ title, data, onItemClick }) => {
   return (
@@ -14,7 +14,7 @@ const CategorySection = ({ title, data, onItemClick }) => {
             <div
               key={item._id}
               className="MobileView-category-card"
-              onClick={() => onItemClick(item.slug)}  // ← yahan
+              onClick={() => onItemClick(item.slug)}
               style={{ cursor: "pointer" }}
             >
               <img src={item.image} alt={item.name} />
@@ -30,45 +30,39 @@ const CategoryPage = ({ onClose }) => {
   const [menData, setMenData] = useState([]);
   const [womenData, setWomenData] = useState([]);
   const [kidsData, setKidsData] = useState([]);
+  const navigate = useNavigate();
 
-    const navigate = useNavigate(); 
-
-const handleItemClick = (slug) => {
-  onClose();
-  navigate(`/products/${slug}`);  // by-slug/ HATA DO
-};
+  const handleItemClick = (slug) => {
+    onClose();
+    navigate(`/products/${slug}`);
+  };
 
   useEffect(() => {
- const fetchData = async () => {
-  try {
+    const fetchData = async () => {
+      try {
+        const [menRes, womenRes, kidsRes] = await Promise.all([
+          API.get("/api/product-type?gender=men"),
+          API.get("/api/product-type?gender=women"),
+          API.get("/api/product-type?gender=kids"),
+        ]);
 
-    const menRes = await axios.get("http://localhost:4000/api/product-type?gender=men")
-
- 
-    const womenRes = await axios.get("http://localhost:4000/api/product-type?gender=women");
-
-    const kidsRes = await axios.get("http://localhost:4000/api/product-type?gender=kids");
-
-console.log("MEN:", menRes.data);
-console.log("WOMEN:", womenRes.data);
-console.log("KIDS:", kidsRes.data);
-
-    setMenData(menRes.data.productTypes || []);
-    setWomenData(womenRes.data.productTypes || []);
-    setKidsData(kidsRes.data.productTypes || []);
-
-  } catch (err) {
-    console.error(err);
-  }
-};
+        setMenData(menRes.data.productTypes || []);
+        setWomenData(womenRes.data.productTypes || []);
+        setKidsData(kidsRes.data.productTypes || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
     fetchData();
   }, []);
 
   return (
-     <div className="MobileView-category-overlay" onClick={onClose}>
-      <div className="MobileView-category-container" onClick={(e) => e.stopPropagation()}>
-        {/* ...header same... */}
+    <div className="MobileView-category-overlay" onClick={onClose}>
+      <div
+        className="MobileView-category-container"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="MobileView-category-page">
           <CategorySection title="Men's Clothing"   data={menData}   onItemClick={handleItemClick} />
           <CategorySection title="Women's Clothing" data={womenData} onItemClick={handleItemClick} />

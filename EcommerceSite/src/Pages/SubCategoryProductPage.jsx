@@ -29,7 +29,7 @@ function ProductTypeCard({ item, index }) {
     <div
       className="spp-card"
       style={{ "--i": index }}
-      onClick={() => item.slug && navigate(`/products/type/${item.slug}`)}
+     onClick={() => item.slug && navigate(`/products/${item.slug}`)}
     >
       <div className="spp-card-img-wrap">
         {!imgLoaded && <div className="spp-img-shimmer" />}

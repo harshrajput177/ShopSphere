@@ -1,10 +1,6 @@
 @import "../Poppins-Font.css";
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap');
 
-/* ─────────────────────────────────────
-   SUMMER BANNER — 2:1 Ratio (1000×500)
-───────────────────────────────────── */
-
 .summer-banner {
   width: 100%;
   max-width: 1500px;
