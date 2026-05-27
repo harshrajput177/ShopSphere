@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Coupon = require("../models/CouponModel");
-const {protect} = require("../MiddleWare/authmiddleware"); // apna existing admin middleware
+const {protect} = require("../MiddleWare/authmiddleware"); 
 
 router.get("/product/:productId", async (req, res) => {
   try {
