@@ -5,7 +5,7 @@ import {
   getMyRatingApi,
   updateRatingApi,
   deleteRatingApi,
-} from "../../api/ratingApi";  // uploadReviewMediaApi hata diya
+} from "../../api/Ratingapi";  // uploadReviewMediaApi hata diya
 
 // ── FETCH all ratings ────────────────────────────────────────
 export const fetchRatings = createAsyncThunk(
