@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchHomeProducts } from "../Store/Slices/ProductSlice";
 import { addWishlist, removeWishlist } from "../Store/Slices/wishlistSlice";
-import "../../Style-CSS/Landing-css/LandingCom4.css";
+import "../../Style-CSS/Landing-css/LandingCom6.css";
 
 function HeartIcon() {
   return (
@@ -31,7 +31,6 @@ function ChevronRight() {
 
 function ProductCard({ p, isWishlisted, onWishlist }) {
   const navigate = useNavigate();
-
   const [optimisticWished, setOptimisticWished] = useState(isWishlisted);
 
   useEffect(() => {
@@ -40,7 +39,7 @@ function ProductCard({ p, isWishlisted, onWishlist }) {
 
   const handleWishlistClick = (e) => {
     e.stopPropagation();
-    setOptimisticWished((prev) => !prev); 
+    setOptimisticWished((prev) => !prev);
     onWishlist(p, e);
   };
 
@@ -49,11 +48,10 @@ function ProductCard({ p, isWishlisted, onWishlist }) {
 
   return (
     <div
-      className="product-card"
+      className="product-card-com6"
       onClick={() => navigate(`/product/${p._id}`)}
     >
       <div className="card-image-wrap">
-   
         <img
           src={p?.variants?.[0]?.mainImage || p?.variants?.[0]?.images?.[0]}
           alt={p.title}
@@ -62,7 +60,6 @@ function ProductCard({ p, isWishlisted, onWishlist }) {
           width="400"
           height="500"
         />
-
         <div className="card-actions">
           <button
             className={`action-icon wishlist ${optimisticWished ? "active" : ""}`}
@@ -88,13 +85,16 @@ function ProductCard({ p, isWishlisted, onWishlist }) {
 export default function BestSeller() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const scrollRef = useRef(null);
+  const trackRef = useRef(null);
+  const [pos, setPos] = useState(0);
+  const [activeDot, setActiveDot] = useState(0);
 
   const { homeItems, loading } = useSelector((state) => state.products);
   const wishlistItems = useSelector((state) => state.wishlist.items);
   const { user } = useSelector((state) => state.auth);
 
   const bestSeller = homeItems.bestSeller || [];
+  const DOTS = 3;
 
   useEffect(() => {
     dispatch(fetchHomeProducts());
@@ -110,66 +110,95 @@ export default function BestSeller() {
   const handleWishlist = useCallback(
     (p, e) => {
       e.stopPropagation();
-
-      if (!user) {
-        navigate("?auth=login");
-        return;
-      }
-
+      if (!user) { navigate("?auth=login"); return; }
       if (isWishlisted(p._id)) {
         dispatch(removeWishlist({ productId: p._id }));
       } else {
-        dispatch(
-          addWishlist({
-            productId: p._id,
-            title: p.title,
-            price: (p?.variants?.[0]?.sizes?.[0]?.price || 0) - (p?.discount || 0),
-            originalPrice: p?.variants?.[0]?.sizes?.[0]?.price || 0,
-            image: p?.variants?.[0]?.mainImage || p?.variants?.[0]?.images?.[0],
-            sizes: p?.variants?.[0]?.sizes || [],
-          })
-        );
+        dispatch(addWishlist({
+          productId: p._id,
+          title: p.title,
+          price: (p?.variants?.[0]?.sizes?.[0]?.price || 0) - (p?.discount || 0),
+          originalPrice: p?.variants?.[0]?.sizes?.[0]?.price || 0,
+          image: p?.variants?.[0]?.mainImage || p?.variants?.[0]?.images?.[0],
+          sizes: p?.variants?.[0]?.sizes || [],
+        }));
       }
     },
     [dispatch, isWishlisted, user, navigate]
   );
 
-  const handleNext = () => scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
-  const handlePrev = () => scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
+  const slideTo = (newPos) => {
+    if (!trackRef.current) return;
+    const max = Math.max(0, trackRef.current.scrollWidth - trackRef.current.parentElement.offsetWidth);
+    const clamped = Math.max(0, Math.min(newPos, max));
+    setPos(clamped);
+    trackRef.current.style.transform = `translateX(-${clamped}px)`;
+    const step = max / Math.max(DOTS - 1, 1);
+    setActiveDot(Math.min(Math.round(clamped / step), DOTS - 1));
+  };
+
+  const cardWidth = () => {
+    const c = trackRef.current?.querySelector(".product-card-com6");
+    return c ? c.offsetWidth + 16 : 216;
+  };
+
+  const handleNext = () => slideTo(pos + cardWidth() * 2);
+  const handlePrev = () => slideTo(pos - cardWidth() * 2);
+
+  const handleDot = (i) => {
+    if (!trackRef.current) return;
+    const max = Math.max(0, trackRef.current.scrollWidth - trackRef.current.parentElement.offsetWidth);
+    slideTo(i * max / Math.max(DOTS - 1, 1));
+  };
 
   if (loading) return <h2 style={{ textAlign: "center" }}>Loading...</h2>;
 
   return (
     <section className="trending-section">
+
       <div className="trending-heading">
-        <span>
-          <h2>Best Sellers</h2>
-          <p>Based On Your Recent Activity</p>
-        </span>
+        <span className="heading-eyebrow">Best Sellers</span>
+        <h2><em>Top</em> Picks For You</h2>
+        <p>Loved by thousands of shoppers</p>
       </div>
 
-      <div className="carousel-wrapper">
-        <button className="nav-btn-com4 left" onClick={handlePrev}>
-          <ChevronLeft />
-        </button>
+      <div className="carousel-outer">
+        <div className="carousel-wrapper">
 
-        <div ref={scrollRef} className="cards-track-outer">
-          <div className="cards-track">
-            {bestSeller.map((p) => (
-              <ProductCard
-                key={p._id}
-                p={p}
-                isWishlisted={isWishlisted(p._id)}
-                onWishlist={handleWishlist}
-              />
-            ))}
+          <button className="nav-btn left" onClick={handlePrev}>
+            <ChevronLeft />
+          </button>
+
+          <div className="cards-track-outer">
+            <div className="cards-track" ref={trackRef}>
+              {bestSeller.map((p) => (
+                <ProductCard
+                  key={p._id}
+                  p={p}
+                  isWishlisted={isWishlisted(p._id)}
+                  onWishlist={handleWishlist}
+                />
+              ))}
+            </div>
           </div>
-        </div>
 
-        <button className="nav-btn-com4 right" onClick={handleNext}>
-          <ChevronRight />
-        </button>
+          <button className="nav-btn right" onClick={handleNext}>
+            <ChevronRight />
+          </button>
+
+        </div>
       </div>
+
+      <div className="carousel-dots">
+        {Array.from({ length: DOTS }).map((_, i) => (
+          <button
+            key={i}
+            className={`dot ${activeDot === i ? "active" : ""}`}
+            onClick={() => handleDot(i)}
+          />
+        ))}
+      </div>
+
     </section>
   );
 }

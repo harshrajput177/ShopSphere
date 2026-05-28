@@ -266,7 +266,7 @@
 @media (min-width: 601px) and (max-width: 1024px) {
   .genz-container { padding: 28px 18px 36px; }
   .genz-slider { gap: 14px; }
-  .genz-card, .genz-skeleton-card { min-width: 210px; }
+  .genz-card, .genz-skeleton-card { min-width: 200px; }
   .genz-title { font-size: 1.3rem; }
 }
 
@@ -275,7 +275,7 @@
   .genz-container { padding: 20px 12px 28px; }
   .genz-title { font-size: 1.1rem; }
   .genz-slider { gap: 12px; }
-  .genz-card, .genz-skeleton-card { min-width: 170px; }
+  .genz-card, .genz-skeleton-card { min-width: 160px; max-width: 190px;}
   .genz-info { font-size: 12px; }
   .genz-price { font-size: 13px; padding: 8px; }
   .genz-ribbon { font-size: 9px; padding: 3px 8px; }

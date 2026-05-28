@@ -8,6 +8,26 @@ import FilterSidebar from "./FilterSlider";
 import "../../Style-CSS/ProductListing/ProductListing.css";
 
 
+// ─────────────────────────────────────────────────────────────
+// Skeleton card – matches pl-card proportions
+// ─────────────────────────────────────────────────────────────
+const SkeletonCard = () => (
+  <div className="pl-skeleton-card">
+    <div className="pl-skeleton-img  skeleton-base" />
+    <div className="pl-skeleton-rating skeleton-base" />
+    <div className="pl-skeleton-title-1 skeleton-base" />
+    <div className="pl-skeleton-title-2 skeleton-base" />
+    <div className="pl-skeleton-price  skeleton-base" />
+  </div>
+);
+
+// How many ghost cards to show while loading
+const SKELETON_COUNT = 12;
+
+
+// ─────────────────────────────────────────────────────────────
+// Main component
+// ─────────────────────────────────────────────────────────────
 const ProductListing = () => {
   const { slug, occasion } = useParams();
   const location            = useLocation();
@@ -17,21 +37,21 @@ const ProductListing = () => {
   const [searchParams]  = useSearchParams();
   const searchQuery     = searchParams.get("q") || "";
   const isSearchPage    = location.pathname === "/search";
-  // ── Extra query params from MegaMenu ───────────────────
   const subCategoryId   = searchParams.get("subCategory") || "";
   const productTypeId   = searchParams.get("productType") || "";
   const groupParam      = searchParams.get("group") || "";
 
-  const [allProducts, setAllProducts] = useState([]);
+  const [allProducts, setAllProducts]         = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [attributes, setAttributes] = useState([]);
-  const [filterMeta, setFilterMeta] = useState(null);
-  const [activeFilters, setActiveFilters] = useState({});
-  const [sortType, setSortType] = useState("");
-  const [showFilter, setShowFilter] = useState(false);
+  const [attributes, setAttributes]           = useState([]);
+  const [filterMeta, setFilterMeta]           = useState(null);
+  const [activeFilters, setActiveFilters]     = useState({});
+  const [sortType, setSortType]               = useState("");
+  const [showFilter, setShowFilter]           = useState(false);
+  const [loading, setLoading]                 = useState(false); // ← new
 
 
-  const { user } = useSelector((state) => state.auth);
+  const { user }      = useSelector((state) => state.auth);
   const wishlistItems = useSelector((state) => state.wishlist.items);
 
   useEffect(() => {
@@ -51,21 +71,23 @@ const ProductListing = () => {
     } else {
       dispatch(addWishlist({
         productId: item._id,
-        title: item.title,
-        price: item.variants[0]?.sizes[0]?.price || 0,
-        image: item.variants[0]?.mainImage || item.variants[0]?.images?.[0],
+        title:     item.title,
+        price:     item.variants[0]?.sizes[0]?.price || 0,
+        image:     item.variants[0]?.mainImage || item.variants[0]?.images?.[0],
       }));
     }
   };
 
 
+  // ── Fetch products ────────────────────────────────────────
   useEffect(() => {
     const fetchAll = async () => {
       try {
+        setLoading(true); // ← start loader
 
-        // ── 1. Search page ────────────────────────────────
+        // 1. Search page
         if (isSearchPage) {
-          if (!searchQuery) return;
+          if (!searchQuery) { setLoading(false); return; }
           const res = await API.get(
             `/api/products/search?q=${encodeURIComponent(searchQuery)}&limit=100`
           );
@@ -76,7 +98,7 @@ const ProductListing = () => {
           return;
         }
 
-        // ── 2. Occasion page ──────────────────────────────
+        // 2. Occasion page
         if (occasion) {
           const res = await API.get(`/api/products/by-occasion/${occasion}`);
           setAllProducts(res.data.products);
@@ -86,14 +108,13 @@ const ProductListing = () => {
           return;
         }
 
-        // ── 3. Slug-based page (productType or collection) ─
+        // 3. Slug-based page
         if (slug) {
           try {
             const prodRes = await API.get(`/api/products/by-slug/${slug}`);
             const { productType, products: prods, filterMeta } = prodRes.data;
             const attrRes = await API.get(`/api/attribute/product/${productType._id}`);
 
-            // If a group query param came along, filter client-side
             const filtered = groupParam
               ? prods.filter((p) => p.productType?.group === groupParam)
               : prods;
@@ -103,7 +124,6 @@ const ProductListing = () => {
             setFilterMeta(filterMeta);
             setAttributes(attrRes.data);
           } catch {
-            // fallback: collection slug
             const colRes = await API.get(`/api/collection/${slug}`);
             setAllProducts(colRes.data.products);
             setFilteredProducts(colRes.data.products);
@@ -113,12 +133,11 @@ const ProductListing = () => {
           return;
         }
 
-        // ── 4. SubCategory query param (MegaMenu fallback) ─
+        // 4. SubCategory query param
         if (subCategoryId) {
           const res = await API.get(`/api/products/by-subcategory/${subCategoryId}`);
           let products = res.data.products || [];
 
-          // Optionally filter by productType id
           if (productTypeId) {
             products = products.filter(
               (p) =>
@@ -126,8 +145,6 @@ const ProductListing = () => {
                 p.productType?.toString() === productTypeId
             );
           }
-
-          // Optionally filter by group
           if (groupParam) {
             products = products.filter((p) => p.productType?.group === groupParam);
           }
@@ -141,6 +158,8 @@ const ProductListing = () => {
 
       } catch (err) {
         console.error("ProductListing fetchAll error:", err);
+      } finally {
+        setLoading(false); // ← always stop loader
       }
     };
 
@@ -148,57 +167,46 @@ const ProductListing = () => {
   }, [slug, occasion, isSearchPage, searchQuery, subCategoryId, productTypeId, groupParam]);
 
 
+  // ── maxPrice from URL ─────────────────────────────────────
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const maxPriceParam = params.get("maxPrice");
-
     if (maxPriceParam) {
-      setActiveFilters(prev => ({
-        ...prev,
-        maxPrice: Number(maxPriceParam)
-      }));
+      setActiveFilters(prev => ({ ...prev, maxPrice: Number(maxPriceParam) }));
     }
   }, [location.search]);
 
 
+  // ── Client-side filtering + sorting ──────────────────────
   useEffect(() => {
     let result = [...allProducts];
 
-    // Price filter
     if (activeFilters.maxPrice) {
       result = result.filter(p =>
         p.variants.some(v => v.sizes.some(s => s.price <= activeFilters.maxPrice))
       );
     }
-
     if (activeFilters.subCategories?.length) {
       result = result.filter(p =>
         activeFilters.subCategories.includes(p.subCategory?.name)
       );
     }
-
-    // Gender filter
     if (activeFilters.Gender?.length) {
       result = result.filter(p =>
         activeFilters.Gender.includes(p.subCategory?.gender?.name)
       );
     }
-
-    // Color filter
     if (activeFilters.Color?.length) {
       result = result.filter(p =>
         p.variants.some(v => activeFilters.Color.includes(v.color))
       );
     }
-
-    // Occasion filter
     if (activeFilters.Occasion?.length) {
       result = result.filter(p =>
         p.occasion.some(o => activeFilters.Occasion.includes(o))
       );
     }
 
-    // Size filter
     const sizeAttr = attributes.find(a => a.isSize);
     if (sizeAttr && activeFilters[sizeAttr.name]?.length) {
       result = result.filter(p =>
@@ -207,8 +215,6 @@ const ProductListing = () => {
         )
       );
     }
-
-    // Size filter for collection (no attributes)
     if (!sizeAttr && activeFilters.Size?.length) {
       result = result.filter(p =>
         p.variants.some(v =>
@@ -216,20 +222,16 @@ const ProductListing = () => {
         )
       );
     }
-
-    // ProductType filter (collection page)
     if (activeFilters.ProductType?.length) {
       result = result.filter(p =>
         activeFilters.ProductType.includes(p.productType?._id?.toString() || p.productType?.toString())
       );
     }
 
-    // Flags filter
     if (activeFilters.isTrending)   result = result.filter(p => p.isTrending);
     if (activeFilters.isBestSeller) result = result.filter(p => p.isBestSeller);
     if (activeFilters.isNewArrival) result = result.filter(p => p.isNewArrival);
 
-    // Attributes filter
     attributes.filter(a => !a.isSize).forEach(attr => {
       if (activeFilters[attr.name]?.length) {
         result = result.filter(p => {
@@ -245,7 +247,6 @@ const ProductListing = () => {
       }
     });
 
-    // Sort
     if (sortType === "low") {
       result.sort((a, b) => (a.variants[0]?.sizes[0]?.price || 0) - (b.variants[0]?.sizes[0]?.price || 0));
     } else if (sortType === "high") {
@@ -260,7 +261,7 @@ const ProductListing = () => {
   }, [activeFilters, sortType, allProducts, attributes]);
 
 
-  // Page title helper
+  // ── Helpers ───────────────────────────────────────────────
   const pageTitle = isSearchPage
     ? `Results for "${searchQuery}"`
     : slug?.replace(/-/g, " ") || "Products";
@@ -270,13 +271,16 @@ const ProductListing = () => {
     : `Products / ${slug?.replace(/-/g, " ") || ""}`;
 
 
+  // ─────────────────────────────────────────────────────────
+  // Render
+  // ─────────────────────────────────────────────────────────
   return (
     <div className="pl-container">
 
       {/* DESKTOP LEFT SIDEBAR */}
       <div className="pl-left desktop-only">
         <div className="pl-breadcrumb">Home / {breadcrumb}</div>
-        {filterMeta && (
+        {filterMeta && !loading && (
           <FilterSidebar
             attributes={attributes}
             filterMeta={filterMeta}
@@ -293,61 +297,80 @@ const ProductListing = () => {
           Home / {breadcrumb}
         </div>
 
+        {/* Top bar */}
         <div className="pl-topbar">
-          <h2>{pageTitle} ({filteredProducts.length})</h2>
-          <div className="pl-sort">
-            <span className="desktop-only">Sort by:</span>
-            <select value={sortType} onChange={e => setSortType(e.target.value)}>
-              <option value="">Recommended</option>
-              <option value="low">Price: Low to High</option>
-              <option value="high">Price: High to Low</option>
-              <option value="rating">Bestseller</option>
-              <option value="latest">Latest</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Product Grid */}
-        <div className="pl-grid">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map(item => (
-              <div
-                className="pl-card"
-                key={item._id}
-                onClick={() => navigate(`/product/${item._id}`)}
-              >
-                <div className="pl-img-wrap">
-                  <img
-                    src={item.variants[0]?.mainImage || item.variants[0]?.images[0] || "/placeholder.png"}
-                    alt={item.title}
-                  />
-                  <span className="pl-badge">Best Price</span>
-                  <div className="pl-actions">
-                    <button onClick={(e) => handleWishlist(e, item)}>
-                      {isWishlisted(item._id)
-                        ? <FaHeart color="red" size={18} />
-                        : <FaRegHeart size={18} />
-                      }
-                    </button>
-                  </div>
-                </div>
-                <div className="pl-rating">⭐ {item.rating || 4.5}</div>
-                <div className="pl-info">
-                  <p className="pl-title">{item.title}</p>
-                  <div className="pl-price">
-                    <span className="current">₹{item.variants[0]?.sizes[0]?.price || 0}</span>
-                    <span className="old">₹{(item.variants[0]?.sizes[0]?.price || 0) + 500}</span>
-                    <span className="off">{item.discount ? `${item.discount}% OFF` : "20% OFF"}</span>
-                  </div>
-                </div>
-              </div>
-            ))
+          {loading ? (
+            <>
+              <div className="pl-skeleton-heading skeleton-base" />
+              <div className="pl-skeleton-sort    skeleton-base" />
+            </>
           ) : (
-            <h3>No Products Found</h3>
+            <>
+              <h2>{pageTitle} ({filteredProducts.length})</h2>
+              <div className="pl-sort">
+                <span className="desktop-only">Sort by:</span>
+                <select value={sortType} onChange={e => setSortType(e.target.value)}>
+                  <option value="">Recommended</option>
+                  <option value="low">Price: Low to High</option>
+                  <option value="high">Price: High to Low</option>
+                  <option value="rating">Bestseller</option>
+                  <option value="latest">Latest</option>
+                </select>
+              </div>
+            </>
           )}
         </div>
+
+        {/* Product Grid  OR  Skeleton Grid */}
+        {loading ? (
+          <div className="pl-skeleton-grid">
+            {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
+        ) : (
+          <div className="pl-grid">
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map(item => (
+                <div
+                  className="pl-card"
+                  key={item._id}
+                  onClick={() => navigate(`/product/${item._id}`)}
+                >
+                  <div className="pl-img-wrap">
+                    <img
+                      src={item.variants[0]?.mainImage || item.variants[0]?.images[0] || "/placeholder.png"}
+                      alt={item.title}
+                    />
+                    <span className="pl-badge">Best Price</span>
+                    <div className="pl-actions">
+                      <button onClick={(e) => handleWishlist(e, item)}>
+                        {isWishlisted(item._id)
+                          ? <FaHeart color="red" size={18} />
+                          : <FaRegHeart size={18} />
+                        }
+                      </button>
+                    </div>
+                  </div>
+                  <div className="pl-rating">⭐ {item.rating || 4.5}</div>
+                  <div className="pl-info">
+                    <p className="pl-title">{item.title}</p>
+                    <div className="pl-price">
+                      <span className="current">₹{item.variants[0]?.sizes[0]?.price || 0}</span>
+                      <span className="old">₹{(item.variants[0]?.sizes[0]?.price || 0) + 500}</span>
+                      <span className="off">{item.discount ? `${item.discount}% OFF` : "20% OFF"}</span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <h3>No Products Found</h3>
+            )}
+          </div>
+        )}
       </div>
 
+      {/* MOBILE BOTTOM BAR */}
       <div className="mobile-bottom-bar mobile-only">
         <button className="mob-bar-btn" onClick={() => setSortType("")}>
           <span>⇅</span> Sort By
@@ -377,19 +400,14 @@ const ProductListing = () => {
               <FilterSidebar
                 attributes={attributes}
                 filterMeta={filterMeta}
-                onFilterChange={(filters) => {
-                  setActiveFilters(filters);
-                }}
+                onFilterChange={(filters) => setActiveFilters(filters)}
               />
             )}
 
             <div className="mobile-filter-footer">
               <button
                 className="mob-filter-clear"
-                onClick={() => {
-                  setActiveFilters({});
-                  setShowFilter(false);
-                }}
+                onClick={() => { setActiveFilters({}); setShowFilter(false); }}
               >
                 Clear All
               </button>

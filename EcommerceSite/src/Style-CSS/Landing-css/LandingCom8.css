@@ -1,32 +1,37 @@
 @import "../Poppins-Font.css";
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap');
 
+
 .summer-banner {
   width: 100%;
   max-width: 1500px;
   margin: 0 auto;
   padding: 30px 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
   background: transparent;
 }
 
-/* ── SHARED PANEL BASE ── */
-
-.summer-banner-left,
-.summer-banner-right {
-  position: relative;
-  border-radius: 4px;
-  overflow: hidden;
-  /* 2:1 ratio = 50% of own width */
-  aspect-ratio: 2 / 1;
+/* ── SLIDER TRACK (desktop: side-by-side | mobile: scroll) ── */
+.summer-slider-track {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
   width: 100%;
 }
 
-/* ── BANNER 1 — Pure Image ── */
+/* ── SHARED PANEL BASE ── */
+.summer-slide {
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  aspect-ratio: 2 / 1;
+  width: 100%;
+  flex-shrink: 0;
+}
 
+/* ── BANNER 1 — Pure Image ── */
 .summer-banner-left img {
   width: 100%;
   height: 100%;
@@ -39,8 +44,7 @@
   transform: scale(1.04);
 }
 
-/* ── BANNER 2 — Model Full BG + Text ── */
-
+/* ── BANNER 2 — Model Full BG ── */
 .summer-right-bg {
   position: absolute;
   inset: 0;
@@ -56,7 +60,7 @@
   transform: scale(1.05);
 }
 
-
+/* ── RIGHT TEXT LAYER ── */
 .summer-right-text {
   position: absolute;
   bottom: 0;
@@ -109,21 +113,93 @@
 
 .summer-link-btn:hover { opacity: 0.6; }
 
-/* ── TABLET ── */
-@media (min-width: 601px) and (max-width: 1024px) {
-  .summer-banner { padding: 24px 16px; gap: 10px; }
-  .summer-right-text h2 { font-size: 22px; }
-  .summer-right-text { padding: 20px 22px; }
+/* ────────────────────────────────
+   DOTS — hidden on desktop
+──────────────────────────────── */
+.summer-dots {
+  display: none;
 }
 
-/* ── MOBILE ── */
+/* ── TABLET ── */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .summer-banner         { padding: 24px 16px; }
+  .summer-slider-track   { gap: 10px; }
+  .summer-right-text     { padding: 20px 22px; }
+  .summer-right-text h2  { font-size: 22px; }
+}
+
+/* ────────────────────────────────
+   MOBILE — horizontal scroll slider
+──────────────────────────────── */
 @media (max-width: 600px) {
   .summer-banner {
-    grid-template-columns: 1fr;
-    padding: 16px 12px;
-    gap: 10px;
+    padding: 15px 0 15px 8px;
+    gap: 14px;
   }
 
-  .summer-right-text { padding: 18px 20px; }
+  /* override grid → scrollable flex row */
+  .summer-slider-track {
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;          /* Firefox */
+    gap: 0;
+    width: 100%;
+    padding: 0 12px;
+    box-sizing: border-box;
+  }
+
+  /* hide webkit scrollbar */
+  .summer-slider-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* each slide = full viewport width */
+  .summer-slide {
+    flex: 0 0 calc(100vw - 24px);   /* full width minus padding */
+    width: calc(100vw - 24px);
+    scroll-snap-align: start;
+    border-radius: 8px;
+    aspect-ratio: 2 / 1;
+    margin-right: 12px;
+  }
+
+  .summer-slide:last-child {
+    margin-right: 0;
+  }
+
+  .summer-right-text  { padding: 18px 20px; }
   .summer-right-text h2 { font-size: 22px; }
+
+  /* ── DOTS ── */
+  .summer-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 0 0 4px;
+  }
+
+  .summer-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    background: #ccc;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease, width 0.3s ease;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* active dot — elongated pill style */
+  .summer-dot--active {
+    background: #222;
+    width: 22px;
+    border-radius: 4px;
+    transform: none;
+  }
 }

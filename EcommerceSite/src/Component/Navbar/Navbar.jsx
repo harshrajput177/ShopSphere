@@ -17,6 +17,7 @@ import SearchMobile from "../Landing/SearchMobileView/SearchMobile";
 import WishlistMobileView from "../MobileView/WishlistMobile";
 import MobileCategoryView from "../MobileView/NavMobileCategory";
 import { getMe, logoutUser } from "../Store/Slices/authSlice";
+import img from "../../images/928afd9a-95ac-464d-8f91-1ca3dd2deeb5.png"
 
 import MegaMenu from "./Men";
 
@@ -141,7 +142,7 @@ useEffect(() => {
     Kids:  { desc: "Shop for Boys, Girls and Infants",      img: "../../images/Kids cloth.jpg",   bg: "kids-bg"  },
   };
 
-  // ─── Static extra nav items (non-gender) ─────────────────
+
   const staticItems = ["Wedding"];
 
   // ─── Profile Dropdown ─────────────────────────────────────
@@ -182,11 +183,11 @@ useEffect(() => {
               {mobileMenu ? <FaXmark /> : <CiMenuBurger className="bar-icon" />}
             </div>
 
-            {/* <img
-              className="logo"
-              src="https://aartisto.com/wp-content/uploads/2020/11/myntra.png"
+            <img
+              className="nav-logo"
+              src={img}
               alt="Logo"
-            /> */}
+            />
 
 
             <ul className="navb-menu">

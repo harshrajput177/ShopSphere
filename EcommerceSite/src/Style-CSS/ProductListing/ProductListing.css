@@ -386,9 +386,123 @@
   display: none;
 }
 
-/* ==============================
-   RESPONSIVE BREAKPOINTS
-============================== */
+/* ── Skeleton Loader ─────────────────────────────────────── */
+
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.skeleton-base {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 37%,
+    #f0f0f0 63%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 2s ease infinite;
+  border-radius: 6px;
+}
+
+/* Grid of skeleton cards — same layout as .pl-grid */
+.pl-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 0;
+  width: 100%;
+}
+
+.pl-skeleton-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fafafa;
+  padding-bottom: 12px;
+}
+
+/* Thumbnail */
+.pl-skeleton-img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 8px 8px 0 0;
+}
+
+/* Rating bar */
+.pl-skeleton-rating {
+  height: 12px;
+  width: 60px;
+  margin: 0 12px;
+  border-radius: 4px;
+}
+
+/* Title lines */
+.pl-skeleton-title-1 {
+  height: 14px;
+  width: 60%;
+  margin: 0 12px;
+  border-radius: 4px;
+}
+.pl-skeleton-title-2 {
+  height: 14px;
+  width: 60%;
+  margin: 0 12px;
+  border-radius: 4px;
+}
+
+/* Price row */
+.pl-skeleton-price {
+  height: 16px;
+  width: 70%;
+  margin: 4px 12px 0;
+  border-radius: 4px;
+}
+
+/* Loading header (title + count area) */
+.pl-skeleton-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.pl-skeleton-heading {
+  height: 22px;
+  width: 250px;
+  border-radius: 5px;
+}
+
+.pl-skeleton-sort {
+  height: 34px;
+  width: 150px;
+  border-radius: 8px;
+}
+
+/* Dark-mode support */
+@media (prefers-color-scheme: dark) {
+  .skeleton-base {
+    background: linear-gradient(
+      90deg,
+      #b4b4b4 25%,
+      #ffffff 37%,
+      #fcfdff 63%
+    );
+    background-size: 600px 100%;
+  }
+  .pl-skeleton-card { background: #fefeff; }
+}
+
+/* Mobile – 2 columns */
+@media (max-width: 640px) {
+  .pl-skeleton-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
 @media (max-width: 768px) {
   .desktop-only {
     display: none !important;
@@ -460,6 +574,19 @@
   .pl-price .off {
     font-size: 11px;
   }
+
+  .pl-skeleton-title-1 {
+  height: 14px;
+  width: 60%;
+  margin: 0 12px;
+  border-radius: 4px;
+}
+
+.pl-skeleton-heading {
+  height: 22px;
+  width: 100px;
+  border-radius: 5px;
+}
 
   /* Show mobile breadcrumb */
   .pl-breadcrumb.mobile-only {
