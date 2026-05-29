@@ -180,7 +180,7 @@ const res = await API.get(`/api/pincode/check/${pincode}`);
 
         {/* Brand */}
         <div className="ViewProduct-brand">
-          {product.specifications?.Brand?.replace(/"/g, "").trim() || "No Brand"}
+          {product.specifications?.Brand?.replace(/"/g, "").trim() || "Kelwor"}
         </div>
 
         {/* Title */}

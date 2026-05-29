@@ -242,6 +242,10 @@ useEffect(() => {
         <div
           key={i}
           className="suggestion-item"
+            onMouseDown={(e) => {
+    e.preventDefault(); 
+    handleSearch(s);
+  }}
           onClick={() => handleSearch(s)}
         >
           <CiSearch className="sugg-icon" />

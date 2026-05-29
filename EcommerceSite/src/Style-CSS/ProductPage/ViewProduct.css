@@ -343,85 +343,7 @@
 .ViewProduct-cart-btn:active { transform: scale(0.98); }
 
 
-/* ─── COUPON BOX ────────────────────────────────────────── */
-.coupon-box h3 {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--clr-ink);
-  margin-bottom: 16px;
-}
 
-.coupon-list {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding-bottom: 4px;
-}
-.coupon-list::-webkit-scrollbar { display: none; }
-
-.single-coupon {
-  min-width: 220px;
-  flex-shrink: 0;
-  padding: 16px;
-  border-radius: var(--radius-sm);
-  background: var(--clr-tag-bg);
-  border: 1.5px dashed var(--clr-border-strong);
-  transition: all 0.2s;
-}
-
-.single-coupon:hover {
-  border-color: var(--clr-gold);
-  background: #eeecff;
-}
-
-.single-coupon h4 {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--clr-ink);
-  margin-bottom: 6px;
-}
-
-.single-coupon p {
-  font-size: 12px;
-  color: var(--clr-ink-muted);
-  margin-bottom: 14px;
-  line-height: 1.4;
-}
-
-.coupon-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.coupon-footer span {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--clr-ink);
-  letter-spacing: 0.06em;
-}
-
-.coupon-footer button {
-  border: 1.5px solid var(--clr-ink);
-  background: transparent;
-  color: var(--clr-ink);
-  padding: 5px 12px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-family: var(--font-body);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  cursor: pointer;
-  transition: all 0.18s;
-}
-
-.coupon-footer button:hover {
-  background: var(--clr-ink);
-  color: var(--clr-white);
-}
 
 /* ─── EXTRA / SOCIAL ROW ────────────────────────────────── */
 .View-extra {
@@ -962,12 +884,6 @@
     margin-bottom: 8px;
   }
 
-  /* Coupon cards */
-  .single-coupon { min-width: 190px; }
-  .single-coupon h4 { font-size: 14px; }
-  .single-coupon p { font-size: 11px; }
-  .coupon-footer span { font-size: 13px; }
-  .coupon-footer button { padding: 4px 10px; font-size: 10px; }
 
   /* Extra row */
   .View-extra {

@@ -583,6 +583,7 @@ const searchSuggest = async (req, res) => {
     const q = req.query.q?.trim();
     if (!q || q.length < 2) return res.json({ suggestions: [] });
 
+    // Atlas Search se matching products lao
     const products = await Product.aggregate([
       {
         $search: {
@@ -594,30 +595,62 @@ const searchSuggest = async (req, res) => {
                   query: q,
                   path: "title",
                   fuzzy: { maxEdits: 1, prefixLength: 1 },
-                  score: { boost: { value: 2 } }   // autocomplete scores higher
-                }
+                },
               },
               {
                 text: {
                   query: q,
-                  path: "title",
-                  fuzzy: { maxEdits: 1 }
-                }
-              }
+                  path: "productTypeName",
+                  fuzzy: { maxEdits: 1 },
+                },
+              },
             ],
-            minimumShouldMatch: 1
-          }
-        }
+            minimumShouldMatch: 1,
+          },
+        },
       },
-      { $limit: 8 },
-      { $project: { title: 1, _id: 0 } }
+      { $limit: 40 },
+      {
+        $project: {
+          genderName: 1,
+          productTypeName: 1,
+          subCategoryName: 1,
+          _id: 0,
+        },
+      },
     ]);
 
-    const suggestions = [...new Set(products.map(p => p.title))].slice(0, 6);
-    res.json({ suggestions });
+    const suggestionSet = new Set();
+
+    products.forEach((p) => {
+      const gender      = (p.genderName || "").trim();       // "Women"
+      const productType = (p.productTypeName || "").trim();  // "Jeans"
+      const subCat      = (p.subCategoryName || "").trim();  // "Western"
+
+      const qLower = q.toLowerCase();
+
+      // ✅ "Jeans for Women"
+      if (productType && gender) {
+        const s = `${productType} for ${gender}`;
+        if (s.toLowerCase().includes(qLower)) suggestionSet.add(s);
+      }
+
+      // ✅ "Jeans" (standalone)
+      if (productType && productType.toLowerCase().includes(qLower)) {
+        suggestionSet.add(productType);
+      }
+
+      // ✅ "Western for Women"
+      if (subCat && gender) {
+        const s = `${subCat} for ${gender}`;
+        if (s.toLowerCase().includes(qLower)) suggestionSet.add(s);
+      }
+    });
+
+    res.json({ suggestions: [...suggestionSet].slice(0, 6) });
   } catch (err) {
     console.error("Suggest error:", err);
-    res.json({ suggestions: [] });  // graceful fallback
+    res.json({ suggestions: [] });
   }
 };
 
