@@ -27,12 +27,15 @@ const AccountPannel = () => {
   const { orders } = useSelector((state) => state.order);
 
   // Delivered ya Completed orders count karo, max 3
-  const done = Math.min(
-    orders.filter((o) =>
-      o.status === "Delivered" || o.status === "Completed"
-    ).length,
-    3
-  );
+ const done = Math.min(
+  orders.filter((o) =>
+    o.status === "Delivered" ||
+    o.status === "Completed" ||
+    o.status === "Confirmed" ||
+    o.status === "Shipped"
+  ).length,
+  3
+);
 
   useEffect(() => {
     dispatch(getMe());
@@ -82,29 +85,30 @@ const AccountPannel = () => {
         <div className="mobileView-offer-section">
           <p className="mobileView-offer-title">Save big on your first 3 orders</p>
 
-          {/* Steps */}
-          <div className="mobileView-offer-steps">
-            {discounts.map((d, i) => {
-              const isDone   = i < done;
-              const isActive = i === done;
-              const isLocked = i > done;
-              return (
-                <div
-                  key={i}
-                  className={`mobileView-step ${
-                    isDone   ? "mobileView-step--done"   :
-                    isActive ? "mobileView-step--active" :
-                               "mobileView-step--locked"
-                  }`}
-                >
-                  {isDone   && <span className="mobileView-step-tick">✓</span>}
-                  {isLocked && <span className="mobileView-step-tick">🔒</span>}
-                  <span className="mobileView-step-label">{d.order}</span>
-                  <span className="mobileView-step-off">{d.off}</span>
-                </div>
-              );
-            })}
-          </div>
+      <div className="mobileView-offer-steps">
+  {discounts.map((d, i) => {
+    const isDone   = i < done;
+    const isActive = i === done;
+    const isLocked = i > done;
+    const stateClass = isDone ? "mobileView-step--done" : isActive ? "mobileView-step--active" : "mobileView-step--locked";
+    const [num, ...rest] = d.order.split("");
+
+    return (
+      <div key={i} className={`mobileView-step-wrapper ${stateClass}`}>
+        <div className="mobileView-step-lock">
+          {isDone ? "✓" : isLocked ? "🔒" : ""}
+        </div>
+        <div className="mobileView-step-circle">
+          <span className="mobileView-step-circle-num">
+            {num}<sup>{rest.join("")}</sup>
+          </span>
+          <span className="mobileView-step-circle-label">Order</span>
+        </div>
+        <span className="mobileView-step-badge">{d.off}</span>
+      </div>
+    );
+  })}
+</div>
 
           {/* Offer Box */}
           {!user ? (

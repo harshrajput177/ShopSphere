@@ -203,7 +203,7 @@
 .btn-shop-now {
   display: inline-block;
   padding: 13px 32px;
-  background: var(--pink);
+  background: black;
   color: var(--white);
   border: none;
   border-radius: 50px;
@@ -212,13 +212,13 @@
   font-weight: 600;
   cursor: pointer;
   letter-spacing: 0.3px;
-  box-shadow: 0 4px 20px rgba(255,63,108,0.3);
+  box-shadow: 0 4px 20px rgba(100, 100, 100, 0.3);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .btn-shop-now:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(255,63,108,0.4);
+  box-shadow: 0 8px 28px rgba(79, 79, 79, 0.4);
 }
 
 /* ── Loading ── */
