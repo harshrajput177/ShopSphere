@@ -425,7 +425,7 @@
   .heading-eyebrow     { font-size: 0.55rem; }
   .trending-heading p  { font-size: 0.62rem; }
   .carousel-outer      { padding: 0 34px; margin: 0 -34px; }
-  .nav-btn             { width: 28px; height: 28px; }
+  .nav-btn             { width: 36px; height: 36px; }
   .nav-btn svg         { width: 11px; height: 11px; }
   .product-card-com6   { flex: 0 0 148px; width: 148px; }
   .cards-track         { gap: 10px; }
@@ -439,5 +439,5 @@
 @media (max-width: 360px) {
   .carousel-outer    { padding: 0 30px; margin: 0 -30px; }
   .product-card-com6 { flex: 0 0 135px; width: 135px; }
-  .nav-btn           { width: 26px; height: 26px; }
+  .nav-btn           { width: 34px; height: 34px; }
 }

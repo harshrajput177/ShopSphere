@@ -103,7 +103,7 @@ const LoginModal = ({ onClose }) => {
             <button className="Login-close-btn" onClick={onClose}>×</button>
 
             <div className="login-header">
-              <h2>NYKAA FASHION</h2>
+              <h2>KELWOR FASHION</h2>
             </div>
 
             <div className="login-body">

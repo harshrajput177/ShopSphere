@@ -136,11 +136,11 @@ useEffect(() => {
     setMobileMenu(false);
   };
 
-  const categoryMeta = {
-    Women: { desc: "Shop Westernwear, Indianwear and More", img: "../../images/youngwomen.jpg", bg: "women-bg" },
-    Men:   { desc: "Shop Formals, Casuals and Denims",      img: "../../images/men-cloth.jpg",    bg: "men-bg"   },
-    Kids:  { desc: "Shop for Boys, Girls and Infants",      img: "../../images/Kids cloth.jpg",   bg: "kids-bg"  },
-  };
+const categoryMeta = {
+  Women: { desc: "Shop Westernwear, Indianwear and More", bg: "women-bg" },
+  Men:   { desc: "Shop Formals, Casuals and Denims",      bg: "men-bg"   },
+  Kids:  { desc: "Shop for Boys, Girls and Infants",      bg: "kids-bg"  },
+};
 
 
   const staticItems = ["Wedding"];

@@ -1,0 +1,199 @@
+/* ── WRAPPER ── */
+.ag-wrapper {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* ── CARD ── */
+.ag-card {
+  background: #ffffff;
+  border: 1px solid #f0ede8;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+
+.ag-card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 16px;
+}
+
+/* ── FORM ELEMENTS ── */
+.ag-label {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+
+.ag-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e0ddd8;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #111;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.ag-input:focus {
+  border-color: #aaa;
+}
+
+.ag-file {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* ── IMAGE PREVIEW ── */
+.ag-preview {
+  margin-top: 10px;
+}
+
+.ag-preview-img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #f0ede8;
+  display: block;
+}
+
+.ag-preview-name {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+}
+
+/* ── BUTTONS ── */
+.ag-btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.ag-btn-primary {
+  padding: 9px 20px;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ag-btn-primary:hover {
+  background: #333;
+}
+
+.ag-btn-secondary {
+  padding: 9px 20px;
+  background: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ag-btn-secondary:hover {
+  background: #f5f5f5;
+}
+
+/* ── TABLE ── */
+.ag-table-wrap {
+  overflow-x: auto;
+}
+
+.ag-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.ag-table th {
+  text-align: left;
+  padding: 8px 12px;
+  color: #888;
+  font-weight: 500;
+  border-bottom: 1px solid #f0ede8;
+}
+
+.ag-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f9f7f5;
+  color: #111;
+  vertical-align: middle;
+}
+
+.ag-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── THUMBNAIL ── */
+.ag-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #f0ede8;
+  display: block;
+}
+
+/* ── BADGE ── */
+.ag-badge {
+  display: inline-block;
+  font-size: 12px;
+  padding: 3px 8px;
+  background: #f5f3ef;
+  color: #555;
+  border-radius: 4px;
+}
+
+/* ── ACTION BUTTONS ── */
+.ag-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.ag-icon-btn {
+  padding: 5px 10px;
+  background: none;
+  border: 1px solid #ece9e4;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #444;
+  transition: background 0.15s;
+}
+
+.ag-icon-btn:hover {
+  background: #f5f3ef;
+}
+
+.ag-icon-btn--danger {
+  color: #e53e3e;
+  border-color: #fde8e8;
+}
+
+.ag-icon-btn--danger:hover {
+  background: #fff5f5;
+}
+
+/* ── EMPTY STATE ── */
+.ag-empty {
+  text-align: center;
+  padding: 24px;
+  color: #bbb;
+  font-size: 14px;
+}

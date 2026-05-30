@@ -9,7 +9,7 @@ import { IoCartOutline } from "react-icons/io5";
 import { HiOutlineUser } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import AccountPage from "./MobileView/AccountMobileView"
-import AccountHeader from "./MobileView/NavbarMobileView";
+import AccountHeader from "./MobileView/AccNavMobileView";
 import CartDrawer from "./Cart/FilledCart";
 import Category from "./MobileView/CategoryMobileView";
 
