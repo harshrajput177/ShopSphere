@@ -90,13 +90,13 @@ function ProductCard({ p, isWishlisted, onWishlist }) {
             <HeartIcon />
           </button>
 
-          <button
+          {/* <button
             className="action-icon"
             onClick={(e) => e.stopPropagation()}
             aria-label="Quick view"
           >
             <EyeIcon />
-          </button>
+          </button> */}
         </div>
       </div>
 

@@ -10,7 +10,7 @@
   top: 0;
   left: 0;
   overflow: visible !important;
-  z-index: 999;
+  z-index: 9999;
   display: flex;
   justify-content: center;
 }
@@ -35,12 +35,12 @@
 }
 
 .nav-logo {
-  width: 85px;
+  width: 55px;
   margin-bottom: 10px;
 }
 
 /* ===================== */
-/* DESKTOP MENU (ul/li style) */
+/* DESKTOP MENU          */
 /* ===================== */
 .navb-menu {
   display: flex;
@@ -57,63 +57,22 @@
   background: none;
 }
 
+/* ===================== */
+/* SEARCH BOX            */
+/* ===================== */
 .navb-search-box {
   position: relative;
-  flex: 1;              /* ← flex stretch */
+  flex: 1;
   max-width: 480px;
-  min-width: 0;         /* ← flex overflow fix */
-  z-index: 10001;       /* ← mega menu (9999) se upar */
+  min-width: 0;
+  z-index: 10001;
   display: flex;
   align-items: center;
   background-color: rgb(248, 249, 255);
   padding: 10px 12px;
   border-radius: 32px;
   border: 0.5px solid rgb(207, 207, 207) !important;
-}
-
-/* Suggestions Dropdown Container */
-.search-suggestions {
-  position: absolute;
-  top: calc(90% + 6px);
-  left: 0;
-  right: 0;
-  background:rgb(248, 249, 255);
-  border: 0.5px solid #e0e0e0;
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
-  z-index: 10002;
-  overflow: hidden;
-  max-height: 380px;
-  overflow-y: auto;
-  padding: 6px 0;        /* ← top/bottom breathing room */
-}
-
-/* Each suggestion item */
-.suggestion-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px;    /* ← left-right padding + vertical height */
-  cursor: pointer;
-  font-size: 14px;
-  color: #333;
-  line-height: 1.4;
-  transition: background 0.12s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;  /* ← long text cut off with ... */
-}
-
-.suggestion-item:hover {
-  background: #fff5f7;
-  color: #ff3f6c;
-}
-
-/* Search icon inside each item */
-.sugg-icon {
-  font-size: 15px;
-  color: #bbb;
-  flex-shrink: 0;        /* ← icon kabhi squeeze na ho */
+  overflow: visible !important;
 }
 
 .navb-search-box input {
@@ -124,10 +83,203 @@
   margin-left: 8px;
   font-size: 15px;
   font-weight: 300 !important;
+  color: rgb(50, 50, 50);
+}
+
+.navb-search-box input::placeholder {
   color: rgb(173, 173, 173);
 }
 
-/* RIGHT */
+/* Clear (✕) button */
+.search-clear-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #aaa;
+  font-size: 13px;
+  padding: 2px 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.search-clear-btn:hover { color: #555; }
+
+/* ===================== */
+/* SUGGESTIONS DROPDOWN  */
+/* ===================== */
+@keyframes suggFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  z-index: 99999;
+  overflow: hidden;
+  max-height: 500px;
+  overflow-y: auto;
+  animation: suggFadeIn 0.15s ease;
+}
+
+/* Scrollbar styling */
+.search-suggestions::-webkit-scrollbar { width: 4px; }
+.search-suggestions::-webkit-scrollbar-track { background: transparent; }
+.search-suggestions::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 4px; }
+
+/* Section label */
+.sugg-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #aaa;
+  padding: 10px 16px 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Divider between sections */
+.sugg-divider {
+  height: 1px;
+  background: #f2f2f2;
+  margin: 4px 0;
+}
+
+/* ── Base suggestion item ── */
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  background: #ffffff;
+  transition: background 0.12s;
+}
+.suggestion-item:hover { background: #f7f7f8; }
+
+.sugg-icon {
+  font-size: 17px;
+  color: #bbb;
+  flex-shrink: 0;
+}
+
+/* Badge (Trending / gender tag) */
+.sugg-badge {
+  margin-left: auto;
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: #fff0f3;
+  color: #ff3f6c;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+.sugg-badge-gray {
+  background: #f2f2f2;
+  color: #777;
+}
+
+/* ── Recent searches ── */
+.suggestion-item.recent span:first-of-type {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+}
+.sugg-delete {
+  margin-left: auto;
+  color: #ccc;
+  font-size: 11px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.12s, background 0.12s;
+}
+.sugg-delete:hover {
+  color: #888;
+  background: #efefef;
+}
+
+/* ── Trending ── */
+.sugg-trend-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.suggestion-item.trending span:nth-child(2) {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+}
+
+/* ── Category ── */
+.sugg-cat-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.suggestion-item.category span:nth-child(2) {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+}
+
+/* ── Product suggestions ── */
+.suggestion-item.product {
+  padding: 8px 16px;
+  align-items: center;
+}
+.sugg-product-img {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+  font-size: 20px;
+}
+.sugg-product-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sugg-product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.sugg-product-name {
+  font-size: 14px;
+  color: #222;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sugg-product-meta {
+  font-size: 12px;
+  color: #999;
+}
+.sugg-product-price {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+/* ===================== */
+/* RIGHT ICONS           */
+/* ===================== */
 .navb-nav-right {
   display: flex;
   gap: 26px;
@@ -145,9 +297,7 @@
   cursor: pointer;
 }
 
-.nav-icon-react {
-  font-size: 1.52rem;
-}
+.nav-icon-react { font-size: 1.52rem; }
 
 .nav-icon p {
   font-size: 12px;
@@ -155,29 +305,30 @@
   font-family: 'PoppinsRegular';
 }
 
+/* ===================== */
+/* NAV ITEM + MEGA MENU  */
+/* ===================== */
 .real-nav-item {
   position: relative;
   padding-bottom: 8px;
   cursor: pointer;
   z-index: 9999;
 }
- 
+
 /* Pink underline */
 .real-nav-item::after {
   content: "";
   position: absolute;
   left: 0;
-  bottom: -27px;         
+  bottom: -27px;
   width: 0%;
   height: 3px;
   background: #ff3f6c;
   transition: width 0.25s ease;
-    z-index: 9999;
+  z-index: 9999;
 }
- 
 .real-nav-item:hover::after { width: 100%; }
 .real-nav-item.active::after { width: 100%; }
- 
 
 .real-nav-item::before {
   content: "";
@@ -185,17 +336,16 @@
   top: 60px;
   left: 0;
   width: 100vw;
-  height: 24px;        /* navbar bottom se mega-menu top tak */
+  height: 24px;
   z-index: 9997;
   display: none;
   background: transparent;
 }
- 
-.real-nav-item:hover::before {
-  display: block;
-}
+.real-nav-item:hover::before { display: block; }
 
-/* PROFILE */
+/* ===================== */
+/* PROFILE DROPDOWN      */
+/* ===================== */
 .profile-wrapper {
   position: relative;
   cursor: pointer;
@@ -242,7 +392,6 @@
   margin-bottom: 12px;
   transition: 0.3s;
 }
-
 .login-btn:hover { background: #e0335e; }
 
 .dropdown-divider {
@@ -259,23 +408,20 @@
   padding: 8px 0;
   transition: 0.2s;
 }
-
 .dropdown-item:hover { color: #ff3f6c; }
 
-/* MOBILE MENU ICON - desktop pe hidden */
+/* ===================== */
+/* MOBILE ELEMENTS       */
+/* ===================== */
 .mobile-menu-icon {
   display: none;
   font-size: 22px;
   cursor: pointer;
 }
 
-.mobile-search-icon {
-  display: none;
-}
+.mobile-search-icon { display: none; }
 
-.cart-icon-wrapper {
-  position: relative;
-}
+.cart-icon-wrapper { position: relative; }
 
 .nav-cart-badge {
   position: absolute;
@@ -294,10 +440,8 @@
 }
 
 /* ===================== */
-/* MOBILE SIDEBAR - ALWAYS fixed, slide karta hai */
-/* Desktop pe bhi fixed rakho, bas left: -100% */
+/* MOBILE SIDEBAR        */
 /* ===================== */
-
 .mobile-menu-overlay {
   position: fixed;
   top: 0;
@@ -306,10 +450,9 @@
   height: 100vh;
   background: rgba(0, 0, 0, 0.45);
   z-index: 9998;
-  display: none; /* Desktop pe hide */
+  display: none;
 }
 
-/* SIDEBAR DIV - ab yeh ul nahi, div hai */
 .mobile-sidebar {
   position: fixed;
   top: 0;
@@ -326,11 +469,8 @@
   display: flex;
 }
 
-.mobile-sidebar.open {
-  left: 0;
-}
+.mobile-sidebar.open { left: 0; }
 
-/* CLOSE BUTTON */
 .mobile-menu-close {
   display: flex;
   justify-content: flex-end;
@@ -340,7 +480,6 @@
   color: #444;
 }
 
-/* HEADING */
 .mobile-menu-heading {
   font-size: 26px;
   font-weight: 700;
@@ -351,7 +490,6 @@
   margin-bottom: 4px;
 }
 
-/* CATEGORY LIST */
 .mobile-category-list {
   display: flex;
   flex-direction: column;
@@ -359,7 +497,6 @@
   padding: 0 12px 20px;
 }
 
-/* EACH CARD */
 .mobile-category-card {
   position: relative;
   height: 120px;
@@ -370,34 +507,33 @@
   align-items: center;
   transition: transform 0.2s;
 }
+.mobile-category-card:active { transform: scale(0.98); }
 
-.mobile-category-card:active {
-  transform: scale(0.98);
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,0.35) 0%, transparent 100%);
+  z-index: 1;
 }
 
-/* TEXT */
 .mobile-category-text {
   padding: 12px 16px;
   z-index: 2;
 }
-
 .mobile-category-text h3 {
   font-size: 17px;
   font-weight: 700;
   color: #f2f2f2;
-   text-shadow: #444;
   margin: 0 0 3px;
 }
-
 .mobile-category-text p {
   font-size: 12px;
-  text-shadow: #444;
   color: #ffffff;
   margin: 0;
   line-height: 1.3;
 }
 
-/* CARD BACKGROUNDS */
+/* Card backgrounds */
 .women-bg  { background: linear-gradient(135deg, #f5f0ee 75%, #fff9f6 100%); }
 .men-bg    { background: linear-gradient(135deg, #eef0f5 55%, #b8c0d4 100%); }
 .kids-bg   { background: linear-gradient(135deg, #f0f5ee 55%, #b8d4b8 100%); }
@@ -406,14 +542,13 @@
 .wedding-bg{ background: linear-gradient(135deg, #fff5f0 55%, #f0c4b0 100%); }
 
 /* ===================== */
-/* RESPONSIVE */
+/* RESPONSIVE            */
 /* ===================== */
-
 @media (max-width: 1300px) {
   .navb-menu { gap: 22px; font-size: 15px; }
   .nav-left-logo { gap: 25px; }
   .navb-search-box { width: 24rem; padding: 8px 10px; }
-  .nav-logo { width: 75px; }
+  .nav-logo { width: 45px; }
 }
 
 @media (max-width: 1200px) {
@@ -424,30 +559,16 @@
   .navb-nav-right { gap: 18px; }
 }
 
-/* ===================== */
-/* TABLET - 1024px se neeche */
-/* ===================== */
 @media (max-width: 1024px) {
   .navb-search-box { width: 26rem; }
   .mobile-menu-icon { display: block; }
-
-    .mega-menu-f {
-    display: none !important;
-  }
-
-  /* Desktop ul menu hide karo */
+  .mega-menu-f { display: none !important; }
   .navb-menu { display: none !important; }
-
-  /* Sidebar aur overlay enable karo */
   .mobile-sidebar { display: flex; }
   .mobile-menu-overlay { display: block; }
 }
 
-/* ===================== */
-/* MOBILE - 850px se neeche */
-/* ===================== */
 @media (max-width: 850px) {
-
   .real-nav-container {
     display: flex;
     flex-wrap: wrap;
@@ -486,7 +607,7 @@
     position: absolute;
     left: 55%;
     transform: translateX(-50%);
-    width: 80px;
+    width: 55px;
   }
 
   .navb-nav-right {
@@ -507,6 +628,6 @@
 }
 
 @media (max-width: 480px) {
-  .nav-logo { width: 70px; margin-left: 30px; }
+  .nav-logo { width: 42px; margin-left: 30px; }
   .nav-icon-react { font-size: 1.6rem; color: rgb(46, 46, 46); }
 }

@@ -583,73 +583,81 @@ const searchSuggest = async (req, res) => {
     const q = req.query.q?.trim();
     if (!q || q.length < 2) return res.json({ suggestions: [] });
 
-    // Atlas Search se matching products lao
     const products = await Product.aggregate([
       {
         $search: {
           index: "default",
           compound: {
             should: [
-              {
-                autocomplete: {
-                  query: q,
-                  path: "title",
-                  fuzzy: { maxEdits: 1, prefixLength: 1 },
-                },
-              },
-              {
-                text: {
-                  query: q,
-                  path: "productTypeName",
-                  fuzzy: { maxEdits: 1 },
-                },
-              },
+              { autocomplete: { query: q, path: "title", fuzzy: { maxEdits: 1 }, score: { boost: { value: 3 } } } },
+              { text: { query: q, path: "productTypeName", fuzzy: { maxEdits: 1 }, score: { boost: { value: 2 } } } },
+              { text: { query: q, path: "subCategoryName", fuzzy: { maxEdits: 1 } } }
             ],
-            minimumShouldMatch: 1,
-          },
-        },
+            minimumShouldMatch: 1
+          }
+        }
       },
-      { $limit: 40 },
+      { $limit: 30 },
       {
         $project: {
-          genderName: 1,
+          title:           1,
+          genderName:      1,
           productTypeName: 1,
           subCategoryName: 1,
-          _id: 0,
-        },
-      },
+          variants:        { $slice: ["$variants", 1] },  // sirf pehla variant
+          _id:             1
+        }
+      }
     ]);
 
-    const suggestionSet = new Set();
+    const qLower = q.toLowerCase();
+    const keywordMap  = new Map();
+    const categoryMap = new Map();
+    const productList = [];
 
     products.forEach((p) => {
-      const gender      = (p.genderName || "").trim();       // "Women"
-      const productType = (p.productTypeName || "").trim();  // "Jeans"
-      const subCat      = (p.subCategoryName || "").trim();  // "Western"
+      const gender      = (p.genderName      || "").trim();
+      const productType = (p.productTypeName || "").trim();
+      const subCat      = (p.subCategoryName || "").trim();
+      const img         = p.variants?.[0]?.images?.[0] || null;
+      const price       = p.variants?.[0]?.sizes?.[0]?.price || null;
 
-      const qLower = q.toLowerCase();
-
-      // ✅ "Jeans for Women"
+      // keyword: "Cargo Pants for Men"
       if (productType && gender) {
-        const s = `${productType} for ${gender}`;
-        if (s.toLowerCase().includes(qLower)) suggestionSet.add(s);
+        const key = `${productType} for ${gender}`;
+        if (!keywordMap.has(key))
+          keywordMap.set(key, { text: key, type: "keyword", meta: gender });
       }
 
-      // ✅ "Jeans" (standalone)
-      if (productType && productType.toLowerCase().includes(qLower)) {
-        suggestionSet.add(productType);
+      // category: "Western Wear › Cargo Pants"
+      if (subCat && productType) {
+        const key = `${subCat} › ${productType}`;
+        if (!categoryMap.has(key))
+          categoryMap.set(key, { text: key, type: "category", meta: gender });
       }
 
-      // ✅ "Western for Women"
-      if (subCat && gender) {
-        const s = `${subCat} for ${gender}`;
-        if (s.toLowerCase().includes(qLower)) suggestionSet.add(s);
+      // products (title match wale top 4)
+      if (productList.length < 4 && p.title?.toLowerCase().includes(qLower)) {
+        productList.push({
+          type:  "product",
+          text:  p.title,
+          id:    p._id,
+          image: img,
+          price: price ? `₹${price}` : null,
+          meta:  `${gender} · ${subCat || productType}`
+        });
       }
     });
 
-    res.json({ suggestions: [...suggestionSet].slice(0, 6) });
+    const suggestions = [
+      ...[...keywordMap.values()].slice(0, 3),
+      ...[...categoryMap.values()].slice(0, 2),
+      ...productList
+    ];
+
+    res.json({ suggestions });
   } catch (err) {
-    console.error("Suggest error:", err);
+    console.error("Suggest error:", err.message);
     res.json({ suggestions: [] });
   }
 };
@@ -696,10 +704,18 @@ const searchProducts = async (req, res) => {
     const { q, limit = 100 } = req.query;
     if (!q?.trim()) return res.json({ products: [], total: 0 });
 
+        const SearchLog = require("../models/SearchLog");
+    await SearchLog.create({ query: q.toLowerCase().trim() });
+
     const genderValues = ["Men", "Women", "Kids"];
 
-    const rawWords = q.trim().split(/\s+/);
-    const normalizedWords = [...new Set(rawWords.map(normalizeWord))];
+const rawWords = q.trim().split(/\s+/);
+
+// "for", "and", "the" jaise stop words hata do
+const stopWords = new Set(["for", "and", "the", "a", "an", "of", "in"]);
+const filteredWords = rawWords.filter(w => !stopWords.has(w.toLowerCase()));
+
+const normalizedWords = [...new Set(filteredWords.map(normalizeWord))];
 
     // Gender aur product words alag karo
     const genderWords  = normalizedWords.filter(w => genderValues.includes(w));

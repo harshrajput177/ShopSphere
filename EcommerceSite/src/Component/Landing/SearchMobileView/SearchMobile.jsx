@@ -7,18 +7,10 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import API from "../../api/api";
 import { CiSearch } from "react-icons/ci";
 import { MdOutlineHistory, MdNorthWest } from "react-icons/md";
-
-/* ─── Trending fallback ─────────────────── */
-const TRENDING = [
-  "Women Straight Jeans",
-  "Oversized T-Shirts",
-  "Ethnic Wear Sale",
-  "Summer Dresses",
-  "Men Chinos",
-];
+import { FaXmark } from "react-icons/fa6";
 
 /* ─── Local Storage Helpers ───────────────── */
-const RECENT_KEY = "sm_recent_searches";
+const RECENT_KEY = "recentSearches"; // Navbar ke saath same key
 
 const getRecent = () => {
   try {
@@ -40,18 +32,15 @@ const addToRecent = (q, current) => {
   return updated;
 };
 
-/* Highlight text */
+/* ─── Highlight matched text ──────────────── */
 const Highlight = ({ text, query }) => {
   if (!query) return <span>{text}</span>;
   const idx = text.toLowerCase().indexOf(query.toLowerCase());
   if (idx < 0) return <span>{text}</span>;
-
   return (
     <span>
       {text.substring(0, idx)}
-      <em className="sugg-highlight">
-        {text.substring(idx, idx + query.length)}
-      </em>
+      <em className="sugg-highlight">{text.substring(idx, idx + query.length)}</em>
       {text.substring(idx + query.length)}
     </span>
   );
@@ -63,24 +52,31 @@ const SearchMobile = ({ closeSearch }) => {
   const query = params.get("q") || "";
   const inputRef = useRef(null);
 
-  const [searchText, setSearchText] = useState(query);
-  const [suggestions, setSuggestions] = useState([]);
+  const [searchText, setSearchText]       = useState(query);
+  const [suggestions, setSuggestions]     = useState([]);
+  const [trending, setTrending]           = useState([]);
   const [recentSearches, setRecentSearches] = useState(getRecent);
-  const [showSugg, setShowSugg] = useState(false);
+  const [showSugg, setShowSugg]           = useState(false);
 
   /* Autofocus */
   useEffect(() => {
     setTimeout(() => inputRef.current?.focus(), 100);
   }, []);
 
-  /* Suggestions API */
+  /* Trending fetch */
+  useEffect(() => {
+    API.get("/api/products/search/trending")
+      .then((res) => setTrending(res.data.trending || []))
+      .catch(() => {});
+  }, []);
+
+  /* Suggestions API — debounced */
   useEffect(() => {
     if (searchText.length < 2) {
       setSuggestions([]);
       setShowSugg(false);
       return;
     }
-
     const timer = setTimeout(async () => {
       try {
         const res = await API.get(
@@ -92,36 +88,27 @@ const SearchMobile = ({ closeSearch }) => {
         setSuggestions([]);
       }
     }, 300);
-
     return () => clearTimeout(timer);
   }, [searchText]);
 
-  /* Search Handler → Redirect */
+  /* Search Handler */
   const handleSearch = (q = searchText) => {
-    const trimmed = q.trim();
+    const text = typeof q === "object" ? q.text || "" : String(q);
+    const trimmed = text.trim();
     if (!trimmed) return;
 
     const updated = addToRecent(trimmed, recentSearches);
     setRecentSearches(updated);
-
     setShowSugg(false);
-
-    // ✅ MAIN FIX: Redirect to Product Listing
     navigate(`/search?q=${encodeURIComponent(trimmed)}`);
-
     closeSearch && closeSearch();
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") handleSearch();
-  };
-
-  const handleSuggClick = (s) => {
-    handleSearch(s);
-  };
-
-  const handleRecentClick = (q) => {
-    handleSearch(q);
+  const deleteRecent = (e, item) => {
+    e.stopPropagation();
+    const updated = recentSearches.filter((r) => r !== item);
+    setRecentSearches(updated);
+    saveRecent(updated);
   };
 
   const clearRecent = () => {
@@ -129,7 +116,12 @@ const SearchMobile = ({ closeSearch }) => {
     saveRecent([]);
   };
 
-  /* Home UI */
+  /* Suggestion groups */
+  const keywordSugg  = suggestions.filter((s) => s.type === "keyword");
+  const categorySugg = suggestions.filter((s) => s.type === "category");
+  const productSugg  = suggestions.filter((s) => s.type === "product");
+
+  /* ── Home State (recent + trending) ── */
   const HomeState = () => (
     <>
       {recentSearches.length > 0 && (
@@ -140,11 +132,21 @@ const SearchMobile = ({ closeSearch }) => {
               <FiTrash2 size={13} /> Clear all
             </button>
           </div>
-
           <div className="SM-tags">
             {recentSearches.map((r, i) => (
-              <button key={i} className="SM-tag" onClick={() => handleRecentClick(r)}>
-                <MdOutlineHistory size={13} /> {r}
+              <button
+                key={i}
+                className="SM-tag"
+                onClick={() => handleSearch(r)}
+              >
+                <MdOutlineHistory size={13} />
+                {r}
+                <span
+                  className="SM-tag-delete"
+                  onClick={(e) => deleteRecent(e, r)}
+                >
+                  <FaXmark size={9} />
+                </span>
               </button>
             ))}
           </div>
@@ -155,12 +157,24 @@ const SearchMobile = ({ closeSearch }) => {
         <div className="SM-section-header">
           <h4>Trending Now</h4>
         </div>
-
         <ul className="SM-trending-list">
-          {TRENDING.map((t, i) => (
-            <li key={i} className="SM-trend-item" onClick={() => handleRecentClick(t)}>
+          {(trending.length > 0
+            ? trending
+            : [
+                { text: "Women Straight Jeans" },
+                { text: "Oversized T-Shirts" },
+                { text: "Ethnic Wear Sale" },
+                { text: "Summer Dresses" },
+                { text: "Men Chinos" },
+              ]
+          ).map((t, i) => (
+            <li
+              key={i}
+              className="SM-trend-item"
+              onClick={() => handleSearch(t.text || t)}
+            >
               <span className="SM-trend-num">{i + 1}</span>
-              <span className="SM-trend-text">{t}</span>
+              <span className="SM-trend-text">{t.text || t}</span>
               {i < 2 && <HiOutlineFire className="SM-fire-icon" />}
               <MdNorthWest className="SM-arr-icon" />
             </li>
@@ -170,19 +184,93 @@ const SearchMobile = ({ closeSearch }) => {
     </>
   );
 
-  /* Suggestions UI */
+  /* ── Suggestion List (typed query) ── */
   const SuggestionList = () => (
-    <ul className="SM-sugg-list">
-      {suggestions.map((s, i) => (
-        <li key={i} className="SM-sugg-item" onClick={() => handleSuggClick(s)}>
-          <CiSearch className="SM-sugg-icon" />
-          <span className="SM-sugg-text">
-            <Highlight text={s} query={searchText} />
-          </span>
-          <MdNorthWest className="SM-arr-icon" />
-        </li>
-      ))}
-    </ul>
+    <div className="SM-sugg-wrapper">
+
+      {/* Keywords */}
+      {keywordSugg.length > 0 && (
+        <>
+          <div className="SM-sugg-label">Suggestions</div>
+          <ul className="SM-sugg-list">
+            {keywordSugg.map((s, i) => (
+              <li
+                key={i}
+                className="SM-sugg-item"
+                onClick={() => handleSearch(s.text)}
+              >
+                <CiSearch className="SM-sugg-icon" />
+                <span className="SM-sugg-text">
+                  <Highlight text={s.text} query={searchText} />
+                </span>
+                {s.meta && <span className="SM-sugg-badge">{s.meta}</span>}
+                <MdNorthWest className="SM-arr-icon" />
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {/* Categories */}
+      {categorySugg.length > 0 && (
+        <>
+          <div className="SM-sugg-label">Categories</div>
+          <ul className="SM-sugg-list">
+            {categorySugg.map((s, i) => (
+              <li
+                key={i}
+                className="SM-sugg-item SM-sugg-item--cat"
+                onClick={() => handleSearch(s.text)}
+              >
+                <span className="SM-cat-icon">📂</span>
+                <span className="SM-sugg-text">
+                  <Highlight text={s.text} query={searchText} />
+                </span>
+                {s.meta && (
+                  <span className="SM-sugg-badge SM-sugg-badge--gray">
+                    {s.meta}
+                  </span>
+                )}
+                <MdNorthWest className="SM-arr-icon" />
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {/* Products */}
+      {productSugg.length > 0 && (
+        <>
+          <div className="SM-sugg-label">Products</div>
+          <ul className="SM-sugg-list">
+            {productSugg.map((s, i) => (
+              <li
+                key={i}
+                className="SM-sugg-item SM-sugg-item--product"
+                onClick={() => {
+                  setShowSugg(false);
+                  navigate(`/product/${s.id}`);
+                  closeSearch && closeSearch();
+                }}
+              >
+                <div className="SM-prod-thumb">
+                  {s.image
+                    ? <img src={s.image} alt={s.text} />
+                    : <span>👕</span>}
+                </div>
+                <div className="SM-prod-info">
+                  <span className="SM-prod-name">
+                    <Highlight text={s.text} query={searchText} />
+                  </span>
+                  {s.meta && <span className="SM-prod-meta">{s.meta}</span>}
+                </div>
+                {s.price && <span className="SM-prod-price">{s.price}</span>}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
   );
 
   return (
@@ -195,22 +283,20 @@ const SearchMobile = ({ closeSearch }) => {
 
         <div className="SM-input-wrap">
           <CiSearch className="SM-input-icon" />
-
           <input
             ref={inputRef}
             type="text"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             placeholder="Search products, brands..."
           />
-
           {searchText && (
             <button
               className="SM-clear-input-btn"
-              onClick={() => setSearchText("")}
+              onClick={() => { setSearchText(""); setSuggestions([]); }}
             >
-              ✕
+              <FaXmark size={9} />
             </button>
           )}
         </div>
@@ -222,11 +308,10 @@ const SearchMobile = ({ closeSearch }) => {
 
       {/* Body */}
       <div className="SM-body">
-        {showSugg && suggestions.length > 0 ? (
-          <SuggestionList />
-        ) : (
-          <HomeState />
-        )}
+        {showSugg && suggestions.length > 0
+          ? <SuggestionList />
+          : <HomeState />
+        }
       </div>
     </div>
   );

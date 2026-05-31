@@ -19,12 +19,24 @@ const {
 } = require("../controllers/ProductController");
 
 
-// ─────────────────────────────────────────────────────────
-// ✅ ALL SPECIFIC ROUTES MUST COME BEFORE  /:id
-// ─────────────────────────────────────────────────────────
 
 // Search
 router.get("/search/suggest", searchSuggest);
+// Trending searches (top searched terms last 7 days)
+router.get("/search/trending", async (req, res) => {
+  try {
+    const trending = await SearchLog.aggregate([
+      { $match: { createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } } },
+      { $group: { _id: "$query", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 6 },
+      { $project: { text: "$_id", _id: 0 } }
+    ]);
+    res.json({ trending });
+  } catch {
+    res.json({ trending: [] });
+  }
+});
 router.get("/search",         searchProducts);
 
 // Static named routes

@@ -17,7 +17,7 @@ import SearchMobile from "../Landing/SearchMobileView/SearchMobile";
 import WishlistMobileView from "../MobileView/WishlistMobile";
 import MobileCategoryView from "../MobileView/NavMobileCategory";
 import { getMe, logoutUser } from "../Store/Slices/authSlice";
-import img from "../../images/928afd9a-95ac-464d-8f91-1ca3dd2deeb5.png"
+import img from "../../images/928afd9a-95ac-464d-8f91-1ca3dd2deeb5.png";
 
 import MegaMenu from "./Men";
 
@@ -29,10 +29,8 @@ const Navbar = () => {
   const [showMobileWishlist, setShowMobileWishlist] = useState(false);
   const [genders, setGenders] = useState([]);
   const [activeMenu, setActiveMenu] = useState(null);
-  // activeMenu = { _id, name } of the hovered gender
-
-
   const [activeMobileCategory, setActiveMobileCategory] = useState(null);
+
   const cartItems = useSelector((state) => state.cart.items);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -43,43 +41,83 @@ const Navbar = () => {
   const menuTimeoutRef = useRef(null);
 
   const totalQty = cartItems.reduce((acc, item) => acc + item.qty, 0);
-  // Ye states add karo
-const [searchQuery, setSearchQuery] = useState("");
-const [suggestions, setSuggestions]  = useState([]);
-const [showSugg, setShowSugg]        = useState(false);
-const searchRef                       = useRef(null);
 
-// Debounced suggestions fetch
-useEffect(() => {
-  if (searchQuery.length < 2) { setSuggestions([]); return; }
-  const timer = setTimeout(async () => {
-    try {
-      const res = await API.get(`/api/products/search/suggest?q=${searchQuery}`);
-      setSuggestions(res.data.suggestions || []);
-      setShowSugg(true);
-    } catch { setSuggestions([]); }
-  }, 300);
-  return () => clearTimeout(timer);
-}, [searchQuery]);
+  // ─── Search States ────────────────────────────────────────
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [trending, setTrending] = useState([]);
+  const [recentSearches, setRecentSearches] = useState(
+    () => JSON.parse(localStorage.getItem("recentSearches") || "[]")
+  );
+  const [showSugg, setShowSugg] = useState(false);
+  const searchRef = useRef(null);
 
-// Enter press ya search icon click
-const handleSearch = (q = searchQuery) => {
-  if (!q.trim()) return;
-  setShowSugg(false);
-  navigate(`/search?q=${encodeURIComponent(q.trim())}`);
-};
+  // Trending — sirf ek baar fetch
+  useEffect(() => {
+    API.get("/api/products/search/trending")
+      .then((res) => setTrending(res.data.trending || []))
+      .catch(() => {});
+  }, []);
 
-// Outside click se suggestions band
-useEffect(() => {
-  const handler = (e) => {
-    if (searchRef.current && !searchRef.current.contains(e.target)) {
-      setShowSugg(false);
+  // Debounced suggestions fetch
+  useEffect(() => {
+    if (searchQuery.length < 2) {
+      setSuggestions([]);
+      return;
     }
-  };
-  document.addEventListener("mousedown", handler);
-  return () => document.removeEventListener("mousedown", handler);
-}, []);
+    const timer = setTimeout(async () => {
+      try {
+        const res = await API.get(
+          `/api/products/search/suggest?q=${encodeURIComponent(searchQuery)}`
+        );
+        setSuggestions(res.data.suggestions || []);
+        setShowSugg(true);
+      } catch {
+        setSuggestions([]);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
+  // Recent search save karo
+  const saveRecent = (query) => {
+    const updated = [
+      query,
+      ...recentSearches.filter((r) => r !== query),
+    ].slice(0, 5);
+    setRecentSearches(updated);
+    localStorage.setItem("recentSearches", JSON.stringify(updated));
+  };
+
+  const deleteRecent = (e, item) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const updated = recentSearches.filter((r) => r !== item);
+    setRecentSearches(updated);
+    localStorage.setItem("recentSearches", JSON.stringify(updated));
+  };
+
+  const handleSearch = (q = searchQuery) => {
+    const query = typeof q === "object" ? q.text || "" : String(q);
+    if (!query.trim()) return;
+    saveRecent(query.trim());
+    setShowSugg(false);
+    setSearchQuery(query);
+    navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+  };
+
+  // Outside click se suggestions band
+  useEffect(() => {
+    const handler = (e) => {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowSugg(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  // ─── Other Effects ────────────────────────────────────────
   useEffect(() => {
     dispatch(getMe());
   }, [dispatch]);
@@ -106,7 +144,6 @@ useEffect(() => {
     timeoutRef.current = setTimeout(() => setShowProfile(false), 200);
   };
 
-  // ─── Mega menu hover handlers (with small delay to prevent flicker) ───
   const handleMenuEnter = (gender) => {
     clearTimeout(menuTimeoutRef.current);
     setActiveMenu(gender);
@@ -136,14 +173,26 @@ useEffect(() => {
     setMobileMenu(false);
   };
 
-const categoryMeta = {
-  Women: { desc: "Shop Westernwear, Indianwear and More", bg: "women-bg" },
-  Men:   { desc: "Shop Formals, Casuals and Denims",      bg: "men-bg"   },
-  Kids:  { desc: "Shop for Boys, Girls and Infants",      bg: "kids-bg"  },
-};
-
+  const categoryMeta = {
+    Women: { desc: "Shop Westernwear, Indianwear and More", bg: "women-bg" },
+    Men:   { desc: "Shop Formals, Casuals and Denims",      bg: "men-bg"   },
+    Kids:  { desc: "Shop for Boys, Girls and Infants",      bg: "kids-bg"  },
+  };
 
   const staticItems = ["Wedding"];
+
+  // Suggestions ko type ke hisaab se alag karo
+  const keywordSuggestions  = suggestions.filter((s) => s.type === "keyword");
+  const categorySuggestions = suggestions.filter((s) => s.type === "category");
+  const productSuggestions  = suggestions.filter((s) => s.type === "product");
+
+  // Dropdown dikhao ya nahi
+  const showEmptyState =
+    showSugg && searchQuery.length < 2 &&
+    (recentSearches.length > 0 || trending.length > 0);
+  const showResults =
+    showSugg && searchQuery.length >= 2 && suggestions.length > 0;
+  const showDropdown = showEmptyState || showResults;
 
   // ─── Profile Dropdown ─────────────────────────────────────
   const ProfileDropdown = () => {
@@ -151,13 +200,16 @@ const categoryMeta = {
       return (
         <div className="profile-dropdown">
           <p className="profile-text">
-            Becoming a member comes with easy order tracking, rewards, offers and more.
+            Becoming a member comes with easy order tracking, rewards, offers
+            and more.
           </p>
           <button className="login-btn" onClick={() => navigate("?auth=login")}>
             Login/Signup Now →
           </button>
           <div className="dropdown-divider" />
-          <div className="dropdown-item">Orders <span>📦</span></div>
+          <div className="dropdown-item">
+            Orders <span>📦</span>
+          </div>
         </div>
       );
     }
@@ -166,8 +218,12 @@ const categoryMeta = {
         <h2>Hi {user.name || "User"}</h2>
         <p>{user.mobile || user.email}</p>
         <div className="dropdown-divider" />
-        <div className="dropdown-item">Orders <span>📦</span></div>
-        <button className="login-btn" onClick={handleLogout}>Logout</button>
+        <div className="dropdown-item">
+          Orders <span>📦</span>
+        </div>
+        <button className="login-btn" onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     );
   };
@@ -179,28 +235,30 @@ const categoryMeta = {
 
           {/* LEFT */}
           <div className="nav-left-logo">
-            <div className="mobile-menu-icon" onClick={() => setMobileMenu(!mobileMenu)}>
-              {mobileMenu ? <FaXmark /> : <CiMenuBurger className="bar-icon" />}
+            <div
+              className="mobile-menu-icon"
+              onClick={() => setMobileMenu(!mobileMenu)}
+            >
+              {mobileMenu ? (
+                <FaXmark />
+              ) : (
+                <CiMenuBurger className="bar-icon" />
+              )}
             </div>
 
-            <img
-              className="nav-logo"
-              src={img}
-              alt="Logo"
-            />
-
+            <img className="nav-logo" src={img} alt="Logo" />
 
             <ul className="navb-menu">
               {genders.map((gender) => (
                 <li
                   key={gender._id}
-                  className={`real-nav-item ${activeMenu?._id === gender._id ? "active" : ""}`}
+                  className={`real-nav-item ${
+                    activeMenu?._id === gender._id ? "active" : ""
+                  }`}
                   onMouseEnter={() => handleMenuEnter(gender)}
                   onMouseLeave={handleMenuLeave}
                 >
                   {gender.name}
-
-                 
                   {activeMenu?._id === gender._id && (
                     <MegaMenu
                       genderName={gender.name}
@@ -211,8 +269,6 @@ const categoryMeta = {
                   )}
                 </li>
               ))}
-
-              {/* Static items */}
               {staticItems.map((item) => (
                 <li key={item} className="real-nav-item">
                   {item}
@@ -221,40 +277,193 @@ const categoryMeta = {
             </ul>
           </div>
 
+          {/* DESKTOP SEARCH */}
+          <div className="navb-search-box desktop-search" ref={searchRef}>
+            <i className="navb-search-icon" onClick={() => handleSearch()}>
+              <CiSearch className="Laptop-Search-icon" />
+            </i>
+            <input
+              placeholder="Search for products, brands and more"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowSugg(true);
+              }}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              onFocus={() => setShowSugg(true)}
+            />
+            {searchQuery && (
+              <span
+                className="search-clear-btn"
+                onClick={() => {
+                  setSearchQuery("");
+                  setSuggestions([]);
+                }}
+              >
+                <FaXmark />
+              </span>
+            )}
 
-   {/* DESKTOP SEARCH */}
-<div className="navb-search-box desktop-search" ref={searchRef}>
-  <i className="navb-search-icon" onClick={() => handleSearch()}>
-    <CiSearch className="Laptop-Search-icon" />
-  </i>
-  <input
-    placeholder="Search for products, brands and more"
-    value={searchQuery}
-    onChange={(e) => setSearchQuery(e.target.value)}
-    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-    onFocus={() => searchQuery.length > 1 && setShowSugg(true)}
-  />
+            {/* ── Suggestions Dropdown ── */}
+            {showDropdown && (
+              <div className="search-suggestions">
 
-  {/* Suggestions Dropdown */}
-  {showSugg && suggestions.length > 0 && (
-    <div className="search-suggestions">
-      {suggestions.map((s, i) => (
-        <div
-          key={i}
-          className="suggestion-item"
-            onMouseDown={(e) => {
-    e.preventDefault(); 
-    handleSearch(s);
-  }}
-          onClick={() => handleSearch(s)}
-        >
-          <CiSearch className="sugg-icon" />
-          <span>{s}</span>
-        </div>
-      ))}
-    </div>
-  )}
-</div>
+                {/* Empty state: Recent + Trending */}
+                {showEmptyState && (
+                  <>
+                    {recentSearches.length > 0 && (
+                      <>
+                        <div className="sugg-section-label">Recent searches</div>
+                        {recentSearches.map((item, i) => (
+                          <div
+                            key={i}
+                            className="suggestion-item recent"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              handleSearch(item);
+                            }}
+                          >
+                            <CiSearch className="sugg-icon" />
+                            <span>{item}</span>
+                            <span
+                              className="sugg-delete"
+                              onMouseDown={(e) => deleteRecent(e, item)}
+                            >
+                              <FaXmark />
+                            </span>
+                          </div>
+                        ))}
+                        {trending.length > 0 && (
+                          <div className="sugg-divider" />
+                        )}
+                      </>
+                    )}
+
+                    {trending.length > 0 && (
+                      <>
+                        <div className="sugg-section-label">Trending</div>
+                        {trending.map((t, i) => (
+                          <div
+                            key={i}
+                            className="suggestion-item trending"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              handleSearch(t.text);
+                            }}
+                          >
+                            <span className="sugg-trend-icon">🔥</span>
+                            <span>{t.text}</span>
+                            <span className="sugg-badge">Trending</span>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </>
+                )}
+
+                {/* Query typed: Keyword + Category + Product suggestions */}
+                {showResults && (
+                  <>
+                    {/* Keywords */}
+                    {keywordSuggestions.length > 0 && (
+                      <>
+                        <div className="sugg-section-label">Suggestions</div>
+                        {keywordSuggestions.map((s, i) => (
+                          <div
+                            key={i}
+                            className="suggestion-item"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              handleSearch(s.text);
+                            }}
+                          >
+                            <CiSearch className="sugg-icon" />
+                            <span>{s.text}</span>
+                            {s.meta && (
+                              <span className="sugg-badge sugg-badge-gray">
+                                {s.meta}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </>
+                    )}
+
+                    {/* Categories */}
+                    {categorySuggestions.length > 0 && (
+                      <>
+                        {keywordSuggestions.length > 0 && (
+                          <div className="sugg-divider" />
+                        )}
+                        <div className="sugg-section-label">Categories</div>
+                        {categorySuggestions.map((s, i) => (
+                          <div
+                            key={i}
+                            className="suggestion-item category"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              handleSearch(s.text);
+                            }}
+                          >
+                            <span className="sugg-cat-icon">📂</span>
+                            <span>{s.text}</span>
+                            {s.meta && (
+                              <span className="sugg-badge sugg-badge-gray">
+                                {s.meta}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </>
+                    )}
+
+                    {/* Products */}
+                    {productSuggestions.length > 0 && (
+                      <>
+                        {(keywordSuggestions.length > 0 ||
+                          categorySuggestions.length > 0) && (
+                          <div className="sugg-divider" />
+                        )}
+                        <div className="sugg-section-label">Products</div>
+                        {productSuggestions.map((s, i) => (
+                          <div
+                            key={i}
+                            className="suggestion-item product"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              setShowSugg(false);
+                              navigate(`/product/${s.id}`);
+                            }}
+                          >
+                            <div className="sugg-product-img">
+                              {s.image ? (
+                                <img src={s.image} alt={s.text} />
+                              ) : (
+                                <span>👕</span>
+                              )}
+                            </div>
+                            <div className="sugg-product-info">
+                              <span className="sugg-product-name">
+                                {s.text}
+                              </span>
+                              <span className="sugg-product-meta">
+                                {s.meta}
+                              </span>
+                            </div>
+                            {s.price && (
+                              <span className="sugg-product-price">
+                                {s.price}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* RIGHT */}
           <div className="navb-nav-right">
@@ -268,7 +477,10 @@ const categoryMeta = {
               {showProfile && <ProfileDropdown />}
             </div>
 
-            <div className="mobile-search-icon" onClick={() => setOpenSearch(true)}>
+            <div
+              className="mobile-search-icon"
+              onClick={() => setOpenSearch(true)}
+            >
               <CiSearch className="Mobile-Search-icon" />
             </div>
 
@@ -277,9 +489,14 @@ const categoryMeta = {
               <p>Wishlist</p>
             </div>
 
-            <div className="nav-icon cart-icon-wrapper" onClick={() => setShowCart(true)}>
+            <div
+              className="nav-icon cart-icon-wrapper"
+              onClick={() => setShowCart(true)}
+            >
               <CiShoppingCart className="nav-icon-react" />
-              {totalQty > 0 && <span className="nav-cart-badge">{totalQty}</span>}
+              {totalQty > 0 && (
+                <span className="nav-cart-badge">{totalQty}</span>
+              )}
               <p>Bag</p>
             </div>
           </div>
@@ -289,12 +506,18 @@ const categoryMeta = {
 
         {/* MOBILE SIDEBAR OVERLAY */}
         {mobileMenu && (
-          <div className="mobile-menu-overlay" onClick={() => setMobileMenu(false)} />
+          <div
+            className="mobile-menu-overlay"
+            onClick={() => setMobileMenu(false)}
+          />
         )}
 
         {/* MOBILE SIDEBAR */}
         <div className={`mobile-sidebar ${mobileMenu ? "open" : ""}`}>
-          <div className="mobile-menu-close" onClick={() => setMobileMenu(false)}>
+          <div
+            className="mobile-menu-close"
+            onClick={() => setMobileMenu(false)}
+          >
             <FaXmark />
           </div>
           <h2 className="mobile-menu-heading">Categories</h2>
@@ -324,7 +547,9 @@ const categoryMeta = {
         </div>
 
         {showCart && <CartDrawer onClose={() => setShowCart(false)} />}
-        {openSearch && <SearchMobile closeSearch={() => setOpenSearch(false)} />}
+        {openSearch && (
+          <SearchMobile closeSearch={() => setOpenSearch(false)} />
+        )}
 
         {activeMobileCategory && (
           <MobileCategoryView

@@ -1,13 +1,9 @@
-/* ═══════════════════════════════════════════════════
-   SearchMobile.css  —  Professional E-commerce Search
-   ═══════════════════════════════════════════════════ */
-
 /* ── Container ──────────────────────────────────────── */
 .SM-container {
   position: fixed;
   inset: 0;
   background: #f7f7f7;
-  z-index: 1999;
+  z-index: 19999;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -53,16 +49,16 @@
   height: 40px;
   padding: 0 36px 0 36px;
   border-radius: 8px;
-  border: 1.5px solid #e8572a;
-  background: #fdf8f6;
+  border: 1.5px solid #ff3f6c;
+  background: #fff9fb;
   font-size: 14px;
   color: #1a1a1a;
   outline: none;
   transition: border-color 0.2s, background 0.2s;
 }
-.SM-input-wrap input::placeholder { color: #aaa; }
+.SM-input-wrap input::placeholder { color: #bbb; }
 .SM-input-wrap input:focus {
-  border-color: #d44e22;
+  border-color: #e0335e;
   background: #fff;
 }
 
@@ -70,7 +66,7 @@
   position: absolute;
   left: 10px;
   font-size: 18px;
-  color: #aaa;
+  color: #bbb;
   pointer-events: none;
 }
 
@@ -80,7 +76,7 @@
   width: 20px;
   height: 20px;
   border: none;
-  background: #ddd;
+  background: #e0e0e0;
   color: #666;
   border-radius: 50%;
   font-size: 10px;
@@ -95,7 +91,7 @@
 .SM-search-btn {
   height: 36px;
   padding: 0 14px;
-  background: #e8572a;
+  background: #ff3f6c;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -105,7 +101,7 @@
   flex-shrink: 0;
   transition: background 0.15s;
 }
-.SM-search-btn:hover { background: #d04a1f; }
+.SM-search-btn:hover  { background: #e0335e; }
 .SM-search-btn:active { transform: scale(0.97); }
 
 /* ── Body ────────────────────────────────────────────── */
@@ -146,11 +142,11 @@
   border: none;
   background: transparent;
   font-size: 12px;
-  color: #e8572a;
+  color: #ff3f6c;
   cursor: pointer;
   font-weight: 500;
 }
-.SM-clear-btn:hover { color: #d04a1f; }
+.SM-clear-btn:hover { color: #e0335e; }
 
 /* ── Recent Tags ─────────────────────────────────────── */
 .SM-tags {
@@ -163,7 +159,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 6px 12px;
+  padding: 6px 10px;
   background: #f5f5f5;
   border: 1px solid #e8e8e8;
   border-radius: 20px;
@@ -174,10 +170,24 @@
   white-space: nowrap;
 }
 .SM-tag:hover {
-  background: #fdf1ec;
-  border-color: #e8572a;
-  color: #e8572a;
+  background: #fff0f3;
+  border-color: #ff3f6c;
+  color: #ff3f6c;
 }
+
+.SM-tag-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ddd;
+  color: #777;
+  margin-left: 2px;
+  transition: background 0.12s;
+}
+.SM-tag-delete:hover { background: #ccc; color: #333; }
 
 /* ── Trending ────────────────────────────────────────── */
 .SM-trending-list {
@@ -193,15 +203,16 @@
   padding: 11px 2px;
   border-bottom: 1px solid #f5f5f5;
   cursor: pointer;
-  transition: background 0.12s;
+  transition: all 0.12s;
+  border-radius: 6px;
 }
 .SM-trend-item:last-child { border-bottom: none; }
-.SM-trend-item:hover { background: #fdf8f6; border-radius: 8px; padding-left: 6px; }
+.SM-trend-item:hover { background: #fff0f3; padding-left: 6px; }
 
 .SM-trend-num {
   font-size: 12px;
   font-weight: 700;
-  color: #e8572a;
+  color: #ff3f6c;
   width: 16px;
   flex-shrink: 0;
 }
@@ -213,198 +224,146 @@
 }
 
 .SM-fire-icon {
-  color: #e8572a;
+  color: #ff3f6c;
   font-size: 15px;
   animation: pulse 1.5s ease-in-out infinite;
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  50%       { opacity: 0.4; }
 }
 
 .SM-arr-icon {
   font-size: 14px;
   color: #ccc;
+  flex-shrink: 0;
 }
 
-/* ── Suggestions ─────────────────────────────────────── */
+/* ── Suggestion wrapper ──────────────────────────────── */
+.SM-sugg-wrapper {
+  background: #fff;
+  padding-bottom: 16px;
+}
+
+.SM-sugg-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #aaa;
+  padding: 12px 16px 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Suggestion list items ───────────────────────────── */
 .SM-sugg-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  background: #fff;
 }
 
 .SM-sugg-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 13px 16px;
+  padding: 12px 16px;
   border-bottom: 1px solid #f5f5f5;
   cursor: pointer;
   transition: background 0.12s;
 }
-.SM-sugg-item:hover { background: #fdf8f6; }
+.SM-sugg-item:last-child { border-bottom: none; }
+.SM-sugg-item:hover { background: #fff0f3; }
 
 .SM-sugg-icon {
   font-size: 18px;
-  color: #bbb;
+  color: #ccc;
+  flex-shrink: 0;
+}
+
+.SM-cat-icon {
+  font-size: 16px;
   flex-shrink: 0;
 }
 
 .SM-sugg-text {
   flex: 1;
   font-size: 14px;
-  color: #333;
+  color: #222;
 }
 
 .sugg-highlight {
   font-style: normal;
   font-weight: 700;
-  color: #e8572a;
+  color: #ff3f6c;
 }
 
-/* ── Product Results ─────────────────────────────────── */
-.SM-results-section {
-  padding-bottom: 20px;
-}
-
-.SM-results-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  background: #fff;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 13px;
-  color: #666;
-}
-
-.SM-results-meta strong { color: #1a1a1a; }
-
-.SM-filter-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  border: 1px solid #ddd;
-  background: #fff;
-  padding: 5px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  color: #444;
-  cursor: pointer;
+/* Badge */
+.SM-sugg-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: #fff0f3;
+  color: #ff3f6c;
   font-weight: 500;
-  transition: border-color 0.15s;
+  flex-shrink: 0;
 }
-.SM-filter-btn:hover { border-color: #e8572a; color: #e8572a; }
-
-/* ── Product Grid ────────────────────────────────────── */
-.SM-product-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1px;
-  background: #ececec;
-  margin-top: 1px;
+.SM-sugg-badge--gray {
+  background: #f2f2f2;
+  color: #888;
 }
 
-.SM-product-card {
-  background: #fff;
-  cursor: pointer;
-  transition: background 0.15s;
+/* ── Product suggestion item ─────────────────────────── */
+.SM-sugg-item--product {
+  padding: 10px 16px;
+  align-items: center;
 }
-.SM-product-card:hover { background: #fdf8f6; }
-.SM-product-card:hover .SM-product-img { transform: scale(1.04); }
 
-.SM-product-img-wrap {
-  position: relative;
-  aspect-ratio: 3 / 4;
+.SM-prod-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
   overflow: hidden;
-  background: #f5f5f5;
+  border: 1px solid #f0f0f0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+  font-size: 22px;
 }
-
-.SM-product-img {
+.SM-prod-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.35s ease;
 }
 
-.SM-discount-badge {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  background: #e8572a;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 3px 7px;
-  border-radius: 4px;
-  letter-spacing: 0.02em;
+.SM-prod-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
-.SM-product-info {
-  padding: 8px 10px 12px;
-}
-
-.SM-product-brand {
-  font-size: 10px;
-  font-weight: 700;
-  color: #999;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 2px;
-}
-
-.SM-product-name {
-  font-size: 13px;
-  color: #1a1a1a;
-  line-height: 1.35;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+.SM-prod-name {
+  font-size: 14px;
+  color: #222;
+  white-space: nowrap;
   overflow: hidden;
-  margin-bottom: 6px;
-  min-height: 36px;
+  text-overflow: ellipsis;
 }
 
-.SM-price-row {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  margin-bottom: 5px;
-}
-
-.SM-price {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1a1a1a;
-}
-
-.SM-mrp {
+.SM-prod-meta {
   font-size: 12px;
-  color: #aaa;
-  text-decoration: line-through;
-}
-
-.SM-rating-row {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.SM-rating-pill {
-  background: #388e3c;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
-.SM-reviews {
-  font-size: 11px;
   color: #999;
+}
+
+.SM-prod-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111;
+  flex-shrink: 0;
+  margin-left: 6px;
 }
 
 /* ── Skeleton Loader ─────────────────────────────────── */
@@ -416,23 +375,19 @@
   margin-top: 1px;
 }
 
-.SM-skeleton-card {
-  background: #fff;
-  padding: 0 0 12px;
-}
+.SM-skeleton-card { background: #fff; padding: 0 0 12px; }
 
 .SM-skeleton-img {
   width: 100%;
   aspect-ratio: 3 / 4;
-  background: #f0f0f0;
   animation: shimmer 1.4s infinite linear;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   background-size: 200% 100%;
 }
 
 .SM-skeleton-line {
   height: 12px;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite linear;
   border-radius: 6px;
@@ -454,9 +409,4 @@
   gap: 12px;
   color: #bbb;
 }
-
-.SM-empty p {
-  font-size: 14px;
-  color: #999;
-  text-align: center;
-}
+.SM-empty p { font-size: 14px; color: #999; text-align: center; }
