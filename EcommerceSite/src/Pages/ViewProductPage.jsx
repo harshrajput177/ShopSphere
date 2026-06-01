@@ -6,51 +6,86 @@ import Comp3 from "../Component/ProductPage/SimilarProduct";
 import Comp4 from "../Component/ProductPage/RecentViewProduct";
 import Comp5 from "../Component/ProductPage/YouMayAlso";
 
+
 function ProductPageSkeleton() {
   return (
-    <div style={{ display: "flex", gap: "24px", padding: "24px", maxWidth: "1300px", margin: "0 auto" , paddingTop:"80px"}}>
-      <style>{`
-        @keyframes shimmer {
-          0%   { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-        .sk { 
-          background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
-          background-size: 480% 150%;
-          animation: shimmer 1.2s ease infinite;
-          border-radius: 8px;
-        }
-      `}</style>
+    <div className="ViewProduct-product-container">
 
-      {/* Left - Images */}
-      <div style={{ display: "flex", gap: "12px", flex: "0 0 55%" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          {[1,2,3,4].map(i => (
-            <div key={i} className="sk" style={{ width: "84px", height: "90px" }} />
-          ))}
+      {/* Left — Image Section */}
+      <div className="ViewProduct-image-section">
+        <div className="thumbnail-list">
+          <div className="thumbnail-scroll">
+            {[1,2,3,4].map(i => (
+              <div key={i} className="sk sk-thumb" />
+            ))}
+          </div>
         </div>
-        <div className="sk" style={{ flex: 1, minHeight: "500px", borderRadius: "12px" }} />
+        <div className="sk sk-main-image" />
       </div>
 
-      {/* Right - Details */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "16px", paddingTop: "8px" }}>
-        <div className="sk" style={{ height: "16px", width: "80px" }} />
-        <div className="sk" style={{ height: "28px", width: "90%" }} />
-        <div className="sk" style={{ height: "28px", width: "60%" }} />
-        <div className="sk" style={{ height: "36px", width: "200px" }} />
-        <div style={{ display: "flex", gap: "8px" }}>
-          {[1,2,3,4,5].map(i => (
-            <div key={i} className="sk" style={{ width: "48px", height: "48px" }} />
+      {/* Right — Details Section */}
+      <div className="ViewProduct-details-section">
+
+        <div className="sk sk-brand" />
+        <div className="sk sk-title-lg" />
+        <div className="sk sk-title-sm" />
+        <div className="sk sk-rating" />
+
+        {/* Price row */}
+        <div className="sk-price-row">
+          <div className="sk sk-price-main" />
+          <div className="sk sk-price-old" />
+          <div className="sk sk-price-badge" />
+        </div>
+
+        <div className="sk sk-label" />
+
+        {/* Color swatches */}
+        <div className="sk-colors">
+          {[1,2,3].map(i => (
+            <div key={i} className="sk sk-color-swatch" />
           ))}
         </div>
-        <div style={{ display: "flex", gap: "12px" }}>
-          <div className="sk" style={{ height: "52px", flex: 1 }} />
-          <div className="sk" style={{ height: "52px", flex: 1 }} />
+
+        <div className="sk sk-label" />
+
+        {/* Sizes */}
+        <div className="sk-sizes">
+          {[1,2,3,4,5].map(i => (
+            <div key={i} className="sk sk-size-btn" />
+          ))}
         </div>
+
+        {/* Buttons */}
+        <div className="sk-btns">
+          <div className="sk sk-wish-btn" />
+          <div className="sk sk-cart-btn" />
+        </div>
+
+        {/* Delivery box */}
+        <div className="sk sk-delivery" />
+
+        {/* Accordion heading */}
+        <div className="sk sk-acc-heading" />
+
+        {/* Accordion rows */}
+        <div className="sk-acc-group">
+          {[130, 110, 100].map((w, i) => (
+            <div key={i} className="sk-acc-row">
+              <div className="sk sk-acc-icon" />
+              <div className="sk-acc-text">
+                <div className="sk" style={{ height: "13px", width: `${w}px` }} />
+                <div className="sk" style={{ height: "10px", width: `${w + 50}px` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+
       </div>
     </div>
   );
 }
+
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 60 },

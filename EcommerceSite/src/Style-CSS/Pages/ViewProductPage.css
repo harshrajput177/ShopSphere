@@ -1,0 +1,114 @@
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.sk {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.2s ease infinite;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Left side ── */
+.sk-thumb        { width: 84px; height: 104px; border-radius: 5px; }
+.sk-main-image   { flex: 1; min-height: 460px; border-radius: 5px; }
+
+/* ── Right side ── */
+.sk-brand        { height: 13px; width: 90px; border-radius: 20px; margin-bottom: 10px; }
+.sk-title-lg     { height: 27px; width: 85%; margin-bottom: 10px; }
+.sk-title-sm     { height: 27px; width: 55%; margin-bottom: 14px; }
+.sk-rating       { height: 13px; width: 120px; border-radius: 20px; margin-bottom: 14px; }
+.sk-label        { height: 13px; width: 90px; margin-bottom: 12px; }
+.sk-delivery     { height: 110px; border-radius: 10px; margin-bottom: 16px; }
+.sk-acc-heading  { height: 22px; width: 160px; border-radius: 6px; margin: 32px 0 14px; }
+
+/* ── Price row ── */
+.sk-price-row {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  border-top: 1px solid #e8e8e8;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 12px 0;
+  margin-bottom: 16px;
+}
+.sk-price-main   { height: 32px; width: 90px; }
+.sk-price-old    { height: 22px; width: 70px; }
+.sk-price-badge  { height: 22px; width: 60px; border-radius: 20px; }
+
+/* ── Colors ── */
+.sk-colors {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.sk-color-swatch { width: 68px; height: 88px; border-radius: 5px; }
+
+/* ── Sizes ── */
+.sk-sizes {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.sk-size-btn { width: 52px; height: 42px; border-radius: 5px; }
+
+/* ── Buttons ── */
+.sk-btns {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.sk-wish-btn { width: 52px;  height: 52px; border-radius: 10px; }
+.sk-cart-btn { flex: 1;      height: 52px; border-radius: 10px; }
+
+/* ── Accordion ── */
+.sk-acc-group {
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.sk-acc-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  border-bottom: 1px solid #e8e8e8;
+}
+.sk-acc-row:last-child { border-bottom: none; }
+.sk-acc-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  flex-shrink: 0;
+}
+.sk-acc-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── Mobile (max 768px) ── */
+@media (max-width: 768px) {
+  .sk-main-image   { min-height: 0; aspect-ratio: 3/4; width: 100%; border-radius: 0; }
+  .sk-thumb        { width: 56px; height: 70px; }
+  .sk-title-lg     { height: 20px; }
+  .sk-title-sm     { height: 20px; }
+  .sk-price-main   { height: 26px; width: 80px; }
+  .sk-color-swatch { width: 54px; height: 70px; }
+
+  .sk-btns {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    padding: 10px 16px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid #e8e8e8;
+    margin: 0;
+    z-index: 100;
+  }
+}
