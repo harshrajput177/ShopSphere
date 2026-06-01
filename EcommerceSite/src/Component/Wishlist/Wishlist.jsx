@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { FaTimes } from "react-icons/fa";
+import { FiShoppingBag } from "react-icons/fi";
 import "./Wishlist.css";
-
 import { fetchWishlist, removeWishlist } from "../Store/Slices/wishlistSlice";
 import { addCart } from "../Store/Slices/cartSlice";
+import { useToast } from "../Toast/UseToast";
+import ToastContainer from "../Toast/ToastContainer";
 
 const WishlistView = () => {
   const dispatch = useDispatch();
-
   const { items, loading } = useSelector((state) => state.wishlist);
+  const { toasts, showToast, removeToast } = useToast();
 
   const [openSizeModal, setOpenSizeModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -21,6 +23,7 @@ const WishlistView = () => {
 
   const handleRemove = (id) => {
     dispatch(removeWishlist({ productId: id }));
+    showToast({ type: "success", title: "Removed from Wishlist", message: "You can add it back anytime", icon: "unheart" });
   };
 
   const getDiscount = (price, original) => {
@@ -30,59 +33,37 @@ const WishlistView = () => {
 
   return (
     <div className="wishlist-container">
-      
-      {/* TITLE */}
-      <h2 className="wishlist-title">
-        My Wishlist ({items.length})
-      </h2>
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
 
-      {/* LOADING */}
+      <h2 className="wishlist-title">My Wishlist ({items.length})</h2>
+
       {loading && <p style={{ textAlign: "center" }}>Loading...</p>}
 
-      {/* EMPTY */}
       {!loading && items.length === 0 && (
         <p style={{ textAlign: "center" }}>No items in wishlist</p>
       )}
 
-      {/* GRID */}
       <div className="wishlist-grid">
         {items.map((item) => (
           <div key={item._id} className="wishlist-card">
-
-            {/* REMOVE */}
-            <button
-              className="wishlist-remove-btn"
-              onClick={() => handleRemove(item.productId)}
-            >
-              <FaTimes  className="Fatimes"/>
+            <button className="wishlist-remove-btn" onClick={() => handleRemove(item.productId)}>
+              <FaTimes className="Fatimes" />
             </button>
 
-            {/* IMAGE */}
             <img src={item.image} alt={item.title} />
 
-            {/* CONTENT */}
             <div className="card-content">
               <h4>{item.brand}</h4>
               <p>{item.title}</p>
-
               <div className="price-box">
                 <span className="price">Rs.{item.price}</span>
-
+                {item.originalPrice && <span className="old-price">Rs.{item.originalPrice}</span>}
                 {item.originalPrice && (
-                  <span className="old-price">
-                    Rs.{item.originalPrice}
-                  </span>
-                )}
-
-                {item.originalPrice && (
-                  <span className="discount">
-                    ({getDiscount(item.price, item.originalPrice)}% OFF)
-                  </span>
+                  <span className="discount">({getDiscount(item.price, item.originalPrice)}% OFF)</span>
                 )}
               </div>
             </div>
 
-            {/* BUTTON */}
             <button
               className="move-btn"
               onClick={() => {
@@ -92,39 +73,25 @@ const WishlistView = () => {
             >
               MOVE TO BAG
             </button>
-
           </div>
         ))}
       </div>
 
-      {/* SIZE MODAL */}
       {openSizeModal && (
         <div className="size-modal-overlay">
           <div className="size-modal">
-
             <div style={{ textAlign: "right" }}>
-              <FaTimes
-                style={{ cursor: "pointer" }}
-                onClick={() => setOpenSizeModal(false)}
-              />
+              <FaTimes style={{ cursor: "pointer" }} onClick={() => setOpenSizeModal(false)} />
             </div>
 
             <h3>Select Size</h3>
+            <p>{selectedItem?.brand} • {selectedItem?.title}</p>
 
-            <p>
-              {selectedItem?.brand} • {selectedItem?.title}
-            </p>
-
-            {/* SIZE OPTIONS */}
             <div className="size-list">
               {selectedItem?.sizes?.map((s) => (
                 <button
                   key={s._id}
-                  className={
-                    selectedSize?.size === s.size
-                      ? "active-size"
-                      : ""
-                  }
+                  className={selectedSize?.size === s.size ? "active-size" : ""}
                   onClick={() => setSelectedSize(s)}
                 >
                   {s.size}
@@ -132,54 +99,29 @@ const WishlistView = () => {
               ))}
             </div>
 
-            {/* PRICE */}
             <div>
-              <h4>
-                Rs.{selectedSize?.price || selectedItem?.price}
-              </h4>
-
+              <h4>Rs.{selectedSize?.price || selectedItem?.price}</h4>
               {selectedItem?.originalPrice && (
-                <p>
-                  {getDiscount(
-                    selectedSize?.price || selectedItem?.price,
-                    selectedItem?.originalPrice
-                  )}
-                  % OFF
-                </p>
+                <p>{getDiscount(selectedSize?.price || selectedItem?.price, selectedItem?.originalPrice)}% OFF</p>
               )}
             </div>
 
-            {/* ADD TO BAG */}
             <button
               className="done-btn"
               onClick={() => {
                 if (!selectedSize) {
-                  alert("Select size first");
+                  showToast({ type: "info", title: "Please select a size", message: "Choose your size before adding to bag", icon: "ruler" });
                   return;
                 }
-
-                dispatch(
-                  addCart({
-                    productId: selectedItem.productId,
-                    size: selectedSize.size,
-                    price: selectedSize.price,
-                    quantity: 1,
-                  })
-                );
-
-                dispatch(
-                  removeWishlist({
-                    productId: selectedItem.productId,
-                  })
-                );
-
+                dispatch(addCart({ productId: selectedItem.productId, size: selectedSize.size, price: selectedSize.price, quantity: 1 }));
+                dispatch(removeWishlist({ productId: selectedItem.productId }));
+                showToast({ type: "success", title: "Added to Bag!", message: `${selectedItem.title} — Size ${selectedSize.size}`, icon: "bag" });
                 setOpenSizeModal(false);
                 setSelectedSize(null);
               }}
             >
               ADD TO BAG
             </button>
-
           </div>
         </div>
       )}

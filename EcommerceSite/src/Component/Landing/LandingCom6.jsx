@@ -89,14 +89,6 @@ function ProductCard({ p, isWishlisted, onWishlist }) {
           >
             <HeartIcon />
           </button>
-
-          {/* <button
-            className="action-icon"
-            onClick={(e) => e.stopPropagation()}
-            aria-label="Quick view"
-          >
-            <EyeIcon />
-          </button> */}
         </div>
       </div>
 
@@ -203,8 +195,6 @@ export default function NewArrival() {
     return () => window.removeEventListener("resize", onResize);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [curIdx, newArrival.length]);
-
-  if (loading) return <h2 style={{ textAlign: "center", padding: "40px" }}>Loading...</h2>;
 
   return (
     <section className="trending-section">

@@ -20,6 +20,7 @@ const ProductListing = lazy(() => import("./Component/ProductListing/ProductList
 import SubCategoryProductPage from "./Pages/SubCategoryProductPage";
 import NotFound from "./Pages/NotFound";
 import Landing from "./Pages/LandingPage";
+import PageLoader from "./Component/Loader/Loader";
 
 
 
@@ -48,7 +49,7 @@ function App() {
 
       <ScrollToTop />
       <Navbar />
-
+          <PageLoader /> 
       <Routes>
         <Route path="/" element={<Landing/>} />
         <Route path="/login" element={<Login />} />

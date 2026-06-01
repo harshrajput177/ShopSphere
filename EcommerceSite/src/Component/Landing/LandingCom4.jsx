@@ -151,7 +151,7 @@ export default function BestSeller() {
     slideTo(i * max / Math.max(DOTS - 1, 1));
   };
 
-  if (loading) return <h2 style={{ textAlign: "center" }}>Loading...</h2>;
+
 
   return (
     <section className="trending-section">

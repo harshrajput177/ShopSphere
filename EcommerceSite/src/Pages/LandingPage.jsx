@@ -1,7 +1,6 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import BottomNavbar from "../Component/Navbarbottom";
-
 
 const Comp1  = lazy(() => import("../Component/Landing/LandingCom1"));
 const Comp2  = lazy(() => import("../Component/Landing/LandingCom2"));
@@ -16,30 +15,55 @@ const Comp10 = lazy(() => import("../Component/Landing/LandingCom10"));
 const Comp11 = lazy(() => import("../Component/Landing/GenderSection"));
 
 
-function SectionSkeleton() {
+function BottomSpinner() {
   return (
     <div style={{
-      width: "100%",
-      minHeight: "300px",
-      background: "linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%)",
-      backgroundSize: "200% 100%",
-      animation: "shimmer 1.4s infinite",
-      borderRadius: "12px",
-      margin: "12px 0"
-    }} />
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "24px 0",
+      gap: "8px"
+    }}>
+      <div style={{
+        width: "10px", height: "10px", borderRadius: "50%",
+        background: "#2874f0",
+        animation: "bounce 0.6s ease-in-out infinite",
+        animationDelay: "0s"
+      }}/>
+      <div style={{
+        width: "10px", height: "10px", borderRadius: "50%",
+        background: "#2874f0",
+        animation: "bounce 0.6s ease-in-out infinite",
+        animationDelay: "0.15s"
+      }}/>
+      <div style={{
+        width: "10px", height: "10px", borderRadius: "50%",
+        background: "#2874f0",
+        animation: "bounce 0.6s ease-in-out infinite",
+        animationDelay: "0.3s"
+      }}/>
+    </div>
   );
 }
 
+
+function EmptyPlaceholder() {
+  return <div style={{ minHeight: "100px" }} />;
+}
+
 const fadeInUp = {
-  hidden:  { opacity: 0, y: 60 },       // ✅ 130 → 60, zyada bounce jaruri nahi
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  hidden:  { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.35 } },
 };
 
 const Landing = () => {
-
   const [isMobile, setIsMobile] = useState(
     () => typeof window !== "undefined" && window.innerWidth <= 768
   );
+
+
+  const [visibleCount, setVisibleCount] = useState(2); // pehle 2 load karo
+  const loaderRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -47,44 +71,59 @@ const Landing = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const components = [
+  const allComponents = [
     Comp1,
     ...(isMobile ? [Comp11] : []),
-    Comp2,
-    Comp5,
-    Comp3,
-    Comp4,
-    Comp8,
-    Comp6,
-    Comp9,
-    Comp7,
-    Comp10,
+    Comp2, Comp5, Comp3, Comp4,
+    Comp8, Comp6, Comp9, Comp7, Comp10,
   ];
+
+  const isAllLoaded = visibleCount >= allComponents.length;
+
+  useEffect(() => {
+    if (isAllLoaded) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount((prev) =>
+            Math.min(prev + 2, allComponents.length) // 2-2 load karo
+          );
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (loaderRef.current) observer.observe(loaderRef.current);
+    return () => observer.disconnect();
+  }, [visibleCount, isAllLoaded, allComponents.length]);
 
   return (
     <div className="Landing-Components">
-    
       <style>{`
-        @keyframes shimmer {
-          0%   { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50%       { transform: translateY(-8px); }
         }
       `}</style>
 
-      {components.map((Component, index) => (
+      {allComponents.slice(0, visibleCount).map((Component, index) => (
         <motion.div
           key={index}
           variants={fadeInUp}
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}  
+          animate="visible"  
         >
-    
-          <Suspense fallback={<SectionSkeleton />}>
+          <Suspense fallback={<EmptyPlaceholder />}>
             <Component />
           </Suspense>
         </motion.div>
       ))}
+
+    
+      {!isAllLoaded && (
+        <div ref={loaderRef}>
+          <BottomSpinner />
+        </div>
+      )}
 
       <BottomNavbar />
     </div>

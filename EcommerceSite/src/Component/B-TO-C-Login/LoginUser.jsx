@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import API from "../api/api"; 
+import API from "../api/api";
 import { useNavigate } from "react-router-dom";
 import OtpModal from "./OtpVerification";
-import axios from "axios";
 import "../../Style-CSS/B-TO-C-Login/LoginUser.css";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebookF, FaApple } from "react-icons/fa";
-import { useDispatch } from "react-redux";          
-import { mergeCart } from "../Store/Slices/cartSlice"; 
-import { getMe } from "../Store/Slices/authSlice";     
+import { useDispatch } from "react-redux";
+import { mergeCart } from "../Store/Slices/cartSlice";
+import { getMe } from "../Store/Slices/authSlice";
+import { useToast } from "../Toast/UseToast";
+import ToastContainer from "../Toast/ToastContainer";
 
 import { initializeApp } from "firebase/app";
 import {
@@ -37,32 +38,30 @@ const LoginModal = ({ onClose }) => {
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
-  const dispatch = useDispatch();   
-    const navigate = useNavigate(); 
-  
-    const handleClose = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { toasts, showToast, removeToast } = useToast();
+
+  const handleClose = () => {
     onClose();
     navigate("/", { replace: true });
   };
 
   const setupRecaptcha = () => {
     if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        auth,
-        "recaptcha-container",
-        {
-          size: "invisible",
-          callback: () => { },
-        }
-      );
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+        size: "invisible",
+        callback: () => {},
+      });
     }
   };
 
   const handleSendOtp = async () => {
+    if (!mobile || mobile.length < 10) {
+      showToast({ type: "error", title: "Invalid mobile number", message: "Please enter a valid 10-digit number", icon: "lock" });
+      return;
+    }
     try {
-      if (!mobile || mobile.length < 10) {
-        return alert("Enter valid mobile number");
-      }
       setLoading(true);
       setupRecaptcha();
       const appVerifier = window.recaptchaVerifier;
@@ -70,9 +69,10 @@ const LoginModal = ({ onClose }) => {
       const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
       setConfirmationResult(result);
       setShowOtpModal(true);
+      showToast({ type: "success", title: "OTP Sent!", message: `Sent to +91 ${mobile}`, icon: "check" });
     } catch (error) {
       console.log(error);
-      alert("OTP send failed");
+      showToast({ type: "error", title: "OTP send failed", message: "Please try again after sometime", icon: "lock" });
     } finally {
       setLoading(false);
     }
@@ -90,13 +90,13 @@ const LoginModal = ({ onClose }) => {
         googleId: user.uid,
       }, { withCredentials: true });
 
-      await dispatch(getMe());    
-      await dispatch(mergeCart()); 
-
-        handleClose();
+      await dispatch(getMe());
+      await dispatch(mergeCart());
+      showToast({ type: "success", title: "Welcome back!", message: `Logged in as ${user.displayName}`, icon: "check" });
+      handleClose();
     } catch (error) {
       console.log(error);
-      alert("Google Login Failed");
+      showToast({ type: "error", title: "Google Login Failed", message: "Please try again", icon: "lock" });
     } finally {
       setLoading(false);
     }
@@ -104,10 +104,12 @@ const LoginModal = ({ onClose }) => {
 
   return (
     <>
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
+
       {!showOtpModal && (
         <div className="login-overlay" onClick={handleClose}>
           <div className="login-modal" onClick={(e) => e.stopPropagation()}>
-           <button className="Login-close-btn" onClick={handleClose}>×</button>
+            <button className="Login-close-btn" onClick={handleClose}>×</button>
 
             <div className="login-header">
               <h2>KELWOR FASHION</h2>
@@ -165,7 +167,7 @@ const LoginModal = ({ onClose }) => {
           confirmationResult={confirmationResult}
           onClose={() => {
             setShowOtpModal(false);
-             handleClose(); 
+            handleClose();
           }}
         />
       )}

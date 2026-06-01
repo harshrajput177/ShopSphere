@@ -62,9 +62,6 @@ const CategoryCollection = () => {
 
       {loading && <CollectionSkeleton />}
 
-      {!loading && error && (
-        <p style={{ textAlign: "center", color: "gray" }}>Loading....</p>
-      )}
 
       {!loading && !error && (
         <div className="collection-slider">
