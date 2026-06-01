@@ -4,7 +4,7 @@ import { getMe, logoutUser } from "../Store/Slices/authSlice";
 import { fetchMyOrders } from "../Store/Slices/OrderSlice";
 import "../../Style-CSS/MobileView/AccountMobileView.css";
 import { FaUserCircle, FaLock, FaComments, FaUser } from "react-icons/fa";
-import LoginMobileModal from "./LoginUserMobile";
+import LoginMobileModal from "../B-TO-C-Login/LoginUser";
 import { useNavigate } from "react-router-dom";
 import ProfilePage from "./ProfileView";
 import WishlistView from "../MobileView/WishlistMobile";
@@ -16,7 +16,6 @@ const discounts = [
 ];
 
 const AccountPannel = () => {
-  const [openLogin, setOpenLogin]     = useState(false);
   const [openProfile, setOpenProfile] = useState(false);
   const [openWishlist, setOpenWishlist] = useState(false);
   const [copied, setCopied]           = useState(null);
@@ -47,10 +46,10 @@ const AccountPannel = () => {
 
   const handleLogout = () => dispatch(logoutUser());
 
-  const handleOrdersClick = () => {
-    if (!user) setOpenLogin(true);
-    else navigate("/orders");
-  };
+const handleOrdersClick = () => {
+  if (!user) navigate("/?auth=login");
+  else navigate("/orders");
+};
 
   const copyCode = (code) => {
     navigator.clipboard.writeText(code).catch(() => {});
@@ -73,7 +72,7 @@ const AccountPannel = () => {
               {user ? (user.name || user.phone) : "there!"}
             </h2>
             {!user && (
-              <p className="mobileView-login-link" onClick={() => setOpenLogin(true)}>
+   <p className="mobileView-login-link" onClick={() => navigate("/?auth=login")}>
                 Login Now &gt;
               </p>
             )}
@@ -118,7 +117,7 @@ const AccountPannel = () => {
                 Login Now! Get extra <b>15% off</b> on your 1st order over ₹700 —{" "}
                 <b>NFNEW15</b>
               </p>
-              <button onClick={() => setOpenLogin(true)}>Login</button>
+              <button onClick={() => navigate("/?auth=login")}>Login</button>
             </div>
 
           ) : done >= 3 ? (
@@ -175,7 +174,7 @@ const AccountPannel = () => {
 
           <div
             className="mobileView-account-item"
-            onClick={() => user ? setOpenWishlist(true) : setOpenLogin(true)}
+          onClick={() => user ? setOpenWishlist(true) : navigate("/?auth=login")}
           >
             <div>
               <p className="mobileView-title">Wishlist</p>
@@ -209,7 +208,7 @@ const AccountPannel = () => {
         {/* ── Profile ── */}
         <div
           className="mobileView-account-item"
-          onClick={() => user ? setOpenProfile(true) : setOpenLogin(true)}
+       onClick={() => user ? setOpenProfile(true) : navigate("/?auth=login")}
         >
           <div>
             <p className="mobileView-title">Profile</p>
@@ -227,8 +226,6 @@ const AccountPannel = () => {
         </div>
       )}
 
-      {/* ── Login Modal ── */}
-      {openLogin && <LoginMobileModal onClose={() => setOpenLogin(false)} />}
     </>
   );
 };

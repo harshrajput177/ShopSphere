@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import API from "../api/api"; 
+import { useNavigate } from "react-router-dom";
 import OtpModal from "./OtpVerification";
 import axios from "axios";
 import "../../Style-CSS/B-TO-C-Login/LoginUser.css";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebookF, FaApple } from "react-icons/fa";
-import { useDispatch } from "react-redux";           // ✅ ADD
-import { mergeCart } from "../Store/Slices/cartSlice"; // ✅ ADD
-import { getMe } from "../Store/Slices/authSlice";     // ✅ ADD
+import { useDispatch } from "react-redux";          
+import { mergeCart } from "../Store/Slices/cartSlice"; 
+import { getMe } from "../Store/Slices/authSlice";     
 
 import { initializeApp } from "firebase/app";
 import {
@@ -36,7 +37,13 @@ const LoginModal = ({ onClose }) => {
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
-  const dispatch = useDispatch();                      // ✅ MOVED — pehle component ke andar
+  const dispatch = useDispatch();   
+    const navigate = useNavigate(); 
+  
+    const handleClose = () => {
+    onClose();
+    navigate("/", { replace: true });
+  };
 
   const setupRecaptcha = () => {
     if (!window.recaptchaVerifier) {
@@ -83,10 +90,10 @@ const LoginModal = ({ onClose }) => {
         googleId: user.uid,
       }, { withCredentials: true });
 
-      await dispatch(getMe());      // ✅ user Redux mein set karo
-      await dispatch(mergeCart());  // ✅ guest cart merge karo
+      await dispatch(getMe());    
+      await dispatch(mergeCart()); 
 
-      onClose();
+        handleClose();
     } catch (error) {
       console.log(error);
       alert("Google Login Failed");
@@ -98,9 +105,9 @@ const LoginModal = ({ onClose }) => {
   return (
     <>
       {!showOtpModal && (
-        <div className="login-overlay" onClick={onClose}>
+        <div className="login-overlay" onClick={handleClose}>
           <div className="login-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="Login-close-btn" onClick={onClose}>×</button>
+           <button className="Login-close-btn" onClick={handleClose}>×</button>
 
             <div className="login-header">
               <h2>KELWOR FASHION</h2>
@@ -158,7 +165,7 @@ const LoginModal = ({ onClose }) => {
           confirmationResult={confirmationResult}
           onClose={() => {
             setShowOtpModal(false);
-            onClose();
+             handleClose(); 
           }}
         />
       )}

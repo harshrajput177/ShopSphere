@@ -13,13 +13,13 @@ import OrderDetail from "./Component/Order/OrderDetails";
 import OrderSuccess from "./Component/Order/OrderSuccess";
 
 const Footer = lazy(() => import("./Component/Footer"));
-const Home = lazy(() => import("./Pages/LandingPage"));
 const Login = lazy(() => import("./Component/B-TO-C-Login/LoginUser"));
 const Wishlist = lazy(() => import("./Component/Wishlist/Wishlist"));
 const ViewProduct = lazy(() => import("./Pages/ViewProductPage"));
 const ProductListing = lazy(() => import("./Component/ProductListing/ProductListing"));
 import SubCategoryProductPage from "./Pages/SubCategoryProductPage";
 import NotFound from "./Pages/NotFound";
+import Landing from "./Pages/LandingPage";
 
 
 
@@ -50,15 +50,13 @@ function App() {
       <Navbar />
 
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Landing/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/Wishlist" element={<Wishlist />} />
         <Route path="/product/:id" element={<ViewProduct />} />
 
-        {/* Old route — rakho taaki purane links toot na jaayein */}
         <Route path="/products/:slug" element={<ProductListing />} />
 
-        {/* ✅ NEW — MegaMenu wale routes: /women/jeans, /men/kurta etc */}
         <Route path="/men/:slug"     element={<ProductListing />} />
         <Route path="/women/:slug"   element={<ProductListing />} />
         <Route path="/kids/:slug"    element={<ProductListing />} />
