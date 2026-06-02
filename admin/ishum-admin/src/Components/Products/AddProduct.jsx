@@ -4,7 +4,6 @@ import "../../CSS/AddProduct.css";
 
 const AddProduct = () => {
 
-  // 🔥 STATES
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [productTypes, setProductTypes] = useState([]);
@@ -66,7 +65,7 @@ const [pasteInput, setPasteInput] = useState("");
     "Sleep Wear/Night Wear"
   ];
 
-  // 🔥 FETCH INITIAL DATA
+
   useEffect(() => {
     fetchCategories();
     fetchCollections();
@@ -118,7 +117,7 @@ const parsePastedTable = () => {
     const cols = parseRow(line);
     const values = {};
 
-    // 🔥 KEY FIX: map by position to sizeFields (not by pasted header name)
+ 
     sizeFields.forEach((field, i) => {
       values[field] = cols[i + 1] || "";  // col[0] = size, col[1+] = measurements
     });
@@ -226,10 +225,10 @@ const handleProductType = (id) => {
 
 
   const addVariant = () => {
-    // 🔥 Attribute se color uthao
+ 
     const selectedColor = attributesData["Color"];
 
-    // 🔥 Validation
+    
     if (!selectedColor || variantImages.length === 0 || sizes.length === 0) {
       alert("Select color, size & images ⚠️");
       return;
@@ -269,87 +268,80 @@ const handleProductType = (id) => {
     ]);
   };
 
-
-  const handleSubmit = async () => {
-    try {
-      setLoading(true);
-
-      const formData = new FormData();
-      formData.append("title", title);
-      formData.append("discount", discount);
-      formData.append("description", description);
-      formData.append("stock", Number(stock));
-      formData.append("category", category);
-      formData.append("subCategory", subcategory);
-      formData.append("productType", productType);
-      formData.append("specifications", JSON.stringify(attributesData));
-      formData.append("isBestSeller", isBestSeller);
-      formData.append("isTrending", isTrending);
-      formData.append("isNewArrival", isNewArrival);
-      formData.append("isGenZ", isGenZ);
-      formData.append("sizeChart", JSON.stringify(sizeChart));
-
-
-      collections.forEach(c => formData.append("collections", c));
-      tags.forEach(t => formData.append("tags", t));
-      occasion.forEach(o => formData.append("occasion", o));
-
-        if (!category || !subcategory || !productType) {
+const handleSubmit = async () => {
+  // ✅ VALIDATE FIRST — before any FormData
+  if (!category || !subcategory || !productType) {
     alert("Select category, subcategory & product type ⚠️"); return;
   }
   if (!title.trim()) {
     alert("Enter product title ⚠️"); return;
   }
+  if (variants.length === 0) {
+    alert("Please add at least one variant ⚠️"); return;
+  }
+  if (variants.some(v => v.mainImageIndex === null || v.mainImageIndex === undefined)) {
+    alert("Please select main image for all variants ⚠️"); return;
+  }
 
-    const allPrices = variants.flatMap(v =>
-  v.sizes
-    .map(s => Number(s.price))
-    .filter(p => p > 0)
-);
-
+  const allPrices = variants.flatMap(v =>
+    v.sizes.map(s => Number(s.price)).filter(p => p > 0)
+  );
   if (allPrices.length === 0) {
     alert("Add price for at least one size ⚠️"); return;
   }
 
-      const minPrice = Math.min(...allPrices);
+  const minPrice = Math.min(...allPrices);
 
-      formData.append("price", minPrice);
+  try {
+    setLoading(true);
 
-      if (variants.some(v => v.mainImageIndex === null || v.mainImageIndex === undefined)) {
-  alert("Please select main image ⚠️");
-  return;
-}
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("price", minPrice);
+    formData.append("discount", discount || 0);
+    formData.append("description", description);
+    formData.append("shortDescription", description); // 🔥 ADD THIS
+    formData.append("category", category);
+    formData.append("subCategory", subcategory);
+    formData.append("productType", productType);
+    formData.append("specifications", JSON.stringify(attributesData));
+    formData.append("isBestSeller", isBestSeller);
+    formData.append("isTrending", isTrending);
+    formData.append("isNewArrival", isNewArrival);
+    formData.append("isGenZ", isGenZ);
+    formData.append("sizeChart", JSON.stringify(sizeChart));
 
+    collections.forEach(c => formData.append("collections", c));
+    tags.forEach(t => formData.append("tags", t));
+    occasion.forEach(o => formData.append("occasion", o));
 
-      if (variants.length === 0) {
-        alert("Please add at least one variant ⚠️");
-        return;
-      }
+    formData.append("variants", JSON.stringify(
+      variants.map(v => ({
+        color: v.color,
+        sizes: v.sizes,
+        mainImageIndex: v.mainImageIndex ?? 0
+        // don't send images array here — files handle that
+      }))
+    ));
 
-      formData.append("variants", JSON.stringify(variants));
+    variants.forEach((variant, i) => {
+      variant.images.forEach((img) => {
+        formData.append(`variants[${i}]`, img);
+      });
+    });
 
-variants.forEach((variant, i) => {
-  variant.images.forEach((img) => {
-    formData.append(`variants[${i}]`, img);
-  });
-});
+    await axios.post("http://localhost:4000/api/products", formData);
+    alert("Product Added ");
+    resetForm();
 
-      await axios.post("http://localhost:4000/api/products", formData);
+  } catch (err) {
+    console.error("SUBMIT ERROR:", err.response?.data || err.message);
+    alert(err.response?.data?.message || "Error ❌");
+  } finally {
+    setLoading(false);
+  }
+};
 
-      alert("Product Added 🚀");
-      resetForm();
-      console.log("FINAL VARIANTS:", variants);
-
-    } catch (err) {
-      console.log(err);
-      alert("Error ❌");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
-  // ✅ RESET FIX
   const resetForm = () => {
     setTitle("");
     setPrice("");

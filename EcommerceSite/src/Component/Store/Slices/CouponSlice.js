@@ -1,10 +1,19 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchProductCouponsApi, applyCouponApi } from "../../api/Couponapi";
+import { fetchAllCouponsApi, fetchProductCouponsApi, applyCouponApi } from "../../api/Couponapi";
 
 export const fetchProductCoupons = createAsyncThunk(
   "coupon/fetchForProduct",
   async (productId) => {
     const res = await fetchProductCouponsApi(productId);
+    return res.data;
+  }
+);
+
+// fetchAllCoupons PEHLE define karo, slice ke andar use hoga
+export const fetchAllCoupons = createAsyncThunk(
+  "coupon/fetchAll",
+  async () => {
+    const res = await fetchAllCouponsApi();
     return res.data;
   }
 );
@@ -40,6 +49,9 @@ const couponSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchAllCoupons.fulfilled, (state, action) => {
+        state.available = action.payload; // ✅ ab yeh kaam karega
+      })
       .addCase(fetchProductCoupons.fulfilled, (state, action) => {
         state.available = action.payload;
       })

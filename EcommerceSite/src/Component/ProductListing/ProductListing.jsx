@@ -63,6 +63,28 @@ const ProductListing = () => {
   const isWishlisted = (productId) =>
     wishlistItems?.some((item) => getId(item) === productId);
 
+const getLowestPrice = (variants) => {
+  let lowest = Infinity;
+  variants?.forEach(v => v.sizes?.forEach(s => {
+    if (s.price < lowest) lowest = s.price;
+  }));
+  return lowest === Infinity ? 0 : lowest;
+};
+
+const getMRP = (item) => {
+  // MRP = price + discount (discount rupees mein stored hai)
+  const price = getLowestPrice(item.variants);
+  if (item.discount && item.discount > 0) return price + item.discount;
+  return null;
+};
+
+const getDiscount = (item) => {
+  const price = getLowestPrice(item.variants);
+  const mrp = getMRP(item);
+  if (!mrp || mrp <= price) return null;
+  return Math.round(((mrp - price) / mrp) * 100); // % calculate karo
+};
+
   const handleWishlist = (e, item) => {
     e.stopPropagation();
     if (!user) { navigate("?auth=login"); return; }
@@ -355,11 +377,18 @@ const ProductListing = () => {
                   <div className="pl-rating">⭐ {item.rating || 4.5}</div>
                   <div className="pl-info">
                     <p className="pl-title">{item.title}</p>
-                    <div className="pl-price">
-                      <span className="current">₹{item.variants[0]?.sizes[0]?.price || 0}</span>
-                      <span className="old">₹{(item.variants[0]?.sizes[0]?.price || 0) + 500}</span>
-                      <span className="off">{item.discount ? `${item.discount}% OFF` : "20% OFF"}</span>
-                    </div>
+  {(() => {
+  const price = getLowestPrice(item.variants);
+  const mrp = getMRP(item);
+  const discount = getDiscount(item);
+  return (
+    <div className="pl-price">
+      <span className="current">₹{price}</span>
+      {mrp && <span className="old">₹{mrp}</span>}
+      {discount && <span className="off">{discount}% OFF</span>}
+    </div>
+  );
+})()}
                   </div>
                 </div>
               ))

@@ -17,7 +17,7 @@
   @font-face {
       font-family: 'PoppinsRegular';
       src: url('../../public/Poppins/Poppins-Regular.ttf') format('opentype');
-      font-weight:800 ;
+      font-weight:400 ;
       font-style: normal;
     }
     

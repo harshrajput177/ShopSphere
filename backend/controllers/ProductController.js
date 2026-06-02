@@ -23,13 +23,15 @@ const createProduct = asyncHandler(async (req, res) => {
     occasion,
   } = req.body;
 
-  // BOOLEAN HELPER
+
+       console.log(" BODY:", req.body);
+   
   const toBool = (val) => val === "true" || val === true;
 
 
-  // specifications parse karne ke baad ye add karo
 let parsedSpecifications = {};
 try {
+
   const raw = JSON.parse(specifications || "{}");
   // Extra quotes aur spaces clean karo
   Object.keys(raw).forEach(key => {
@@ -136,10 +138,6 @@ try {
       }))
     };
   });
-
-    // console.log("FINAL VARIANTS", finalVariants);
-
-  // VALIDATION
 
   if (!title || !price || !category || !subCategory || !productType) {
     return res.status(400).json({
