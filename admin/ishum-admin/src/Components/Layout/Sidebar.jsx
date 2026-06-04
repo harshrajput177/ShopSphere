@@ -89,6 +89,7 @@ const Sidebar = () => {
               <li><Link to="/subcategory/manage">SubCategory List</Link></li>
               <li><Link to="/product-type/manage">Product Type List</Link></li>
               <li><Link to="/attribute/manage">Attribute List</Link></li>
+               <li><Link to="/Sizechart/manage">SizeChart Maange</Link></li>
             </ul>
           )}
         </li>

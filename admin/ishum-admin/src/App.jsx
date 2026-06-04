@@ -21,6 +21,7 @@ import ProductList from './Components/Products/ProductList';
 import EditProduct from './Components/Products/EditProduct';
 import AddGender from './Components/Gender/Gender';
 import CouponManager from './Components/Coupon/CouponManager';
+import BulkSizeChart from './Components/BulkSizeChart/BulkSizeChart';
 
 const App = () => {
   return (
@@ -61,6 +62,7 @@ const App = () => {
               <Route path="/manage-products" element={<ProductList />} />
               <Route path="/admin/edit-product/:id" element={<EditProduct />} />
               <Route path="/coupon/manage" element={<CouponManager/>} />
+                 <Route path="/Sizechart/manage" element={<BulkSizeChart />} />
             </Routes>
 
           </div>

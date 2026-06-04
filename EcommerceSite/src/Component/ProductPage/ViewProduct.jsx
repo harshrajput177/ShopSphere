@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { addCart } from "../Store/Slices/cartSlice";
+import SizeChartModal from "./SizeChart"; 
 import { addWishlist, removeWishlist, fetchWishlist } from "../Store/Slices/wishlistSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import "../../Style-CSS/ProductPage/ViewProduct.css";
@@ -69,6 +70,7 @@ const ProductPage = ({ product, setProduct }) => {
   const [editing, setEditing] = useState(false);
   const [pincodeLoading, setPincodeLoading] = useState(false);
   const [pincodeError, setPincodeError] = useState("");
+  const [showSizeChart, setShowSizeChart] = useState(false);
 
   const checkPincode = async () => {
     if (pincode.length !== 6) {
@@ -225,21 +227,41 @@ const ProductPage = ({ product, setProduct }) => {
           </div>
         </div>
 
-        <div className="ViewProduct-size-section">
-          <p>Select Size</p>
-          <div className="ViewProduct-sizes">
-            {selectedVariant?.sizes?.map((s) => (
-              <button
-                type="button"
-                key={s.size}
-                onClick={() => setSelectedSize({ size: s.size, price: s.price })}
-                className={selectedSize?.size === s.size ? "active-size" : ""}
-              >
-                {s.size}
-              </button>
-            ))}
-          </div>
-        </div>
+<div className="ViewProduct-size-section">
+  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    <p>Select Size</p>
+    {product?.sizeChart?.length > 0 && (
+      <button className="vp-sizechart-btn" onClick={() => setShowSizeChart(true)}>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 3H3v18h18V3z" />
+          <path d="M3 9h18M3 15h18M9 3v18M15 3v18" />
+        </svg>
+        Size Guide
+      </button>
+    )}
+  </div>
+ 
+  <div className="ViewProduct-sizes">
+    {selectedVariant?.sizes?.map((s) => (
+      <button
+        type="button"
+        key={s.size}
+        onClick={() => setSelectedSize({ size: s.size, price: s.price })}
+        className={selectedSize?.size === s.size ? "active-size" : ""}
+      >
+        {s.size}
+      </button>
+    ))}
+  </div>
+
+  {showSizeChart && (
+  <SizeChartModal
+    sizeChart={product.sizeChart}
+    onClose={() => setShowSizeChart(false)}
+  />
+)}
+</div>
 
         <div className="product-btn-group">
           <button className="ViewProduct-Wish-btn" onClick={handleWishlistClick}>

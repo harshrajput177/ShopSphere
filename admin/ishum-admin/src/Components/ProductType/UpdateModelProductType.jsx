@@ -2,9 +2,20 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../../CSS/ProductType/UpdateModel.css";
 
+const GROUP_OPTIONS = [
+  "Topwear",
+  "Bottomwear",
+  "Innerwear",
+  "Co-ord Set",
+  "OnePiece",
+  "Outerwear",
+  "Other",
+];
+
 const UpdateModal = ({ item, closeModal, refresh }) => {
   const [name, setName] = useState("");
   const [image, setImage] = useState(null);
+  const [group, setGroup] = useState("");
 
   const [subCategories, setSubCategories] = useState([]);
   const [subCategory, setSubCategory] = useState("");
@@ -12,9 +23,8 @@ const UpdateModal = ({ item, closeModal, refresh }) => {
   useEffect(() => {
     if (item) {
       setName(item.name);
-      setSubCategory(
-        item.subCategory?._id || item.subCategory || ""
-      );
+      setSubCategory(item.subCategory?._id || item.subCategory || "");
+      setGroup(item.group || ""); // ✅ Pre-fill group
     }
 
     fetchSubCategories();
@@ -23,10 +33,7 @@ const UpdateModal = ({ item, closeModal, refresh }) => {
   // GET ALL SUBCATEGORIES
   const fetchSubCategories = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:4000/api/subcategory"
-      );
-
+      const res = await axios.get("http://localhost:4000/api/subcategory");
       setSubCategories(res.data.subCategories || []);
     } catch (err) {
       console.log(err);
@@ -40,6 +47,7 @@ const UpdateModal = ({ item, closeModal, refresh }) => {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("subCategory", subCategory);
+    formData.append("group", group); // ✅ Send group
 
     if (image) {
       formData.append("image", image);
@@ -51,8 +59,8 @@ const UpdateModal = ({ item, closeModal, refresh }) => {
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data"
-          }
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
 
@@ -61,7 +69,6 @@ const UpdateModal = ({ item, closeModal, refresh }) => {
         refresh();
         closeModal();
       }
-
     } catch (err) {
       console.log(err);
       alert("Error updating ❌");
@@ -90,20 +97,25 @@ const UpdateModal = ({ item, closeModal, refresh }) => {
             value={subCategory}
             onChange={(e) => setSubCategory(e.target.value)}
           >
-            <option value="">
-              Select SubCategory
-            </option>
-
+            <option value="">Select SubCategory</option>
             {subCategories.map((sub) => (
-              <option
-                key={sub._id}
-                value={sub._id}
-              >
-                {sub.name}
-                {" "}
-                (
-                {sub.gender?.name}
-                )
+              <option key={sub._id} value={sub._id}>
+                {sub.name} ({sub.gender?.name})
+              </option>
+            ))}
+          </select>
+
+          <br /><br />
+
+          {/* ✅ GROUP */}
+          <select
+            value={group}
+            onChange={(e) => setGroup(e.target.value)}
+          >
+            <option value="">Select Group</option>
+            {GROUP_OPTIONS.map((g) => (
+              <option key={g} value={g}>
+                {g}
               </option>
             ))}
           </select>
@@ -119,16 +131,8 @@ const UpdateModal = ({ item, closeModal, refresh }) => {
           <br /><br />
 
           <div className="Manageproducttpye-modal-actions">
-            <button type="submit">
-              Update
-            </button>
-
-            <button
-              type="button"
-              onClick={closeModal}
-            >
-              Cancel
-            </button>
+            <button type="submit">Update</button>
+            <button type="button" onClick={closeModal}>Cancel</button>
           </div>
 
         </form>

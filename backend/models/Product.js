@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema({
 
-  // 🔹 BASIC INFO
+  //  BASIC INFO
   title: {
     type: String,
     required: true
@@ -87,7 +87,9 @@ productType: {
   default: []
 },
 
-  // 🔥 VARIANTS (MAIN SYSTEM)
+
+
+  //  VARIANTS (MAIN SYSTEM)
   variants: [
     {
       color: {
@@ -103,7 +105,7 @@ productType: {
 
         mainImage: String,
 
-      // 🔥 NEW (IMPORTANT)
+   
     sizes: [
   {
     size: String,
@@ -111,7 +113,7 @@ productType: {
       type: Number,
       default: 0
     },
-    price: {                // 🔥 ADD THIS
+    price: {               
       type: Number,
       required: true
     },
@@ -129,7 +131,20 @@ productType: {
     default: 0
   },
 
-    // 🔹 SEARCH FIELDS
+  // productSchema mein ye add karo (variants ke baad)
+sizeChart: [
+  {
+    size: String,
+    values: {
+      type: Map,
+      of: String
+    }
+  }
+],
+
+
+
+    // SEARCH FIELDS
   genderName:      { type: String, default: "" },
   productTypeName: { type: String, default: "" },
   subCategoryName: { type: String, default: "" },

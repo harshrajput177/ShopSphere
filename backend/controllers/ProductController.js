@@ -24,7 +24,7 @@ const createProduct = asyncHandler(async (req, res) => {
   } = req.body;
 
 
-       console.log(" BODY:", req.body);
+      //  console.log(" BODY:", req.body);
    
   const toBool = (val) => val === "true" || val === true;
 
@@ -54,6 +54,13 @@ try {
   const parsedOccasion = occasion
     ? Array.isArray(occasion) ? occasion : [occasion]
     : [];
+
+let parsedSizeChart = [];
+try {
+  parsedSizeChart = JSON.parse(req.body.sizeChart || "[]");
+} catch {
+  parsedSizeChart = [];
+}
 
   // TAG LOGIC
   let finalTags = [...parsedTags];
@@ -171,11 +178,12 @@ try {
     specifications: parsedSpecifications,
     variants: finalVariants,
     occasion: parsedOccasion,
+    sizeChart: parsedSizeChart,
   });
 
   res.status(201).json({
     success: true,
-    message: "Product Created Successfully 🚀",
+    message: "Product Created Successfully ",
     product
   });
 });
@@ -511,9 +519,9 @@ let finalMainImage =
     });
   }
 
-  console.log(
-  JSON.stringify(product.variants, null, 2)
-);
+//   console.log(
+//   JSON.stringify(product.variants, null, 2)
+// );
 
   const updated = await product.save();
 
