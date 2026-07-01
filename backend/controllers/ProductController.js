@@ -24,7 +24,7 @@ const createProduct = asyncHandler(async (req, res) => {
   } = req.body;
 
 
-      //  console.log(" BODY:", req.body);
+  //  console.log(" BODY:", req.body);
    
   const toBool = (val) => val === "true" || val === true;
 

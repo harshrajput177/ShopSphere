@@ -11,7 +11,7 @@ const Comp6  = lazy(() => import("../Component/Landing/LandingCom6"));
 const Comp7  = lazy(() => import("../Component/Landing/LandingCom7"));
 const Comp8  = lazy(() => import("../Component/Landing/LandingCom8"));
 const Comp9  = lazy(() => import("../Component/Landing/LandingCom9"));
-const Comp10 = lazy(() => import("../Component/Landing/LandingCom10"));
+// const Comp10 = lazy(() => import("../Component/Landing/LandingCom10"));
 const Comp11 = lazy(() => import("../Component/Landing/GenderSection"));
 
 
@@ -75,7 +75,7 @@ const Landing = () => {
     Comp1,
     ...(isMobile ? [Comp11] : []),
     Comp2, Comp5, Comp3, Comp4,
-    Comp8, Comp6, Comp9, Comp7, Comp10,
+    Comp8, Comp6, Comp9, Comp7,
   ];
 
   const isAllLoaded = visibleCount >= allComponents.length;

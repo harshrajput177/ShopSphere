@@ -86,15 +86,15 @@ const Footer = () => {
           Blazers For Men | Handbags | Ladies Watches | Bags | Sport Shoes |
           Puma Shoes | Wallets | Tops | Earrings | Watches | Kurtis | Nike |
           Smart Watches | Titan Watches | Designer Blouse | Gowns | Rings |
-          Jeans | Bikini | Myntra Fashion Show | Lipstick | Saree | Dresses
+          Jeans | Bikini | Kelwor Fashion Show | Lipstick | Saree | Dresses
         </p>
       </div>
 
       {/* Bottom */}
       <div className="footer-bottom">
         <p>In case of any concern, <span>Contact Us</span></p>
-        <p>© 2026 www.myntra.com. All rights reserved.</p>
-        <p>A Flipkart company</p>
+        <p>© 2026 www.Kelwor.com. All rights reserved.</p>
+    
       </div>
 
     </footer>

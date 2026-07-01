@@ -65,7 +65,7 @@
   flex: 1;
   max-width: 480px;
   min-width: 0;
-  z-index: 10001;
+  z-index: 991;
   display: flex;
   align-items: center;
   background-color: rgb(248, 249, 255);
